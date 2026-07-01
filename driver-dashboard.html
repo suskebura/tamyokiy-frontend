@@ -1,0 +1,3137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAMYOKIY | Driver Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* ===== BASE STYLES ===== */
+        .driver-section {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+        }
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(33,150,243,0.2), rgba(20,20,30,0.7));
+            backdrop-filter: blur(15px);
+            border-radius: 32px;
+            padding: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+            border: 1px solid rgba(33,150,243,0.4);
+        }
+        .welcome-card h1 {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2.2rem;
+        }
+        .driver-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .driver-stat-card {
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(33,150,243,0.3);
+            transition: all 0.3s ease;
+        }
+        .driver-stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #2196F3;
+        }
+        .driver-stat-card i {
+            font-size: 2rem;
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+        .driver-stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .driver-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-available { background: rgba(76,175,80,0.2); color: #4caf50; }
+        .status-on_delivery { background: rgba(33,150,243,0.2); color: #2196F3; }
+        .status-offline { background: rgba(158,158,158,0.2); color: #9e9e9e; }
+        .status-busy { background: rgba(255,152,0,0.2); color: #ff9800; }
+        .status-pending { background: rgba(255,152,0,0.2); color: #ff9800; }
+        .status-picked_up { background: rgba(33,150,243,0.2); color: #2196F3; }
+        .status-in_transit { background: rgba(156,39,176,0.2); color: #9c27b0; }
+        .status-out_for_delivery { background: rgba(0,188,212,0.2); color: #00bcd4; }
+        .status-delivered { background: rgba(76,175,80,0.2); color: #4caf50; }
+
+        /* ===== QR CODE BUTTON STYLES ===== */
+        .qr-btn-small {
+            background: rgba(212,175,55,0.1);
+            border: 1px solid rgba(212,175,55,0.3);
+            color: #D4AF37;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .qr-btn-small:hover {
+            background: #D4AF37;
+            color: #050505;
+            box-shadow: 0 4px 15px rgba(212,175,55,0.3);
+        }
+        .barcode-btn-small {
+            background: rgba(33,150,243,0.1);
+            border: 1px solid rgba(33,150,243,0.3);
+            color: #2196F3;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .barcode-btn-small:hover {
+            background: #2196F3;
+            color: #050505;
+            box-shadow: 0 4px 15px rgba(33,150,243,0.3);
+        }
+        .qr-code-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== QR MODAL STYLES ===== */
+        .qr-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(20px);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInModal 0.3s ease;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUpModal {
+            from { transform: translateY(40px) scale(0.95); opacity: 0; }
+            to { transform: translateY(0) scale(1); opacity: 1; }
+        }
+        .qr-modal-content {
+            background: linear-gradient(145deg, #1a1a2e, #16162a);
+            border-radius: 28px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(212,175,55,0.2);
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+            animation: slideUpModal 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .qr-modal-content h3 {
+            color: #D4AF37;
+            margin-bottom: 5px;
+        }
+        .qr-modal-content .qr-tracking {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        .qr-modal-content .qr-image-container {
+            background: white;
+            padding: 20px;
+            border-radius: 16px;
+            display: inline-block;
+            margin: 10px 0;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .qr-modal-content .qr-image-container img {
+            width: 200px;
+            height: 200px;
+            display: block;
+            image-rendering: pixelated;
+        }
+        .qr-modal-content .qr-image-container img.barcode-image {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            image-rendering: auto;
+        }
+        .qr-modal-content .qr-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .qr-modal-content .qr-actions button {
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .qr-modal-content .qr-download-btn {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+        }
+        .qr-modal-content .qr-download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(212,175,55,0.4);
+        }
+        .qr-modal-content .qr-close-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #888;
+        }
+        .qr-modal-content .qr-close-btn:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        /* ===== NOTIFICATION BELL ===== */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            margin-left: 15px;
+            font-size: 1.2rem;
+            color: #2196F3;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        .notification-bell:hover {
+            transform: scale(1.05);
+            color: #64B5F6;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff6b6b;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 50%;
+            min-width: 18px;
+            text-align: center;
+        }
+        .notification-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            width: 350px;
+            max-height: 450px;
+            background: #1a1a2e;
+            border-radius: 16px;
+            border: 1px solid rgba(33,150,243,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+            z-index: 1000;
+        }
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(33,150,243,0.1);
+            border-bottom: 1px solid rgba(33,150,243,0.2);
+        }
+        .notification-header h4 {
+            color: #2196F3;
+            margin: 0;
+            font-size: 1rem;
+        }
+        .mark-read-btn {
+            background: transparent;
+            border: 1px solid rgba(33,150,243,0.5);
+            color: #2196F3;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .mark-read-btn:hover {
+            background: rgba(33,150,243,0.2);
+        }
+        .notification-list {
+            max-height: 380px;
+            overflow-y: auto;
+        }
+        .notification-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .notification-list::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+        }
+        .notification-list::-webkit-scrollbar-thumb {
+            background: #2196F3;
+            border-radius: 10px;
+        }
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .notification-item:hover {
+            background: rgba(33,150,243,0.08);
+        }
+        .notification-item.unread {
+            background: rgba(33,150,243,0.05);
+            border-left: 3px solid #2196F3;
+        }
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+        .notification-message {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+            line-height: 1.4;
+        }
+        .notification-time {
+            font-size: 0.65rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* ===== PROFILE CARD ===== */
+        .profile-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(20,20,30,0.4);
+            border-radius: 20px;
+            border: 1px solid rgba(33,150,243,0.15);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .profile-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(33,150,243,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #2196F3;
+        }
+        .profile-info h3 {
+            color: #fff;
+            margin: 0;
+        }
+        .profile-info p {
+            color: #888;
+            margin: 3px 0;
+            font-size: 0.85rem;
+        }
+        .profile-info p i {
+            color: #2196F3;
+            width: 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+            margin-bottom: 50px;
+        }
+        .dashboard-card {
+            background: rgba(20,20,30,0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 28px;
+            border: 1px solid rgba(33,150,243,0.35);
+            padding: 35px;
+            transition: all 0.4s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            border-color: #2196F3;
+            box-shadow: 0 25px 50px rgba(33,150,243,0.2);
+        }
+        .dashboard-card h2 {
+            color: #2196F3;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .shipments-list {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .shipments-list::-webkit-scrollbar {
+            width: 5px;
+        }
+        .shipments-list::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        .shipments-list::-webkit-scrollbar-thumb {
+            background: #2196F3;
+            border-radius: 10px;
+        }
+        .shipment-item {
+            background: rgba(20,20,30,0.5);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 16px;
+            border-left: 4px solid #2196F3;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .shipment-item:hover {
+            background: rgba(33,150,243,0.08);
+            transform: translateX(5px);
+        }
+        .shipment-item p {
+            margin: 8px 0;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .shipment-item strong {
+            color: #2196F3;
+        }
+        .status-select {
+            background: rgba(20,20,30,0.8);
+            border: 1px solid #2196F3;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .complete-btn {
+            margin-top: 12px;
+            width: 100%;
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .upload-btn {
+            margin-top: 12px;
+            width: 100%;
+            background: transparent;
+            border: 1px solid #2196F3;
+            color: #2196F3;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        .upload-btn:hover {
+            background: #2196F3;
+            color: #050505;
+        }
+        .btn-primary-small {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* ===== QR SCAN CARD ===== */
+        .scan-card {
+            background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(33,150,243,0.05));
+            border: 2px solid rgba(212,175,55,0.3);
+            border-radius: 24px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.4s ease;
+        }
+        .scan-card:hover {
+            border-color: #D4AF37;
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(212,175,55,0.1);
+        }
+        .scan-card .scan-icon {
+            font-size: 3.5rem;
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+        .scan-card h3 {
+            color: #D4AF37;
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+        }
+        .scan-card p {
+            color: #888;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+        .scan-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .scan-btn-primary {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .scan-btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(212,175,55,0.4);
+        }
+        .scan-btn-secondary {
+            background: transparent;
+            border: 2px solid #2196F3;
+            color: #2196F3;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .scan-btn-secondary:hover {
+            background: rgba(33,150,243,0.1);
+            transform: scale(1.05);
+        }
+
+        /* ===== TODAY'S PROGRESS ===== */
+        .today-progress {
+            margin-bottom: 20px;
+        }
+        .today-progress .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .today-progress .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2196F3, #64B5F6);
+            border-radius: 10px;
+            transition: width 1s ease;
+            width: 0%;
+        }
+        .today-progress .progress-text {
+            display: flex;
+            justify-content: space-between;
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* ===== RATING BREAKDOWN ===== */
+        .rating-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .rating-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .rating-row .stars {
+            width: 80px;
+            color: #ffa500;
+            font-size: 0.9rem;
+        }
+        .rating-row .bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .rating-row .bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffa500, #ffc107);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        .rating-row .count {
+            width: 30px;
+            color: #888;
+            font-size: 0.8rem;
+            text-align: right;
+        }
+
+        /* ===== FILTER BAR ===== */
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .filter-bar input[type="date"] {
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(33,150,243,0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 0.85rem;
+        }
+        .filter-bar input[type="date"]:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+        .filter-bar .filter-btn {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .filter-bar .filter-btn.clear {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #888;
+        }
+        .filter-bar .filter-btn.clear:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        /* ===== EXPORT BUTTON ===== */
+        .export-btn {
+            background: transparent;
+            border: 1px solid #4caf50;
+            color: #4caf50;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .export-btn:hover {
+            background: #4caf50;
+            color: #050505;
+        }
+
+        /* ===== SIGNATURE CANVAS ===== */
+        .signature-container {
+            border: 2px dashed #2196F3;
+            border-radius: 10px;
+            padding: 10px;
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 15px;
+        }
+        .signature-container canvas {
+            width: 100% !important;
+            height: 150px !important;
+            border-radius: 8px;
+            background: #f0f0f0 !important;
+            cursor: crosshair;
+            touch-action: none;
+            display: block !important;
+        }
+        .signature-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .signature-buttons button {
+            background: transparent;
+            border: 1px solid #888;
+            color: #888;
+            padding: 4px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+        }
+        .signature-buttons button:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        .signature-buttons .clear-btn:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        .signature-buttons .undo-btn:hover {
+            border-color: #2196F3;
+            color: #2196F3;
+        }
+
+        /* ===== DELIVERY DETAILS MODAL ===== */
+        .detail-row {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .detail-label {
+            width: 140px;
+            color: #2196F3;
+            font-weight: 600;
+        }
+        .detail-value {
+            color: #e0e0e0;
+            flex: 1;
+        }
+
+        /* ===== PERFORMANCE GRID ===== */
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .perf-item {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .perf-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .perf-label {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 5px;
+        }
+        .perf-success { color: #4caf50; }
+        .perf-failed { color: #ff6b6b; }
+        .perf-gold { color: #D4AF37; }
+        .perf-blue { color: #2196F3; }
+
+        /* ===== MODAL STYLES ===== */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 20px;
+            max-width: 550px;
+            width: 90%;
+            border: 1px solid #2196F3;
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 15px 20px;
+            background: rgba(33,150,243,0.1);
+            border-bottom: 1px solid rgba(33,150,243,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            color: #2196F3;
+            margin: 0;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .modal-close:hover {
+            color: #ff6b6b;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-body input, .modal-body textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(33,150,243,0.3);
+            border-radius: 10px;
+            color: white;
+            font-size: 0.9rem;
+        }
+        .modal-body input:focus, .modal-body textarea:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+        .photo-preview {
+            margin-top: 10px;
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 10px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .modal-submit {
+            background: linear-gradient(135deg, #4caf50, #45a049);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .modal-cancel {
+            background: transparent;
+            border: 1px solid #888;
+            color: #888;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* ================================================================
+           🔥 TELEGRAM-STYLE CHAT UI
+           ================================================================ */
+        .messages-container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 0;
+            height: 750px;
+            min-height: 600px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(33,150,243,0.08);
+        }
+
+        .messages-panel {
+            background: rgba(20,20,30,0.5);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(33,150,243,0.06);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .messages-panel-header {
+            padding: 18px 20px 14px 20px;
+            background: rgba(33,150,243,0.04);
+            border-bottom: 1px solid rgba(33,150,243,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .messages-panel-header h4 {
+            color: #2196F3;
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .unread-badge {
+            background: #ff6b6b;
+            color: #fff;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            animation: pulseBadge 2s infinite;
+        }
+        @keyframes pulseBadge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .conversation-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 10px;
+        }
+
+        .conversation-list::-webkit-scrollbar { width: 4px; }
+        .conversation-list::-webkit-scrollbar-track { background: transparent; }
+        .conversation-list::-webkit-scrollbar-thumb { background: rgba(33,150,243,0.3); border-radius: 10px; }
+
+        .conversation-item {
+            padding: 12px 14px;
+            margin-bottom: 2px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .conversation-item:hover { background: rgba(33,150,243,0.06); }
+        .conversation-item.active { background: rgba(33,150,243,0.1); }
+        .conversation-item.unread { background: rgba(33,150,243,0.05); }
+
+        .conversation-item .conv-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .conversation-item .conv-name {
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .conversation-item .conv-name .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .conversation-item .conv-name .status-dot.online { background: #4caf50; }
+        .conversation-item .conv-name .status-dot.offline { background: #888; }
+
+        .conversation-item .conv-role {
+            font-size: 0.55rem;
+            color: #888;
+            background: rgba(255,255,255,0.05);
+            padding: 2px 10px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .conversation-item .conv-unread {
+            background: #ff6b6b;
+            color: #fff;
+            font-size: 0.55rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .conversation-item .conv-preview {
+            font-size: 0.8rem;
+            color: #777;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-left: 2px;
+        }
+
+        .conversation-item .conv-subject {
+            font-size: 0.65rem;
+            color: #2196F3;
+            font-weight: 500;
+            padding-left: 2px;
+        }
+
+        .conversation-item .conv-time {
+            font-size: 0.55rem;
+            color: #555;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .conv-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2px;
+        }
+
+        .new-convo-section {
+            padding: 12px 16px 14px 16px;
+            border-top: 1px solid rgba(33,150,243,0.06);
+            background: rgba(20,20,30,0.3);
+            flex-shrink: 0;
+        }
+
+        .new-convo-section select {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(33,150,243,0.1);
+            border-radius: 10px;
+            color: #c0c0c0;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232196F3' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+
+        .new-convo-section select:focus {
+            outline: none;
+            border-color: #2196F3;
+            background-color: rgba(33,150,243,0.04);
+        }
+
+        .new-convo-section select option {
+            background: #1a1a2e;
+            color: #e0e0e0;
+            padding: 8px;
+        }
+
+        .new-convo-section .new-convo-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .new-convo-section .new-convo-row input {
+            flex: 1;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(33,150,243,0.1);
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .new-convo-section .new-convo-row input:focus {
+            outline: none;
+            border-color: #2196F3;
+            background: rgba(33,150,243,0.04);
+        }
+
+        .new-convo-section .new-convo-row input::placeholder { color: #555; }
+
+        .new-convo-section .new-convo-row .new-btn {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            border: none;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .new-convo-section .new-convo-row .new-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(33,150,243,0.3);
+        }
+
+        .message-detail-panel {
+            background: rgba(20,20,30,0.3);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .message-detail-header {
+            padding: 16px 24px;
+            background: rgba(33,150,243,0.03);
+            border-bottom: 1px solid rgba(33,150,243,0.06);
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .message-detail-header .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .message-detail-header .header-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(33,150,243,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #2196F3;
+        }
+
+        .message-detail-header .header-user {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .message-detail-header .header-role {
+            font-size: 0.6rem;
+            color: #888;
+            background: rgba(255,255,255,0.05);
+            padding: 2px 10px;
+            border-radius: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .message-detail-header .header-meta {
+            font-size: 0.65rem;
+            color: #555;
+        }
+
+        .message-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px 10px 24px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .message-body::-webkit-scrollbar { width: 4px; }
+        .message-body::-webkit-scrollbar-track { background: transparent; }
+        .message-body::-webkit-scrollbar-thumb { background: rgba(33,150,243,0.2); border-radius: 10px; }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 10px 16px;
+            border-radius: 16px;
+            margin-bottom: 6px;
+            word-wrap: break-word;
+            animation: messageIn 0.25s ease;
+            position: relative;
+            line-height: 1.5;
+        }
+
+        @keyframes messageIn {
+            from { opacity: 0; transform: translateY(8px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .message-wrapper {
+            display: flex;
+            margin-bottom: 8px;
+        }
+        .message-wrapper.sent { justify-content: flex-end; }
+        .message-wrapper.received { justify-content: flex-start; }
+
+        .message-bubble.sent {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 2px 8px rgba(33,150,243,0.15);
+        }
+
+        .message-bubble.received {
+            background: rgba(255,255,255,0.07);
+            color: #e8e8e8;
+            border-bottom-left-radius: 4px;
+            backdrop-filter: blur(4px);
+        }
+
+        .message-bubble .msg-sender {
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-bottom: 3px;
+            opacity: 0.6;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .message-bubble .msg-sender .role-tag {
+            font-size: 0.5rem;
+            font-weight: 400;
+            opacity: 0.5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .message-bubble .msg-text {
+            font-size: 0.92rem;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .message-bubble .msg-subject {
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: inherit;
+            opacity: 0.7;
+            padding: 2px 8px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .message-bubble .msg-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+            font-size: 0.55rem;
+            opacity: 0.5;
+        }
+
+        .message-bubble .msg-footer .msg-time { font-size: 0.55rem; }
+        .message-bubble .msg-footer .read-status { font-size: 0.5rem; }
+        .message-bubble .msg-footer .read-status.read { color: #4caf50; }
+        .message-bubble .msg-footer .read-status.unread { color: #ffa500; }
+        .message-bubble .msg-new-badge {
+            font-size: 0.5rem;
+            color: #4caf50;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        .date-divider {
+            text-align: center;
+            font-size: 0.65rem;
+            color: #555;
+            padding: 12px 0;
+            position: relative;
+        }
+        .date-divider::before {
+            content: '';
+            position: absolute;
+            left: 20%;
+            right: 20%;
+            top: 50%;
+            height: 1px;
+            background: rgba(255,255,255,0.04);
+        }
+        .date-divider span {
+            background: rgba(20,20,30,0.6);
+            padding: 4px 16px;
+            border-radius: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .message-input-area {
+            padding: 12px 20px 16px 20px;
+            border-top: 1px solid rgba(33,150,243,0.05);
+            flex-shrink: 0;
+            display: none;
+            background: rgba(0,0,0,0.15);
+        }
+
+        .message-input-area .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .message-input-area .input-wrapper {
+            flex: 1;
+            position: relative;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(33,150,243,0.08);
+            border-radius: 14px;
+            transition: all 0.3s ease;
+            padding: 4px 4px 4px 16px;
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .message-input-area .input-wrapper:focus-within {
+            border-color: #2196F3;
+            background: rgba(33,150,243,0.04);
+            box-shadow: 0 0 30px rgba(33,150,243,0.02);
+        }
+
+        .message-input-area .input-wrapper textarea {
+            flex: 1;
+            padding: 10px 8px 10px 0;
+            background: transparent;
+            border: none;
+            color: #e0e0e0;
+            resize: none;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.92rem;
+            min-height: 44px;
+            max-height: 120px;
+            line-height: 1.5;
+            outline: none;
+        }
+
+        .message-input-area .input-wrapper textarea::placeholder { color: #555; }
+
+        .message-input-area .send-btn {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            border: none;
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            min-height: 44px;
+            min-width: 80px;
+            justify-content: center;
+        }
+
+        .message-input-area .send-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(33,150,243,0.3);
+        }
+
+        .message-input-area .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .empty-state-msg {
+            text-align: center;
+            padding: 80px 20px;
+            color: #555;
+        }
+        .empty-state-msg i {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 16px;
+            opacity: 0.15;
+            color: #2196F3;
+        }
+        .empty-state-msg .title { font-size: 1.1rem; color: #888; margin-bottom: 6px; }
+        .empty-state-msg .sub { font-size: 0.85rem; color: #666; }
+
+        .msg-badge {
+            background: #ff6b6b;
+            color: #fff;
+            font-size: 0.55rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: 5px;
+            animation: pulseBadge 2s infinite;
+        }
+
+        /* ================================================================
+           🗺️ ROUTE CARD STYLES
+           ================================================================ */
+        .route-card {
+            background: rgba(20,20,30,0.5);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 16px;
+            border-left: 4px solid #D4AF37;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .route-card:hover {
+            background: rgba(212,175,55,0.08);
+            transform: translateX(5px);
+        }
+        .route-card p {
+            margin: 8px 0;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .route-card strong {
+            color: #D4AF37;
+        }
+        .route-progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        .route-progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #D4AF37, #FFD700);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        .route-status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .route-status-planned { background: rgba(33,150,243,0.2); color: #2196F3; }
+        .route-status-in_progress { background: rgba(255,152,0,0.2); color: #ff9800; }
+        .route-status-completed { background: rgba(76,175,80,0.2); color: #4caf50; }
+        .route-status-cancelled { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .messages-container {
+                grid-template-columns: 1fr;
+                height: auto;
+                border-radius: 16px;
+            }
+            .messages-panel {
+                border-right: none;
+                border-bottom: 1px solid rgba(33,150,243,0.06);
+                max-height: 350px;
+            }
+            .conversation-list { max-height: 250px; }
+            .message-body { min-height: 280px; max-height: 380px; }
+            .message-bubble { max-width: 90%; }
+            .message-detail-header { padding: 12px 16px; }
+            .driver-stats-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .messages-container { height: auto; border-radius: 12px; }
+            .message-bubble { max-width: 95%; }
+            .new-convo-section .new-convo-row { flex-direction: column; }
+            .message-input-area .input-row { flex-direction: column; }
+            .message-input-area .input-wrapper { padding: 4px 4px 4px 12px; }
+            .message-input-area .send-btn { width: 100%; min-height: 44px; }
+            .messages-panel-header { padding: 12px 16px; }
+            .message-detail-header .header-avatar { width: 32px; height: 32px; font-size: 1rem; }
+            .driver-stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .performance-grid { grid-template-columns: repeat(3, 1fr); }
+            .profile-card { flex-direction: column; text-align: center; }
+            .notification-dropdown { width: 300px; right: 10px; }
+            .scan-buttons { flex-direction: column; align-items: center; }
+            .scan-btn-primary, .scan-btn-secondary { width: 100%; justify-content: center; }
+        }
+
+        @media (max-width: 480px) {
+            .message-body { padding: 12px 12px 8px 12px; }
+            .message-bubble { padding: 8px 12px; font-size: 0.85rem; }
+            .message-input-area { padding: 8px 12px 12px 12px; }
+            .conversation-item { padding: 10px 12px; }
+            .conversation-item .conv-name { font-size: 0.85rem; }
+            .performance-grid { grid-template-columns: repeat(2, 1fr); }
+            .driver-stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== NAVIGATION ===== -->
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <!-- 🎫 SUPPORT TICKETS - Hidden for drivers -->
+<a href="support-tickets.html" class="nav-link" id="ticketsNavLink" style="display:none;"><i class="fas fa-ticket-alt"></i> Support</a>
+                <!-- 🆕 REAL-TIME DASHBOARD - ADMIN ONLY -->
+<a href="realtime-dashboard.html" class="nav-link" id="realtimeNavLink" style="display:none;"><i class="fas fa-chart-line"></i> Live</a>
+<a href="fleet-dashboard.html" class="nav-link" id="fleetNavLink" style="display:none;"><i class="fas fa-truck"></i> Fleet</a>
+                <a href="gps-tracker.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> GPS Tracker</a>
+                <!-- 🗺️ GPS MAP -->
+<a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                <a href="chatbot.html" class="nav-link"><i class="fas fa-robot"></i> Chat Assistant</a>s
+                <!-- 🗺️ ROUTE LINKS - Driver should see "My Route" only -->
+<a href="route-dashboard.html" class="nav-link" id="routesNavLink" style="display:none;"><i class="fas fa-route"></i> Routes</a>
+<a href="route-create.html" class="nav-link" id="createRouteNavLink" style="display:none;"><i class="fas fa-plus-circle"></i> Create Route</a>
+<a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link" id="myRouteNavLink">
+    <i class="fas fa-info-circle"></i> My Route
+</a>
+                
+                <!-- 🏢 WAREHOUSE LINKS - ROLE BASED -->
+                <!-- ADMIN ONLY (hidden by default) -->
+                <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink" style="display:none;"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink" style="display:none;"><i class="fas fa-boxes"></i> Inventory</a>
+                
+                <!-- CLIENT ONLY -->
+                <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink"><i class="fas fa-warehouse"></i> My Storage</a>
+                
+                <!-- DRIVER ONLY -->
+                <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink" style="display:none;"><i class="fas fa-warehouse"></i> Pickups</a>
+                
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+    </nav>
+
+    <!-- ===== NOTIFICATION DROPDOWN ===== -->
+    <div id="notificationDropdown" class="notification-dropdown" style="display: none;">
+        <div class="notification-header">
+            <h4>📬 Notifications</h4>
+            <button onclick="markAllRead()" class="mark-read-btn">Mark all read</button>
+        </div>
+        <div id="notificationList" class="notification-list">
+            <p style="text-align:center; padding:20px; color:#888;">Loading...</p>
+        </div>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <section class="driver-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="dashboard.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <!-- Welcome Card -->
+            <div class="welcome-card" data-aos="fade-up">
+                <h1><i class="fas fa-truck"></i> Driver Dashboard</h1>
+                <p>Manage your deliveries, update status, and track assigned routes</p>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="profile-card" data-aos="fade-up">
+                <div class="profile-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="profile-info">
+                    <h3 id="driverName">Driver</h3>
+                    <p><i class="fas fa-envelope"></i> <span id="driverEmail">-</span></p>
+                    <p><i class="fas fa-phone"></i> <span id="driverPhone">-</span></p>
+                    <p><i class="fas fa-truck"></i> <span id="vehicleType">-</span></p>
+                    <p><i class="fas fa-id-card"></i> License: <span id="licenseNumber">-</span></p>
+                </div>
+            </div>
+
+            <!-- QR Scan Card -->
+            <div class="scan-card" data-aos="fade-up">
+                <div class="scan-icon"><i class="fas fa-qrcode"></i></div>
+                <h3>📱 Quick Scan & Track</h3>
+                <p>Scan a shipment QR code or enter tracking number to update status instantly</p>
+                <div class="scan-buttons">
+                    <button onclick="location.href='driver-scan.html'" class="scan-btn-primary">
+                        <i class="fas fa-camera"></i> Scan QR Code
+                    </button>
+                    <button onclick="location.href='driver-scan.html'" class="scan-btn-secondary">
+                        <i class="fas fa-keyboard"></i> Enter Tracking
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats (7 cards) -->
+            <div class="driver-stats-grid" data-aos="fade-up">
+                <div class="driver-stat-card">
+                    <i class="fas fa-box"></i>
+                    <div class="driver-stat-number" id="assignedCount">0</div>
+                    <div>Assigned</div>
+                </div>
+                <div class="driver-stat-card">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="driver-stat-number" id="completedCount">0</div>
+                    <div>Completed</div>
+                </div>
+                <div class="driver-stat-card">
+                    <i class="fas fa-star"></i>
+                    <div class="driver-stat-number" id="driverRating">5.0</div>
+                    <div>Rating</div>
+                </div>
+                <div class="driver-stat-card">
+                    <i class="fas fa-dollar-sign"></i>
+                    <div class="driver-stat-number" id="totalEarnings">$0</div>
+                    <div>Earnings</div>
+                </div>
+                <div class="driver-stat-card">
+                    <i class="fas fa-calendar-day"></i>
+                    <div class="driver-stat-number" id="todayCount">0</div>
+                    <div>Today</div>
+                </div>
+                <div class="driver-stat-card">
+                    <i class="fas fa-route"></i>
+                    <div class="driver-stat-number" id="pendingCount">0</div>
+                    <div>Pending</div>
+                </div>
+                <div class="driver-stat-card">
+                    <i class="fas fa-map-signs"></i>
+                    <div class="driver-stat-number" id="assignedRoutesCount">0</div>
+                    <div>Assigned Routes</div>
+                </div>
+            </div>
+
+            <!-- Driver Status Controls -->
+            <div class="dashboard-card" data-aos="fade-up" style="margin-bottom: 30px;">
+                <h2><i class="fas fa-toggle-on"></i> My Status</h2>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+                    <div>
+                        <span class="driver-status-badge" id="driverStatusBadge">⚫ Offline</span>
+                        <span style="margin-left: 10px; color: #888;"><i class="fas fa-truck"></i> Vehicle: <span id="vehicleTypeDisplay">-</span></span>
+                        <span style="margin-left: 10px; color: #888;"><i class="fas fa-id-card"></i> License: <span id="licenseNumberDisplay">-</span></span>
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <button onclick="updateDriverStatus('available')" class="btn-primary-small" style="background:#4caf50;">🟢 Available</button>
+                        <button onclick="updateDriverStatus('on_delivery')" class="btn-primary-small" style="background:#2196F3;">🔵 On Delivery</button>
+                        <button onclick="updateDriverStatus('busy')" class="btn-primary-small" style="background:#ff9800;">🟠 Busy</button>
+                        <button onclick="updateDriverStatus('offline')" class="btn-primary-small" style="background:#9e9e9e;">⚫ Offline</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Progress -->
+            <div class="dashboard-card" data-aos="fade-up" style="margin-bottom: 30px;">
+                <h2><i class="fas fa-tasks"></i> Today's Progress</h2>
+                <div class="today-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="todayProgressFill" style="width: 0%;"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="todayProgressText">0 / 0 deliveries completed</span>
+                        <span id="todayProgressPercent">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance -->
+            <div class="dashboard-card" data-aos="fade-up" style="margin-bottom: 30px;">
+                <h2><i class="fas fa-chart-line"></i> Performance Overview</h2>
+                <div class="performance-grid">
+                    <div class="perf-item">
+                        <div class="perf-number perf-blue" id="totalDeliveries">0</div>
+                        <div class="perf-label">Total Deliveries</div>
+                    </div>
+                    <div class="perf-item">
+                        <div class="perf-number perf-success" id="successRate">0%</div>
+                        <div class="perf-label">Success Rate</div>
+                    </div>
+                    <div class="perf-item">
+                        <div class="perf-number perf-gold" id="totalEarningsDisplay">$0</div>
+                        <div class="perf-label">Total Earnings</div>
+                    </div>
+                    <div class="perf-item">
+                        <div class="perf-number perf-blue" id="avgRating">5.0</div>
+                        <div class="perf-label">Average Rating</div>
+                    </div>
+                    <div class="perf-item">
+                        <div class="perf-number perf-gold" id="totalRatingsCount" style="color:#D4AF37;">0</div>
+                        <div class="perf-label">⭐ Total Ratings</div>
+                    </div>
+                    <div class="perf-item">
+                        <div class="perf-number perf-blue" id="avgDeliveryTime">0d</div>
+                        <div class="perf-label">Avg Delivery Time</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rating Breakdown -->
+            <div class="dashboard-card" data-aos="fade-up" style="margin-bottom: 30px;">
+                <h2><i class="fas fa-star"></i> Rating Breakdown</h2>
+                <div id="ratingBreakdown" class="rating-breakdown">
+                    <p style="text-align:center; color:#888;">Loading ratings...</p>
+                </div>
+            </div>
+
+            <!-- 🆕 ASSIGNED ROUTES SECTION -->
+            <div class="dashboard-card" data-aos="fade-up" style="margin-bottom: 30px; border-color: rgba(212,175,55,0.3);">
+                <h2 style="color: #D4AF37;"><i class="fas fa-route"></i> My Assigned Routes</h2>
+                <div id="assignedRoutesContainer" class="shipments-list">
+                    <p style="text-align:center; color:#888;"><i class="fas fa-spinner fa-pulse"></i> Loading routes...</p>
+                </div>
+            </div>
+
+            <!-- Shipments Grid -->
+            <div class="dashboard-grid">
+                <div class="dashboard-card" data-aos="fade-right">
+                    <h2><i class="fas fa-clock"></i> Pending Deliveries</h2>
+                    <div id="assignedShipmentsList" class="shipments-list">
+                        <p style="text-align:center; color:#888;"><i class="fas fa-spinner fa-pulse"></i> Loading...</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-card" data-aos="fade-left">
+                    <h2><i class="fas fa-check-double"></i> Completed</h2>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                        <button onclick="exportDeliveryHistory()" class="export-btn">
+                            <i class="fas fa-file-export"></i> Export CSV
+                        </button>
+                    </div>
+                    <div id="completedShipmentsList" class="shipments-list">
+                        <p style="text-align:center; color:#888;"><i class="fas fa-spinner fa-pulse"></i> Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Route -->
+            <div class="dashboard-card" data-aos="fade-up">
+                <h2><i class="fas fa-route"></i> Today's Route</h2>
+                <div id="todayRouteList" class="shipments-list">
+                    <p style="text-align:center; color:#888;"><i class="fas fa-spinner fa-pulse"></i> Loading route...</p>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            <div class="dashboard-card" data-aos="fade-up" style="margin-top: 30px;">
+                <h2><i class="fas fa-comment-dots"></i> Messages</h2>
+                <div id="messagesContainer">
+                    <div class="loading"><i class="fas fa-spinner fa-pulse"></i> Loading messages...</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <!-- ===== MODALS ===== -->
+    <div id="detailsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> Delivery Details</h3>
+                <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="deliveryDetails"></div>
+                <div class="modal-buttons">
+                    <button class="modal-cancel" onclick="closeDetailsModal()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="deliveryModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-camera"></i> Proof of Delivery</h3>
+                <button class="modal-close" onclick="closeDeliveryModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Tracking:</strong> <span id="modalTrackingNumber"></span></p>
+                <p><strong>Receiver:</strong> <span id="modalReceiverName"></span></p>
+                <input type="text" id="recipientName" placeholder="Recipient Full Name" required>
+                <textarea id="deliveryNote" rows="2" placeholder="Delivery notes (optional)"></textarea>
+                <div class="signature-container">
+                    <label>✍️ Customer Signature:</label>
+                    <canvas id="signatureCanvas" style="width:100% !important; height:150px !important; display:block !important; background:#f0f0f0 !important;"></canvas>
+                    <div class="signature-buttons">
+                        <button class="clear-btn" onclick="clearSignature()">Clear</button>
+                        <button class="undo-btn" onclick="undoSignature()">Undo</button>
+                    </div>
+                    <p style="color:#888; font-size:0.7rem; margin-top:8px;">
+                        <i class="fas fa-info-circle"></i> Click and drag on the white area above to sign
+                    </p>
+                </div>
+                <div style="margin: 15px 0;">
+                    <label>📸 Delivery Photo:</label>
+                    <input type="file" id="deliveryPhoto" accept="image/*" onchange="previewPhoto(this)">
+                    <img id="photoPreview" class="photo-preview" style="display:none;">
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-cancel" onclick="closeDeliveryModal()">Cancel</button>
+                    <button class="modal-submit" onclick="completeDelivery()">✅ Confirm Delivery</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        AOS.init();
+        
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (!token) window.location.href = 'login.html';
+        if (user.role !== 'driver') {
+            alert('⚠️ Driver access only');
+            window.location.href = 'login.html';
+        }
+        
+        let currentDeliveryTracking = null;
+        let earningsChart = null;
+        let allCompletedShipments = [];
+        let currentConversationId = null;
+        let messageInterval = null;
+        
+        // ===== ESCAPE HTML =====
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // ===== SHOW TOAST =====
+        function showToast(message, type = 'info') {
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    z-index: 99999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    max-width: 400px;
+                `;
+                document.body.appendChild(toastContainer);
+                
+                if (!document.getElementById('toastStyles')) {
+                    const style = document.createElement('style');
+                    style.id = 'toastStyles';
+                    style.textContent = `
+                        @keyframes slideInToast {
+                            from { opacity: 0; transform: translateX(40px); }
+                            to { opacity: 1; transform: translateX(0); }
+                        }
+                        @keyframes slideOutToast {
+                            from { opacity: 1; transform: translateX(0); }
+                            to { opacity: 0; transform: translateX(40px); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+            
+            const toast = document.createElement('div');
+            const colors = {
+                success: '#4caf50',
+                error: '#ff6b6b',
+                info: '#2196F3',
+                warning: '#ff9800'
+            };
+            
+            toast.style.cssText = `
+                background: #1a1a2e;
+                color: #fff;
+                padding: 14px 20px;
+                border-radius: 12px;
+                border-left: 4px solid ${colors[type] || '#2196F3'};
+                box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                animation: slideInToast 0.4s ease;
+                font-size: 0.9rem;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            `;
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️',
+                warning: '⚠️'
+            };
+            
+            toast.innerHTML = `
+                <span style="font-size: 1.1rem;">${icons[type] || 'ℹ️'}</span>
+                <span>${message}</span>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutToast 0.4s ease forwards';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 400);
+            }, 3000);
+        }
+        
+        // ===== SIGNATURE FUNCTIONS =====
+        let signatureData = null;
+        let isDrawing = false;
+        let lastX = 0, lastY = 0;
+        let signatureHistory = [];
+        
+        function initSignatureCanvas() {
+            const canvas = document.getElementById('signatureCanvas');
+            if (!canvas) return;
+            
+            const container = canvas.parentElement;
+            const containerWidth = container ? container.offsetWidth - 20 : 400;
+            
+            canvas.width = containerWidth * 2;
+            canvas.height = 150 * 2;
+            canvas.style.width = containerWidth + 'px';
+            canvas.style.height = '150px';
+            
+            const ctx = canvas.getContext('2d');
+            ctx.scale(2, 2);
+            
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width/2, canvas.height/2);
+            
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#2196F3';
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(10, 75);
+            ctx.lineTo(containerWidth - 10, 75);
+            ctx.strokeStyle = 'rgba(33,150,243,0.15)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            canvas.addEventListener('touchstart', startDrawing, { passive: false });
+            canvas.addEventListener('touchmove', draw, { passive: false });
+            canvas.addEventListener('touchend', endDrawing, { passive: false });
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', endDrawing);
+            canvas.addEventListener('mouseleave', endDrawing);
+        }
+        
+        function startDrawing(e) {
+            e.preventDefault();
+            isDrawing = true;
+            const pos = getPos(e);
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+        
+        function draw(e) {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const pos = getPos(e);
+            const canvas = document.getElementById('signatureCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            lastX = pos.x;
+            lastY = pos.y;
+        }
+        
+        function endDrawing(e) {
+            e.preventDefault();
+            if (isDrawing) {
+                const canvas = document.getElementById('signatureCanvas');
+                signatureHistory.push(canvas.toDataURL());
+                signatureData = canvas.toDataURL();
+            }
+            isDrawing = false;
+        }
+        
+        function getPos(e) {
+            const canvas = document.getElementById('signatureCanvas');
+            const rect = canvas.getBoundingClientRect();
+            let clientX, clientY;
+            if (e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            return {
+                x: (clientX - rect.left),
+                y: (clientY - rect.top)
+            };
+        }
+        
+        function clearSignature() {
+            const canvas = document.getElementById('signatureCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            signatureData = null;
+            signatureHistory = [];
+        }
+        
+        function undoSignature() {
+            if (signatureHistory.length <= 1) {
+                clearSignature();
+                return;
+            }
+            signatureHistory.pop();
+            const canvas = document.getElementById('signatureCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#f0f0f0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0);
+                signatureData = canvas.toDataURL();
+            };
+            img.src = signatureHistory[signatureHistory.length - 1];
+        }
+        
+        function dataURLtoBlob(dataURL) {
+            const arr = dataURL.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        }
+        
+        function previewPhoto(input) {
+            const preview = document.getElementById('photoPreview');
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.style.display = 'block';
+                    preview.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+        // ===== UPDATE DRIVER STATUS =====
+        async function updateDriverStatus(status) {
+            try {
+                const res = await fetch('http://localhost:5000/api/driver/status', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ driverStatus: status })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`Status: ${status}`, 'success');
+                    loadDriverData();
+                } else {
+                    showToast('Error: ' + (data.message || 'Unknown'), 'error');
+                }
+            } catch (err) {
+                console.error('Error:', err);
+                showToast('Connection error', 'error');
+            }
+        }
+        
+        // ===== NOTIFICATIONS =====
+        async function loadNotifications() {
+            try {
+                const res = await fetch('http://localhost:5000/api/notifications', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                const badge = document.getElementById('notificationBadge');
+                if (badge && data.unreadCount > 0) {
+                    badge.style.display = 'inline-block';
+                    badge.innerText = data.unreadCount > 99 ? '99+' : data.unreadCount;
+                } else if (badge) {
+                    badge.style.display = 'none';
+                }
+                
+                const list = document.getElementById('notificationList');
+                if (list) {
+                    if (data.notifications.length === 0) {
+                        list.innerHTML = '<p style="text-align:center; padding:20px; color:#888;">No notifications</p>';
+                        return;
+                    }
+                    
+                    list.innerHTML = data.notifications.map(n => `
+                        <div class="notification-item ${!n.isRead ? 'unread' : ''}" onclick="markAsRead('${n._id}')">
+                            <div class="notification-title">${escapeHtml(n.title)}</div>
+                            <div class="notification-message">${escapeHtml(n.message)}</div>
+                            <div class="notification-time">${formatTime(n.createdAt)}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading notifications:', err);
+            }
+        }
+        
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            if (!dropdown) return;
+            if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                dropdown.style.display = 'block';
+                loadNotifications();
+            } else {
+                dropdown.style.display = 'none';
+            }
+        }
+        
+        async function markAsRead(id) {
+            try {
+                await fetch(`http://localhost:5000/api/notifications/${id}/read`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                loadNotifications();
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        }
+        
+        async function markAllRead() {
+            try {
+                await fetch('http://localhost:5000/api/notifications/read-all', {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                loadNotifications();
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        }
+        
+        function formatTime(date) {
+            const diff = new Date() - new Date(date);
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes} min ago`;
+            if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            return `${days} day${days > 1 ? 's' : ''} ago`;
+        }
+        
+        // ================================================================
+        // 🆕 LOAD ASSIGNED ROUTES
+        // ================================================================
+        async function loadAssignedRoutes() {
+            try {
+                const res = await fetch(`http://localhost:5000/api/routes?driverId=${user.id}&status=planned,in_progress`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                const container = document.getElementById('assignedRoutesContainer');
+                
+                if (!data.success || !data.routes || data.routes.length === 0) {
+                    container.innerHTML = `<p style="text-align:center; color:#888;"><i class="fas fa-route"></i> No routes assigned yet</p>`;
+                    document.getElementById('assignedRoutesCount').innerText = '0';
+                    return;
+                }
+                
+                const routes = data.routes;
+                document.getElementById('assignedRoutesCount').innerText = routes.length;
+                
+                const statusLabels = {
+                    'planned': '📋 Planned',
+                    'in_progress': '🚚 In Progress',
+                    'completed': '✅ Completed',
+                    'cancelled': '❌ Cancelled'
+                };
+                const statusClasses = {
+                    'planned': 'route-status-planned',
+                    'in_progress': 'route-status-in_progress',
+                    'completed': 'route-status-completed',
+                    'cancelled': 'route-status-cancelled'
+                };
+                
+                container.innerHTML = routes.map(route => {
+                    const progress = route.totalStops > 0 ? Math.round((route.completedStops / route.totalStops) * 100) : 0;
+                    return `
+                        <div class="route-card" onclick="viewRouteDetails('${route._id}')">
+                            <p>
+                                <strong>${escapeHtml(route.name)}</strong>
+                                <span class="route-status-badge ${statusClasses[route.status] || 'route-status-planned'}">
+                                    ${statusLabels[route.status] || route.status}
+                                </span>
+                            </p>
+                            <p><strong>📅 Created:</strong> ${new Date(route.createdAt).toLocaleDateString()}</p>
+                            <p><strong>📍 Stops:</strong> ${route.completedStops || 0} / ${route.totalStops || 0} completed</p>
+                            <p><strong>🚚 Driver:</strong> ${escapeHtml(route.driverName || 'Not Assigned')}</p>
+                            <div class="route-progress-bar">
+                                <div class="fill" style="width: ${progress}%;"></div>
+                            </div>
+                            <div style="margin-top: 10px;">
+                                <button onclick="event.stopPropagation(); viewRouteDetails('${route._id}')" class="btn-primary-small" style="background:#D4AF37; color:#050505;">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (err) {
+                console.error('Error loading assigned routes:', err);
+                document.getElementById('assignedRoutesContainer').innerHTML = `
+                    <p style="text-align:center; color:#ff6b6b;">Error loading routes</p>
+                `;
+            }
+        }
+        
+        // ===== VIEW ROUTE DETAILS =====
+        function viewRouteDetails(routeId) {
+            window.location.href = `route-details.html?id=${routeId}`;
+        }
+        
+        // ================================================================
+        // LOAD DRIVER DATA (FULL)
+        // ================================================================
+        async function loadDriverData() {
+            try {
+                const profileRes = await fetch('http://localhost:5000/api/user/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const driver = await profileRes.json();
+                
+                document.getElementById('driverName').innerText = driver.name || 'Driver';
+                document.getElementById('driverEmail').innerText = driver.email || '-';
+                document.getElementById('driverPhone').innerText = driver.phone || '-';
+                document.getElementById('vehicleType').innerText = driver.vehicleType || 'Not set';
+                document.getElementById('vehicleTypeDisplay').innerText = driver.vehicleType || 'Not set';
+                document.getElementById('licenseNumber').innerText = driver.licenseNumber || 'Not set';
+                document.getElementById('licenseNumberDisplay').innerText = driver.licenseNumber || 'Not set';
+                
+                document.getElementById('driverRating').innerText = driver.rating || '5.0';
+                document.getElementById('totalEarnings').innerText = `$${(driver.totalEarnings || 0).toFixed(2)}`;
+                document.getElementById('totalEarningsDisplay').innerText = `$${(driver.totalEarnings || 0).toFixed(2)}`;
+                document.getElementById('completedCount').innerText = driver.completedDeliveries || 0;
+                document.getElementById('totalDeliveries').innerText = driver.completedDeliveries || 0;
+                document.getElementById('avgRating').innerText = driver.rating || '5.0';
+                
+                const totalDeliveries = driver.completedDeliveries || 0;
+                const successRate = totalDeliveries > 0 ? 100 : 0;
+                document.getElementById('successRate').innerText = successRate + '%';
+                document.getElementById('avgDeliveryTime').innerText = '0d';
+                
+                const statusBadge = document.getElementById('driverStatusBadge');
+                const driverStatus = driver.driverStatus || 'offline';
+                const statusMap = {
+                    'available': ['🟢 Available', 'status-available'],
+                    'on_delivery': ['🔵 On Delivery', 'status-on_delivery'],
+                    'busy': ['🟠 Busy', 'status-busy'],
+                    'offline': ['⚫ Offline', 'status-offline']
+                };
+                statusBadge.innerHTML = statusMap[driverStatus] ? statusMap[driverStatus][0] : '⚫ Offline';
+                statusBadge.className = `driver-status-badge ${statusMap[driverStatus] ? statusMap[driverStatus][1] : 'status-offline'}`;
+                
+                // ===== LOAD SHIPMENTS =====
+                const shipmentsRes = await fetch('http://localhost:5000/api/driver/shipments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const shipmentsData = await shipmentsRes.json();
+                
+                let shipments = [];
+                if (shipmentsData.success && Array.isArray(shipmentsData.shipments)) {
+                    shipments = shipmentsData.shipments;
+                } else if (Array.isArray(shipmentsData)) {
+                    shipments = shipmentsData;
+                } else {
+                    shipments = [];
+                }
+                
+                const pendingShipments = shipments.filter(s => s.status !== 'delivered');
+                const completedShipments = shipments.filter(s => s.status === 'delivered');
+                allCompletedShipments = completedShipments;
+                
+                const todayShipments = shipments.filter(s => {
+                    const today = new Date().toDateString();
+                    return new Date(s.createdAt).toDateString() === today;
+                });
+                
+                document.getElementById('assignedCount').innerText = shipments.length;
+                document.getElementById('pendingCount').innerText = pendingShipments.length;
+                document.getElementById('todayCount').innerText = todayShipments.length;
+                
+                // ===== TODAY'S PROGRESS =====
+                const todayDeliveries = todayShipments.length;
+                const todayCompleted = todayShipments.filter(s => s.status === 'delivered').length;
+                const progressPercent = todayDeliveries > 0 ? Math.round((todayCompleted / todayDeliveries) * 100) : 0;
+                document.getElementById('todayProgressFill').style.width = progressPercent + '%';
+                document.getElementById('todayProgressText').innerText = `${todayCompleted} / ${todayDeliveries} deliveries completed`;
+                document.getElementById('todayProgressPercent').innerText = progressPercent + '%';
+                
+                // ===== RATING BREAKDOWN =====
+                updateRatingBreakdown(shipments);
+                
+                // ===== RENDER SHIPMENT LISTS =====
+                renderPendingShipments(pendingShipments);
+                renderCompletedShipments(completedShipments);
+                renderTodayRoute(todayShipments.filter(s => s.status !== 'delivered'));
+                
+                // ===== LOAD ASSIGNED ROUTES (NEW!) =====
+                await loadAssignedRoutes();
+                
+                // ===== LOAD NOTIFICATIONS =====
+                loadNotifications();
+                
+                // ===== LOAD MESSAGES =====
+                loadMessagesForDriver();
+                
+                // ===== LOAD DRIVER RATINGS =====
+                await loadDriverRatings();
+                
+            } catch (err) {
+                console.error('Error:', err);
+                showToast('Error loading data: ' + err.message, 'error');
+            }
+        }
+        
+        // ===== LOAD DRIVER RATINGS =====
+        async function loadDriverRatings() {
+            try {
+                const res = await fetch('http://localhost:5000/api/rating/my-ratings', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    document.getElementById('totalRatingsCount').innerText = data.stats.totalRatings || 0;
+                    updateRatingBreakdownFromAPI(data.distribution);
+                }
+            } catch (err) {
+                console.error('Error loading driver ratings:', err);
+            }
+        }
+        
+        function updateRatingBreakdownFromAPI(distribution) {
+            const container = document.getElementById('ratingBreakdown');
+            if (!distribution || distribution.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#888;">No ratings yet</p>';
+                return;
+            }
+            const total = distribution.reduce((sum, d) => sum + d.count, 0);
+            const ratingMap = {};
+            distribution.forEach(d => {
+                ratingMap[d.stars] = d.count;
+            });
+            const starValues = [5, 4, 3, 2, 1];
+            container.innerHTML = starValues.map(stars => {
+                const count = ratingMap[stars] || 0;
+                const percent = total > 0 ? (count / total) * 100 : 0;
+                return `
+                    <div class="rating-row">
+                        <div class="stars">${'⭐'.repeat(stars)}</div>
+                        <div class="bar">
+                            <div class="fill" style="width: ${percent}%;"></div>
+                        </div>
+                        <div class="count">${count}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateRatingBreakdown(shipments) {
+            const container = document.getElementById('ratingBreakdown');
+            const ratings = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+            const delivered = shipments.filter(s => s.status === 'delivered');
+            delivered.forEach((s, index) => {
+                const rating = Math.max(1, Math.min(5, 5 - (index % 3)));
+                ratings[rating] = (ratings[rating] || 0) + 1;
+            });
+            const total = Object.values(ratings).reduce((a, b) => a + b, 0);
+            if (total === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#888;">No ratings yet</p>';
+                return;
+            }
+            const starValues = [5, 4, 3, 2, 1];
+            container.innerHTML = starValues.map((stars, index) => {
+                const count = ratings[stars] || 0;
+                const percent = total > 0 ? (count / total) * 100 : 0;
+                return `
+                    <div class="rating-row">
+                        <div class="stars">${'⭐'.repeat(stars)}</div>
+                        <div class="bar">
+                            <div class="fill" style="width: ${percent}%;"></div>
+                        </div>
+                        <div class="count">${count}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // ===== RENDER FUNCTIONS =====
+        function renderPendingShipments(pendingShipments) {
+            const pendingList = document.getElementById('assignedShipmentsList');
+            if (pendingShipments.length === 0) {
+                pendingList.innerHTML = '<p style="text-align:center; color:#888;">No pending deliveries 🎉</p>';
+                return;
+            }
+            pendingList.innerHTML = pendingShipments.map(s => `
+                <div class="shipment-item" onclick="showDeliveryDetails('${s.trackingNumber}')">
+                    <p><strong>🔢 Tracking:</strong> <span style="color:#2196F3;">${escapeHtml(s.trackingNumber)}</span></p>
+                    <p><strong>📦 To:</strong> ${escapeHtml(s.receiverName)}</p>
+                    <p><strong>📍 Address:</strong> ${escapeHtml(s.receiverAddress)}</p>
+                    <p><strong>📊 Status:</strong> <span class="status-badge status-${s.status}">${(s.status || 'pending').replace('_', ' ')}</span></p>
+                    <p><strong>⚖️ Weight:</strong> ${s.weight} kg | <strong>💰 Amount:</strong> $${(s.amount || 0).toFixed(2)}</p>
+                    ${(s.qrCode || s.barcode) ? `
+                        <div class="qr-code-actions">
+                            ${s.qrCode ? `<button onclick="event.stopPropagation(); viewQRCodeDriver('${s.trackingNumber}')" class="qr-btn-small"><i class="fas fa-qrcode"></i> QR</button>` : ''}
+                            ${s.barcode ? `<button onclick="event.stopPropagation(); viewQRCodeDriver('${s.trackingNumber}')" class="barcode-btn-small"><i class="fas fa-barcode"></i> Bar</button>` : ''}
+                        </div>
+                    ` : ''}
+                    ${s.status !== 'delivered' ? `
+                        <select id="statusSelect_${s.trackingNumber}" class="status-select">
+                            <option value="picked_up" ${s.status === 'picked_up' ? 'selected' : ''}>📦 Picked Up</option>
+                            <option value="in_transit" ${s.status === 'in_transit' ? 'selected' : ''}>🚚 In Transit</option>
+                            <option value="out_for_delivery" ${s.status === 'out_for_delivery' ? 'selected' : ''}>🏠 Out for Delivery</option>
+                        </select>
+                        <button onclick="event.stopPropagation(); updateShipmentStatus('${s.trackingNumber}')" class="upload-btn">
+                            <i class="fas fa-sync-alt"></i> Update Status
+                        </button>
+                        <button onclick="event.stopPropagation(); openDeliveryModal('${s.trackingNumber}', '${escapeHtml(s.receiverName)}')" class="complete-btn">
+                            <i class="fas fa-check-circle"></i> Complete Delivery
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+        
+        function renderCompletedShipments(completedShipments) {
+            const completedList = document.getElementById('completedShipmentsList');
+            if (completedShipments.length === 0) {
+                completedList.innerHTML = '<p style="text-align:center; color:#888;">No completed deliveries yet</p>';
+                return;
+            }
+            completedList.innerHTML = completedShipments.map(s => `
+                <div class="shipment-item" onclick="showDeliveryDetails('${s.trackingNumber}')">
+                    <p><strong>🔢 Tracking:</strong> <span style="color:#4caf50;">${escapeHtml(s.trackingNumber)}</span></p>
+                    <p><strong>📦 To:</strong> ${escapeHtml(s.receiverName)}</p>
+                    <p><strong>✅ Delivered:</strong> ${s.deliveryProof?.deliveredAt ? new Date(s.deliveryProof.deliveredAt).toLocaleString() : 'N/A'}</p>
+                    <p><strong>✍️ Recipient:</strong> ${s.deliveryProof?.recipientName || 'N/A'}</p>
+                    ${(s.qrCode || s.barcode) ? `
+                        <div class="qr-code-actions">
+                            ${s.qrCode ? `<button onclick="event.stopPropagation(); viewQRCodeDriver('${s.trackingNumber}')" class="qr-btn-small"><i class="fas fa-qrcode"></i> QR</button>` : ''}
+                            ${s.barcode ? `<button onclick="event.stopPropagation(); viewQRCodeDriver('${s.trackingNumber}')" class="barcode-btn-small"><i class="fas fa-barcode"></i> Bar</button>` : ''}
+                        </div>
+                    ` : ''}
+                    ${s.deliveryProof?.deliveryPhoto ? `<p><strong>📸 Photo:</strong> <a href="http://localhost:5000${s.deliveryProof.deliveryPhoto}" target="_blank" onclick="event.stopPropagation();">View Photo</a></p>` : ''}
+                    ${s.deliveryProof?.recipientSignature ? `<p><strong>✍️ Signature:</strong> <a href="http://localhost:5000${s.deliveryProof.recipientSignature}" target="_blank" onclick="event.stopPropagation();">View Signature</a></p>` : ''}
+                </div>
+            `).join('');
+        }
+        
+        function renderTodayRoute(todayPending) {
+            const routeList = document.getElementById('todayRouteList');
+            if (todayPending.length === 0) {
+                routeList.innerHTML = '<p style="text-align:center; color:#888;">No deliveries scheduled for today 📅</p>';
+                return;
+            }
+            routeList.innerHTML = todayPending.map((s, index) => `
+                <div class="shipment-item" onclick="showDeliveryDetails('${s.trackingNumber}')">
+                    <p><strong>#${index + 1}</strong> - <span style="color:#2196F3;">${escapeHtml(s.trackingNumber)}</span></p>
+                    <p><strong>📦 To:</strong> ${escapeHtml(s.receiverName)}</p>
+                    <p><strong>📍 Address:</strong> ${escapeHtml(s.receiverAddress)}</p>
+                    <p><strong>📊 Status:</strong> <span class="status-badge status-${s.status}">${(s.status || 'pending').replace('_', ' ')}</span></p>
+                </div>
+            `).join('');
+        }
+        
+        // ===== EXPORT =====
+        function exportDeliveryHistory() {
+            if (allCompletedShipments.length === 0) {
+                showToast('No completed deliveries to export', 'error');
+                return;
+            }
+            const headers = ['Tracking Number', 'Receiver', 'Delivered At', 'Recipient', 'Amount', 'Weight'];
+            const rows = allCompletedShipments.map(s => [
+                s.trackingNumber,
+                s.receiverName,
+                s.deliveryProof?.deliveredAt ? new Date(s.deliveryProof.deliveredAt).toLocaleString() : 'N/A',
+                s.deliveryProof?.recipientName || 'N/A',
+                s.amount || 0,
+                s.weight || 0
+            ]);
+            const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `delivery_history_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('CSV exported successfully!', 'success');
+        }
+        
+        // ===== SHOW DELIVERY DETAILS =====
+        async function showDeliveryDetails(trackingNumber) {
+            try {
+                const res = await fetch(`http://localhost:5000/api/tracking/${trackingNumber}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const s = await res.json();
+                const detailsHtml = `
+                    <div class="detail-row"><div class="detail-label">Tracking</div><div class="detail-value"><strong>${escapeHtml(s.trackingNumber)}</strong></div></div>
+                    <div class="detail-row"><div class="detail-label">Sender</div><div class="detail-value">${escapeHtml(s.senderName)}</div></div>
+                    <div class="detail-row"><div class="detail-label">Sender Address</div><div class="detail-value">${escapeHtml(s.senderAddress)}</div></div>
+                    <div class="detail-row"><div class="detail-label">Receiver</div><div class="detail-value">${escapeHtml(s.receiverName)}</div></div>
+                    <div class="detail-row"><div class="detail-label">Receiver Address</div><div class="detail-value">${escapeHtml(s.receiverAddress)}</div></div>
+                    <div class="detail-row"><div class="detail-label">Weight</div><div class="detail-value">${s.weight} kg</div></div>
+                    <div class="detail-row"><div class="detail-label">Amount</div><div class="detail-value">$${(s.amount || 0).toFixed(2)}</div></div>
+                    <div class="detail-row"><div class="detail-label">Status</div><div class="detail-value"><span class="status-badge status-${s.status}">${(s.status || 'pending').replace('_', ' ')}</span></div></div>
+                    <div class="detail-row"><div class="detail-label">Created</div><div class="detail-value">${new Date(s.createdAt).toLocaleString()}</div></div>
+                `;
+                document.getElementById('deliveryDetails').innerHTML = detailsHtml;
+                document.getElementById('detailsModal').style.display = 'flex';
+            } catch (err) {
+                showToast('Error loading details', 'error');
+            }
+        }
+        
+        function closeDetailsModal() {
+            document.getElementById('detailsModal').style.display = 'none';
+        }
+        
+        // ===== UPDATE SHIPMENT STATUS =====
+        async function updateShipmentStatus(trackingNumber) {
+            const select = document.getElementById(`statusSelect_${trackingNumber}`);
+            const newStatus = select.value;
+            try {
+                const res = await fetch(`http://localhost:5000/api/driver/shipments/${trackingNumber}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`Status: ${newStatus.replace('_', ' ')}`, 'success');
+                    loadDriverData();
+                } else {
+                    showToast('Error: ' + (data.message || 'Unknown'), 'error');
+                }
+            } catch (err) {
+                showToast('Connection error', 'error');
+            }
+        }
+        
+        // ===== OPEN DELIVERY MODAL =====
+        function openDeliveryModal(trackingNumber, receiverName) {
+            currentDeliveryTracking = trackingNumber;
+            document.getElementById('modalTrackingNumber').innerText = trackingNumber;
+            document.getElementById('modalReceiverName').innerText = receiverName;
+            document.getElementById('recipientName').value = '';
+            document.getElementById('deliveryNote').value = '';
+            document.getElementById('deliveryPhoto').value = '';
+            document.getElementById('photoPreview').style.display = 'none';
+            clearSignature();
+            signatureHistory = [];
+            document.getElementById('deliveryModal').style.display = 'flex';
+            setTimeout(function() {
+                initSignatureCanvas();
+            }, 500);
+        }
+        
+        function closeDeliveryModal() {
+            document.getElementById('deliveryModal').style.display = 'none';
+            currentDeliveryTracking = null;
+        }
+        
+        // ===== COMPLETE DELIVERY =====
+        async function completeDelivery() {
+            const recipientName = document.getElementById('recipientName').value.trim();
+            if (!recipientName) {
+                showToast('Please enter recipient name', 'error');
+                return;
+            }
+            if (!signatureData) {
+                showToast('Please get customer signature', 'error');
+                return;
+            }
+            const deliveryNote = document.getElementById('deliveryNote').value;
+            const photoFile = document.getElementById('deliveryPhoto').files[0];
+            const formData = new FormData();
+            formData.append('recipientName', recipientName);
+            formData.append('deliveryNote', deliveryNote);
+            if (photoFile) {
+                formData.append('deliveryPhoto', photoFile);
+            }
+            const signatureBlob = dataURLtoBlob(signatureData);
+            formData.append('signature', signatureBlob, 'signature.png');
+            showToast('Completing delivery...', 'info');
+            try {
+                const res = await fetch(`http://localhost:5000/api/driver/complete/${currentDeliveryTracking}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ Delivery completed with proof!', 'success');
+                    closeDeliveryModal();
+                    loadDriverData();
+                } else {
+                    showToast('Error: ' + data.message, 'error');
+                }
+            } catch (err) {
+                console.error('Complete delivery error:', err);
+                showToast('Connection error', 'error');
+            }
+        }
+        
+        // ===== VIEW QR CODE (DRIVER) =====
+        function viewQRCodeDriver(trackingNumber) {
+            fetch(`http://localhost:5000/api/public/track/${trackingNumber}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) {
+                        showToast('Shipment not found', 'error');
+                        return;
+                    }
+                    const shipment = data.shipment;
+                    const qrUrl = shipment.qrCode ? `http://localhost:5000${shipment.qrCode}` : null;
+                    const barcodeUrl = shipment.barcode ? `http://localhost:5000${shipment.barcode}` : null;
+                    if (!qrUrl && !barcodeUrl) {
+                        showToast('No QR or Barcode found', 'error');
+                        return;
+                    }
+                    const modal = document.createElement('div');
+                    modal.className = 'qr-modal';
+                    modal.style.display = 'flex';
+                    let imagesHtml = '';
+                    if (qrUrl) {
+                        imagesHtml += `<div class="qr-image-container"><img src="${qrUrl}" alt="QR Code"></div>`;
+                    }
+                    if (barcodeUrl) {
+                        imagesHtml += `<div class="qr-image-container" style="margin-top:10px;"><img src="${barcodeUrl}" alt="Barcode" class="barcode-image"></div>`;
+                    }
+                    modal.innerHTML = `
+                        <div class="qr-modal-content">
+                            <h3><i class="fas fa-qrcode"></i> Shipment Codes</h3>
+                            <p class="qr-tracking">${trackingNumber}</p>
+                            ${imagesHtml}
+                            <p style="color:#888; font-size:0.75rem; margin-top:5px;"><i class="fas fa-info-circle"></i> Scan to track this shipment</p>
+                            <div class="qr-actions">
+                                ${qrUrl ? `<button class="qr-download-btn" onclick="downloadQRCodeDriver('${qrUrl}', '${trackingNumber}')"><i class="fas fa-download"></i> Download QR</button>` : ''}
+                                ${barcodeUrl ? `<button class="qr-download-btn" onclick="downloadBarcodeDriver('${barcodeUrl}', '${trackingNumber}')" style="background:transparent; border:1px solid rgba(33,150,243,0.3); color:#2196F3;"><i class="fas fa-download"></i> Download Bar</button>` : ''}
+                                <button class="qr-close-btn" onclick="this.closest('.qr-modal').remove()"><i class="fas fa-times"></i> Close</button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                    modal.addEventListener('click', function(e) {
+                        if (e.target === this) this.remove();
+                    });
+                })
+                .catch(err => {
+                    console.error('Error loading codes:', err);
+                    showToast('Error loading codes', 'error');
+                });
+        }
+        
+        function downloadQRCodeDriver(qrUrl, trackingNumber) {
+            const link = document.createElement('a');
+            link.download = `QR_${trackingNumber}.png`;
+            link.href = qrUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('✅ QR Code downloaded!', 'success');
+        }
+        
+        function downloadBarcodeDriver(barcodeUrl, trackingNumber) {
+            const link = document.createElement('a');
+            link.download = `Barcode_${trackingNumber}.png`;
+            link.href = barcodeUrl;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast('✅ Barcode downloaded!', 'success');
+        }
+        
+        // ================================================================
+        // MESSAGES (Driver)
+        // ================================================================
+        async function loadMessagesForDriver() {
+            const container = document.getElementById('messagesContainer');
+            if (!container) {
+                console.warn('⚠️ Messages container not found');
+                return;
+            }
+            container.innerHTML = `
+                <div class="loading"><i class="fas fa-spinner fa-pulse"></i> Loading conversations...</div>
+            `;
+            try {
+                const convRes = await fetch('http://localhost:5000/api/messages/conversations', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const convData = await convRes.json();
+                if (!convData.success) {
+                    container.innerHTML = `<p style="color:#ff6b6b;">Error loading conversations</p>`;
+                    return;
+                }
+                const adminsRes = await fetch('http://localhost:5000/api/messages/admin/list', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const adminsData = await adminsRes.json();
+                const userList = adminsData.admins || [];
+                const conversations = convData.conversations || [];
+                const totalUnread = convData.totalUnread || 0;
+                let html = `
+                    <div class="messages-container">
+                        <div class="messages-panel">
+                            <div class="messages-panel-header">
+                                <h4><i class="fas fa-comment-dots"></i> Chats</h4>
+                                <span class="unread-badge">${totalUnread}</span>
+                            </div>
+                            <div class="conversation-list">
+                `;
+                if (conversations.length === 0) {
+                    html += `
+                        <div class="empty-state-msg">
+                            <i class="fas fa-inbox"></i>
+                            <div class="title">No conversations yet</div>
+                            <div class="sub">Start a new chat with an admin</div>
+                        </div>
+                    `;
+                } else {
+                    conversations.forEach(conv => {
+                        const isUnread = conv.unreadCount > 0;
+                        const otherUser = conv.participants.senderId === user.id ? 
+                            conv.participants.receiverName : conv.participants.senderName;
+                        const otherRole = conv.participants.senderId === user.id ? 
+                            conv.participants.receiverRole : conv.participants.senderRole;
+                        const lastMsg = conv.lastMessage?.message || '';
+                        const lastSubject = conv.lastMessage?.subject || '';
+                        const time = conv.lastMessage?.createdAt ? new Date(conv.lastMessage.createdAt) : new Date();
+                        html += `
+                            <div class="conversation-item ${isUnread ? 'unread' : ''}" onclick="loadConversationDriver('${conv.conversationId}')">
+                                <div class="conv-top">
+                                    <div class="conv-name">${escapeHtml(otherUser)}<span class="status-dot offline"></span></div>
+                                    ${isUnread ? `<span class="conv-unread">${conv.unreadCount}</span>` : ''}
+                                </div>
+                                <div class="conv-bottom">
+                                    <div style="flex:1; min-width:0;">
+                                        ${lastSubject ? `<div class="conv-subject">📌 ${escapeHtml(lastSubject)}</div>` : ''}
+                                        <div class="conv-preview">${escapeHtml(lastMsg.substring(0, 60))}${lastMsg.length > 60 ? '...' : ''}</div>
+                                    </div>
+                                    <div class="conv-time">${time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                html += `
+                            </div>
+                            <div class="new-convo-section">
+                                <select id="newMessageRecipient">
+                                    <option value="">-- Select Admin --</option>
+                                    ${userList.map(u => `<option value="${u._id}">${escapeHtml(u.name)} (${u.email})</option>`).join('')}
+                                </select>
+                                <div class="new-convo-row">
+                                    <input type="text" id="newMessageSubject" placeholder="📌 Subject">
+                                    <button onclick="startNewConversationDriver()" class="new-btn"><i class="fas fa-plus"></i> New</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="message-detail-panel">
+                            <div id="messageHeaderDriver" class="message-detail-header">
+                                <div class="header-left">
+                                    <div class="header-avatar"><i class="fas fa-user"></i></div>
+                                    <div><span class="header-user">Select a chat</span><span class="header-role">—</span></div>
+                                </div>
+                                <span class="header-meta">0 messages</span>
+                            </div>
+                            <div id="messageBodyDriver" class="message-body">
+                                <div class="empty-state-msg">
+                                    <i class="fas fa-comment-dots"></i>
+                                    <div class="title">No conversation selected</div>
+                                    <div class="sub">Choose a chat from the left panel</div>
+                                </div>
+                            </div>
+                            <div id="messageInputDriver" class="message-input-area">
+                                <div class="input-row">
+                                    <div class="input-wrapper">
+                                        <textarea id="replyMessageInputDriver" rows="1" placeholder="Type a message..."></textarea>
+                                    </div>
+                                    <button onclick="sendReplyDriver()" class="send-btn"><i class="fas fa-paper-plane send-icon"></i> Send</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML = html;
+                if (messageInterval) clearInterval(messageInterval);
+                messageInterval = setInterval(() => {
+                    if (currentConversationId) {
+                        loadConversationDriver(currentConversationId, true);
+                    }
+                    updateUnreadMessageCountDriver();
+                }, 30000);
+            } catch (err) {
+                console.error('Messages error:', err);
+                container.innerHTML = `<p style="color:#ff6b6b; text-align:center; padding:40px;">❌ Error: ${err.message}</p>`;
+            }
+        }
+        
+        async function loadConversationDriver(conversationId, silent = false) {
+            if (!conversationId) return;
+            currentConversationId = conversationId;
+            const body = document.getElementById('messageBodyDriver');
+            if (!body) return;
+            if (!silent) {
+                body.innerHTML = '<div style="text-align:center; padding:40px; color:#888;"><i class="fas fa-spinner fa-pulse"></i> Loading...</div>';
+            }
+            try {
+                const res = await fetch(`http://localhost:5000/api/messages/conversation/${conversationId}?limit=50`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (!data.success) {
+                    body.innerHTML = `<p style="color:#ff6b6b; text-align:center; padding:40px;">❌ Error: ${data.message || 'Unknown'}</p>`;
+                    return;
+                }
+                const messages = data.messages || [];
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const header = document.getElementById('messageHeaderDriver');
+                if (header && messages.length > 0) {
+                    const first = messages[0];
+                    const otherUser = first.senderId?._id === user.id ? first.receiverName : first.senderName;
+                    const otherRole = first.senderId?._id === user.id ? first.receiverRole : first.senderRole;
+                    header.innerHTML = `
+                        <div class="header-left">
+                            <div class="header-avatar"><i class="fas fa-user"></i></div>
+                            <div><span class="header-user">${escapeHtml(otherUser)}</span><span class="header-role">${otherRole}</span></div>
+                        </div>
+                        <span class="header-meta">${messages.length} messages</span>
+                    `;
+                } else if (header) {
+                    header.innerHTML = `
+                        <div class="header-left">
+                            <div class="header-avatar"><i class="fas fa-user"></i></div>
+                            <div><span class="header-user">No messages</span><span class="header-role">—</span></div>
+                        </div>
+                        <span class="header-meta">0 messages</span>
+                    `;
+                }
+                const input = document.getElementById('messageInputDriver');
+                if (input) input.style.display = 'block';
+                if (messages.length === 0) {
+                    body.innerHTML = `
+                        <div class="empty-state-msg">
+                            <i class="fas fa-comment"></i>
+                            <div class="title">No messages yet</div>
+                            <div class="sub">Send a message to start the conversation</div>
+                        </div>
+                    `;
+                    return;
+                }
+                let chatHtml = '';
+                let lastDate = '';
+                messages.forEach(msg => {
+                    const isMine = msg.senderId?._id === user.id || msg.senderId === user.id;
+                    const senderName = isMine ? 'You' : (msg.senderName || 'Unknown');
+                    const time = new Date(msg.createdAt);
+                    const timeStr = time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                    const dateStr = time.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+                    const roleTag = isMine ? '' : msg.senderRole;
+                    if (dateStr !== lastDate) {
+                        chatHtml += `<div class="date-divider"><span>${dateStr}</span></div>`;
+                        lastDate = dateStr;
+                    }
+                    chatHtml += `
+                        <div class="message-wrapper ${isMine ? 'sent' : 'received'}">
+                            <div class="message-bubble ${isMine ? 'sent' : 'received'}">
+                                <div class="msg-sender">${escapeHtml(senderName)}${roleTag ? `<span class="role-tag">${roleTag}</span>` : ''}${!isMine && !msg.isRead ? `<span class="msg-new-badge">● New</span>` : ''}</div>
+                                ${msg.subject ? `<div class="msg-subject">📌 ${escapeHtml(msg.subject)}</div>` : ''}
+                                <div class="msg-text">${escapeHtml(msg.message)}</div>
+                                <div class="msg-footer">
+                                    <span class="msg-time">${timeStr}</span>
+                                    ${isMine ? `<span class="read-status ${msg.isRead ? 'read' : 'unread'}">${msg.isRead ? '✓ Read' : '✓ Sent'}</span>` : ''}
+                                    ${msg.replyCount > 0 ? `<span class="msg-reply-count">🔄 ${msg.replyCount}</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                body.innerHTML = chatHtml;
+                body.scrollTop = body.scrollHeight;
+            } catch (err) {
+                console.error('Load conversation error:', err);
+                body.innerHTML = `<p style="color:#ff6b6b; text-align:center; padding:40px;">❌ Error: ${err.message}</p>`;
+            }
+        }
+        
+        async function sendReplyDriver() {
+            const messageInput = document.getElementById('replyMessageInputDriver');
+            const message = messageInput?.value?.trim();
+            if (!message) {
+                showToast('Please enter a message', 'error');
+                return;
+            }
+            if (!currentConversationId) {
+                showToast('No conversation selected', 'error');
+                return;
+            }
+            const sendBtn = document.querySelector('#messagesContainer .send-btn');
+            const originalText = sendBtn?.innerHTML || 'Send';
+            if (sendBtn) {
+                sendBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Sending...';
+                sendBtn.disabled = true;
+            }
+            try {
+                const convRes = await fetch(`http://localhost:5000/api/messages/conversation/${currentConversationId}?limit=1`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const convData = await convRes.json();
+                if (!convData.success || convData.messages.length === 0) {
+                    showToast('Error getting conversation info', 'error');
+                    if (sendBtn) { sendBtn.innerHTML = originalText; sendBtn.disabled = false; }
+                    return;
+                }
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                const lastMsg = convData.messages[0];
+                const receiverId = lastMsg.senderId?._id === user.id ? lastMsg.receiverId?._id : lastMsg.senderId?._id;
+                if (!receiverId) {
+                    showToast('Error finding recipient', 'error');
+                    if (sendBtn) { sendBtn.innerHTML = originalText; sendBtn.disabled = false; }
+                    return;
+                }
+                const res = await fetch('http://localhost:5000/api/messages/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        receiverId: receiverId,
+                        subject: lastMsg.subject || 'Re: ' + (lastMsg.subject || 'Message'),
+                        message: message,
+                        parentMessageId: lastMsg.parentMessageId || lastMsg._id
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ Message sent!', 'success');
+                    messageInput.value = '';
+                    loadConversationDriver(currentConversationId);
+                    loadMessagesForDriver();
+                    updateUnreadMessageCountDriver();
+                } else {
+                    showToast('❌ Error: ' + data.message, 'error');
+                }
+            } catch (err) {
+                console.error('Send reply error:', err);
+                showToast('❌ Connection error', 'error');
+            } finally {
+                if (sendBtn) {
+                    sendBtn.innerHTML = originalText;
+                    sendBtn.disabled = false;
+                }
+            }
+        }
+        
+        async function startNewConversationDriver() {
+            const recipientSelect = document.getElementById('newMessageRecipient');
+            const subjectInput = document.getElementById('newMessageSubject');
+            const recipientId = recipientSelect?.value;
+            const subject = subjectInput?.value?.trim() || 'About work schedule';
+            if (!recipientId) {
+                showToast('Please select a recipient', 'error');
+                return;
+            }
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-pen"></i> New Message</h3>
+                        <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p style="color:#888; margin-bottom:10px;">Sending to: <strong style="color:#2196F3;">${recipientSelect.options[recipientSelect.selectedIndex]?.text}</strong></p>
+                        <p style="color:#666; margin-bottom:10px; font-size:0.85rem;">📌 Subject: <strong style="color:#2196F3;">${escapeHtml(subject)}</strong></p>
+                        <textarea id="newMessageText" rows="6" placeholder="Type your message..." style="width:100%; padding:12px; background:rgba(255,255,255,0.05); border:1px solid rgba(33,150,243,0.2); border-radius:12px; color:white; resize:vertical; font-family:inherit; font-size:0.95rem;"></textarea>
+                        <div class="modal-buttons">
+                            <button class="modal-cancel" onclick="this.closest('.modal').remove()">Cancel</button>
+                            <button class="modal-submit" onclick="sendNewMessageDriver('${recipientId}', '${escapeHtml(subject)}')">Send Message</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        async function sendNewMessageDriver(recipientId, subject) {
+            const messageText = document.getElementById('newMessageText')?.value?.trim();
+            if (!messageText) {
+                showToast('Please enter a message', 'error');
+                return;
+            }
+            const btn = document.querySelector('.modal-submit');
+            const originalText = btn?.textContent || 'Send Message';
+            if (btn) {
+                btn.textContent = 'Sending...';
+                btn.disabled = true;
+            }
+            try {
+                const res = await fetch('http://localhost:5000/api/messages/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        receiverId: recipientId,
+                        subject: subject,
+                        message: messageText
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ Message sent!', 'success');
+                    document.querySelector('.modal')?.remove();
+                    loadMessagesForDriver();
+                    updateUnreadMessageCountDriver();
+                } else {
+                    showToast('❌ Error: ' + data.message, 'error');
+                }
+            } catch (err) {
+                console.error('Send message error:', err);
+                showToast('❌ Connection error', 'error');
+            } finally {
+                if (btn) {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                }
+            }
+        }
+        
+        async function updateUnreadMessageCountDriver() {
+            try {
+                const res = await fetch('http://localhost:5000/api/messages/unread/count', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success && data.unreadCount > 0) {
+                    const badge = document.querySelector('#messagesContainer .unread-badge');
+                    if (badge) {
+                        badge.textContent = data.unreadCount;
+                        badge.style.display = 'inline-block';
+                    }
+                }
+            } catch (err) {
+                // Silent fail
+            }
+        }
+        
+        // ===== INIT =====
+        loadDriverData();
+        
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            if (token) loadDriverData();
+        }, 30000);
+        
+        // Close notification dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const bell = document.querySelector('.notification-bell');
+            if (dropdown && bell && !bell.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

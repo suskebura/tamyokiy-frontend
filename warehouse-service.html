@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Storage | TAMYOKIY Logistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .warehouse-service {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+        }
+        .service-card {
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(212,175,55,0.3);
+            padding: 30px;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+            border-color: #D4AF37;
+            box-shadow: 0 10px 40px rgba(212,175,55,0.1);
+        }
+        .service-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .service-card .card-header h3 {
+            color: #D4AF37;
+            margin: 0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .status-received { background: rgba(255,165,0,0.2); color: #ffa500; }
+        .status-sorted { background: rgba(33,150,243,0.2); color: #2196F3; }
+        .status-packed { background: rgba(156,39,176,0.2); color: #9c27b0; }
+        .status-loaded { background: rgba(0,188,212,0.2); color: #00bcd4; }
+        .status-dispatched { background: rgba(76,175,80,0.2); color: #4caf50; }
+        .status-delivered { background: rgba(76,175,80,0.3); color: #2e7d32; }
+        
+        .btn-request {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        .btn-request:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+        }
+        .btn-request:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.4);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+            color: #D4AF37;
+        }
+        .storage-cost {
+            background: rgba(212,175,55,0.08);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .storage-cost .cost-label {
+            color: #888;
+            font-size: 0.8rem;
+        }
+        .storage-cost .cost-value {
+            color: #D4AF37;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .quick-stat {
+            background: rgba(20,20,30,0.4);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.1);
+        }
+        .quick-stat .number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #D4AF37;
+        }
+        .quick-stat .label {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(20,20,30,0.7));
+            backdrop-filter: blur(15px);
+            border-radius: 32px;
+            padding: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.4);
+        }
+        .welcome-card h1 {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2.2rem;
+        }
+        @media (max-width: 768px) {
+            .quick-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .service-card .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        @media (max-width: 480px) {
+            .quick-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <!-- 🆕 REAL-TIME DASHBOARD - ADMIN ONLY -->
+<a href="realtime-dashboard.html" class="nav-link" id="realtimeNavLink" style="display:none;"><i class="fas fa-chart-line"></i> Live</a>
+                <a href="how-it-works.html" class="nav-link"><i class="fas fa-question-circle"></i> How It Works</a>
+                <a href="chatbot.html" class="nav-link"><i class="fas fa-robot"></i> Chat Assistant</a>
+                <!-- 🗺️ ROUTE LINKS - Client should NOT see these -->
+<a href="route-dashboard.html" class="nav-link" id="routesNavLink" style="display:none;"><i class="fas fa-route"></i> Routes</a>
+<a href="route-create.html" class="nav-link" id="createRouteNavLink" style="display:none;"><i class="fas fa-plus-circle"></i> Create Route</a>
+<a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link" id="myRouteNavLink" style="display:none;">
+    <i class="fas fa-info-circle"></i> My Route
+</a>
+                
+                <!-- 🏢 WAREHOUSE LINKS - ROLE BASED -->
+                <!-- ADMIN ONLY (hidden by default) -->
+                <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink" style="display:none;"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink" style="display:none;"><i class="fas fa-boxes"></i> Inventory</a>
+                
+                <!-- CLIENT ONLY -->
+                <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink"><i class="fas fa-warehouse"></i> My Storage</a>
+                
+                <!-- DRIVER ONLY -->
+                <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink" style="display:none;"><i class="fas fa-warehouse"></i> Pickups</a>
+                
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="warehouse-service">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="warehouse.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="welcome-card" data-aos="fade-up">
+                <h1><i class="fas fa-warehouse"></i> My Storage</h1>
+                <p>View your stored items, track inventory, and request dispatch</p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="quick-stats" data-aos="fade-up">
+                <div class="quick-stat">
+                    <div class="number" id="totalItems">0</div>
+                    <div class="label">📦 Items in Storage</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="number" id="storageDays">0</div>
+                    <div class="label">📅 Total Storage Days</div>
+                </div>
+                <div class="quick-stat">
+                    <div class="number" id="totalCost">$0</div>
+                    <div class="label">💰 Storage Cost</div>
+                </div>
+            </div>
+
+            <!-- Stored Items -->
+            <div class="service-card" data-aos="fade-up">
+                <div class="card-header">
+                    <h3><i class="fas fa-box"></i> My Stored Items</h3>
+                    <span style="color: #888; font-size: 0.8rem;" id="itemCount">0 items</span>
+                </div>
+                <div id="storedItemsList">
+                    <div class="empty-state">
+                        <i class="fas fa-box"></i>
+                        <p>No items in storage</p>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 10px;">
+                            Ship items to our warehouse to start storing
+                        </p>
+                        <button onclick="location.href='services.html'" class="btn-gold" style="margin-top: 20px;">
+                            <i class="fas fa-shipping-fast"></i> Ship Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Request Dispatch Modal -->
+            <div id="dispatchModal" class="modal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-truck"></i> Request Dispatch</h3>
+                        <button class="modal-close" onclick="closeDispatchModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>Item:</strong> <span id="dispatchTracking"></span></p>
+                        <p style="color: #888; font-size: 0.9rem; margin-bottom: 15px;">
+                            Enter the delivery address where you want this item sent.
+                        </p>
+                        <input type="text" id="dispatchAddress" placeholder="Delivery Address" required>
+                        <input type="text" id="dispatchReceiver" placeholder="Receiver Name" required>
+                        <div class="modal-buttons">
+                            <button class="modal-cancel" onclick="closeDispatchModal()">Cancel</button>
+                            <button class="modal-submit" onclick="submitDispatchRequest()">Confirm Dispatch</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        AOS.init();
+        
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (!token) window.location.href = 'login.html';
+        
+        let currentInventoryId = null;
+        let currentTracking = null;
+        
+        // ===== LOAD STORED ITEMS =====
+        async function loadStoredItems() {
+            try {
+                const res = await fetch('http://localhost:5000/api/warehouse-client/my-items', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                const container = document.getElementById('storedItemsList');
+                const countEl = document.getElementById('itemCount');
+                const totalItems = document.getElementById('totalItems');
+                const storageDays = document.getElementById('storageDays');
+                const totalCost = document.getElementById('totalCost');
+                
+                if (!data.success || data.count === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-box"></i>
+                            <p>No items in storage</p>
+                            <p style="font-size: 0.85rem; color: #666; margin-top: 10px;">
+                                Ship items to our warehouse to start storing
+                            </p>
+                            <button onclick="location.href='services.html'" class="btn-gold" style="margin-top: 20px;">
+                                <i class="fas fa-shipping-fast"></i> Ship Now
+                            </button>
+                        </div>
+                    `;
+                    countEl.textContent = '0 items';
+                    totalItems.textContent = '0';
+                    storageDays.textContent = '0';
+                    totalCost.textContent = '$0';
+                    return;
+                }
+                
+                countEl.textContent = `${data.count} items`;
+                totalItems.textContent = data.count;
+                
+                let totalDays = 0;
+                let totalCostValue = 0;
+                const dailyRate = 2.00;
+                
+                data.items.forEach(item => {
+                    const days = Math.floor((Date.now() - new Date(item.receivedAt)) / (1000 * 60 * 60 * 24)) || 1;
+                    totalDays += days;
+                    totalCostValue += days * dailyRate;
+                });
+                
+                storageDays.textContent = totalDays;
+                totalCost.textContent = `$${totalCostValue.toFixed(2)}`;
+                
+                const statusLabels = {
+                    'received': '📋 Received',
+                    'sorted': '📊 Sorted',
+                    'packed': '📦 Packed',
+                    'loaded': '🚛 Loaded',
+                    'dispatched': '🚚 Dispatched',
+                    'delivered': '✅ Delivered'
+                };
+                
+                const statusClasses = {
+                    'received': 'status-received',
+                    'sorted': 'status-sorted',
+                    'packed': 'status-packed',
+                    'loaded': 'status-loaded',
+                    'dispatched': 'status-dispatched',
+                    'delivered': 'status-delivered'
+                };
+                
+                container.innerHTML = data.items.map(item => {
+                    const days = Math.floor((Date.now() - new Date(item.receivedAt)) / (1000 * 60 * 60 * 24)) || 1;
+                    const cost = days * dailyRate;
+                    const canDispatch = item.status !== 'dispatched' && item.status !== 'delivered';
+                    
+                    return `
+                        <div class="service-card" style="margin-bottom: 15px; padding: 20px;">
+                            <div class="card-header">
+                                <div>
+                                    <h3 style="font-size: 1.1rem;">📦 ${escapeHtml(item.trackingNumber)}</h3>
+                                    <p style="color: #888; font-size: 0.85rem; margin: 5px 0;">
+                                        <i class="fas fa-warehouse"></i> ${escapeHtml(item.warehouseId?.name || 'N/A')}
+                                    </p>
+                                </div>
+                                <span class="status-badge ${statusClasses[item.status] || 'status-received'}">
+                                    ${statusLabels[item.status] || item.status}
+                                </span>
+                            </div>
+                            
+                            <div style="display: flex; flex-wrap: wrap; gap: 20px; margin: 10px 0;">
+                                <div>
+                                    <span style="color: #888; font-size: 0.7rem;">📅 Received</span>
+                                    <p style="margin: 2px 0; font-size: 0.9rem;">${new Date(item.receivedAt).toLocaleDateString()}</p>
+                                </div>
+                                <div>
+                                    <span style="color: #888; font-size: 0.7rem;">⏱️ Storage Days</span>
+                                    <p style="margin: 2px 0; font-size: 0.9rem;">${days} days</p>
+                                </div>
+                            </div>
+                            
+                            <div class="storage-cost">
+                                <span class="cost-label">💰 Storage Cost ($${dailyRate}/day)</span>
+                                <span class="cost-value">$${cost.toFixed(2)}</span>
+                            </div>
+                            
+                            ${canDispatch ? `
+                                <button onclick="openDispatchModal('${item._id}', '${escapeHtml(item.trackingNumber)}')" class="btn-request">
+                                    <i class="fas fa-truck"></i> Request Dispatch
+                                </button>
+                            ` : `
+                                <div style="margin-top: 10px; padding: 10px; background: rgba(76,175,80,0.1); border-radius: 8px; text-align: center; color: #4caf50;">
+                                    <i class="fas fa-check-circle"></i> ${item.status === 'delivered' ? 'Delivered' : 'Dispatched'}
+                                </div>
+                            `}
+                        </div>
+                    `;
+                }).join('');
+                
+            } catch (err) {
+                console.error('Error loading stored items:', err);
+                document.getElementById('storedItemsList').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color: #ff6b6b;"></i>
+                        <p style="color: #ff6b6b;">Error loading your stored items</p>
+                        <button onclick="loadStoredItems()" class="btn-gold" style="margin-top: 20px;">
+                            <i class="fas fa-sync-alt"></i> Retry
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // ===== DISPATCH MODAL =====
+        function openDispatchModal(inventoryId, trackingNumber) {
+            currentInventoryId = inventoryId;
+            currentTracking = trackingNumber;
+            document.getElementById('dispatchTracking').textContent = trackingNumber;
+            document.getElementById('dispatchAddress').value = '';
+            document.getElementById('dispatchReceiver').value = '';
+            document.getElementById('dispatchModal').style.display = 'flex';
+        }
+        
+        function closeDispatchModal() {
+            document.getElementById('dispatchModal').style.display = 'none';
+            currentInventoryId = null;
+            currentTracking = null;
+        }
+        
+        async function submitDispatchRequest() {
+            const address = document.getElementById('dispatchAddress').value.trim();
+            const receiver = document.getElementById('dispatchReceiver').value.trim();
+            
+            if (!address || !receiver) {
+                showToast('Please enter delivery address and receiver name', 'error');
+                return;
+            }
+            
+            const btn = document.querySelector('.modal-submit');
+            const originalText = btn.textContent;
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch('http://localhost:5000/api/warehouse-client/request-dispatch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        inventoryId: currentInventoryId,
+                        deliveryAddress: address,
+                        receiverName: receiver
+                    })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast('✅ Dispatch request submitted!', 'success');
+                    closeDispatchModal();
+                    loadStoredItems();
+                } else {
+                    showToast('❌ ' + data.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ Connection error', 'error');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+        
+        // ===== ESCAPE HTML =====
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        
+        // ===== SHOW TOAST =====
+        function showToast(message, type = 'info') {
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    z-index: 99999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    max-width: 400px;
+                `;
+                document.body.appendChild(toastContainer);
+                
+                if (!document.getElementById('toastStyles')) {
+                    const style = document.createElement('style');
+                    style.id = 'toastStyles';
+                    style.textContent = `
+                        @keyframes slideInToast {
+                            from { opacity: 0; transform: translateX(40px); }
+                            to { opacity: 1; transform: translateX(0); }
+                        }
+                        @keyframes slideOutToast {
+                            from { opacity: 1; transform: translateX(0); }
+                            to { opacity: 0; transform: translateX(40px); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+            
+            const toast = document.createElement('div');
+            const colors = {
+                success: '#4caf50',
+                error: '#ff6b6b',
+                info: '#D4AF37',
+                warning: '#ff9800'
+            };
+            
+            toast.style.cssText = `
+                background: #1a1a2e;
+                color: #fff;
+                padding: 14px 20px;
+                border-radius: 12px;
+                border-left: 4px solid ${colors[type] || '#D4AF37'};
+                box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                animation: slideInToast 0.4s ease;
+                font-size: 0.9rem;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            `;
+            
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️',
+                warning: '⚠️'
+            };
+            
+            toast.innerHTML = `
+                <span style="font-size: 1.1rem;">${icons[type] || 'ℹ️'}</span>
+                <span>${message}</span>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutToast 0.4s ease forwards';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 400);
+            }, 3000);
+        }
+        
+        // ===== INIT =====
+        loadStoredItems();
+        
+        // Close modal on ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDispatchModal();
+            }
+        });
+        
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('dispatchModal');
+            if (event.target === modal) {
+                closeDispatchModal();
+            }
+        }
+    </script>
+</body>
+</html>

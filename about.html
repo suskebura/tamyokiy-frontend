@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAMYOKIY Logistics Inc. | About Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ============================================================
+           ABOUT PAGE - LUXURY STYLES WITH VIDEO BACKGROUND
+           ============================================================ */
+
+        /* ===== ABOUT HERO WITH VIDEO ===== */
+        .about-hero {
+            min-height: 55vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-top: 100px;
+            overflow: hidden;
+        }
+        .about-hero .video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        .about-hero .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+        }
+        .about-hero .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            padding: 40px 5%;
+        }
+        .about-hero .hero-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            color: #D4AF37;
+            text-transform: uppercase;
+            background: rgba(212, 175, 55, 0.15);
+            padding: 8px 24px;
+            border-radius: 40px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            margin-bottom: 25px;
+        }
+        .about-hero h1 {
+            font-size: clamp(3rem, 6vw, 4.5rem);
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+        .about-hero h1 .gold {
+            color: #D4AF37;
+        }
+        .about-hero .hero-desc {
+            font-size: 1.2rem;
+            color: #c0c0c0;
+            max-width: 650px;
+            line-height: 1.9;
+        }
+
+        /* ============================================================
+           SECTION 1: MISSION, VISION, VALUES - 3 CARDS
+           ============================================================ */
+        .about-mission-section {
+            padding: 100px 5%;
+            background: linear-gradient(180deg, #050505, #0a0a0a);
+            position: relative;
+        }
+        .about-mission-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+        }
+        .about-mission-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 40px;
+        }
+        .about-mission-card {
+            background: rgba(20, 20, 30, 0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 28px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .about-mission-card:nth-child(2) {
+            transform: translateY(-30px);
+        }
+        .about-mission-card:nth-child(2):hover {
+            transform: translateY(-45px);
+        }
+        .about-mission-card:hover {
+            transform: translateY(-15px);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 30px 80px rgba(212, 175, 55, 0.08);
+        }
+        .about-mission-card .card-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+            transition: all 0.6s ease;
+        }
+        .about-mission-card:hover .card-image {
+            transform: scale(1.03);
+        }
+        .about-mission-card .card-content {
+            padding: 32px 35px 38px;
+            text-align: left;
+        }
+        .about-mission-card .card-icon-wrapper {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+        }
+        .about-mission-card .card-icon-wrapper i {
+            font-size: 1.8rem;
+            color: #050505;
+        }
+        .about-mission-card .card-number {
+            font-size: 0.65rem;
+            color: rgba(212, 175, 55, 0.3);
+            letter-spacing: 4px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .about-mission-card h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #D4AF37;
+            margin-bottom: 14px;
+        }
+        .about-mission-card p {
+            color: #d0d0d0;
+            line-height: 2;
+            font-size: 0.98rem;
+            margin-bottom: 0;
+        }
+        .about-mission-card .gold-line {
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, #D4AF37, transparent);
+            margin-top: 18px;
+        }
+
+        /* ============================================================
+           SECTION 2: OUR STORY - FULL WIDTH WITH PHOTO
+           ============================================================ */
+        .about-story-section {
+            padding: 100px 5%;
+            background: #050505;
+            position: relative;
+        }
+        .about-story-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+        }
+        .about-story-card {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(20, 20, 30, 0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            border: 1px solid rgba(212, 175, 55, 0.12);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .about-story-card .story-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            min-height: 450px;
+        }
+        .about-story-card .story-content {
+            padding: 55px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .about-story-card .story-content .story-tag {
+            font-size: 0.65rem;
+            color: #D4AF37;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+        .about-story-card .story-content h2 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 22px;
+        }
+        .about-story-card .story-content h2 span {
+            color: #D4AF37;
+        }
+        .about-story-card .story-content p {
+            color: #c0c0c0;
+            line-height: 2.1;
+            font-size: 1.05rem;
+            margin-bottom: 18px;
+        }
+        .about-story-card .story-content .story-divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, #D4AF37, transparent);
+            margin-bottom: 22px;
+        }
+        .about-story-card .story-content .story-highlight {
+            color: #D4AF37;
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+        }
+
+        /* ============================================================
+           SECTION 3: WHY TAMYOKIY - 3 CARDS
+           ============================================================ */
+        .about-why-section {
+            padding: 100px 5%;
+            background: linear-gradient(180deg, #0a0a0a, #050505);
+        }
+        .about-why-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 35px;
+            margin-top: 40px;
+        }
+        .about-why-card {
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid rgba(212, 175, 55, 0.08);
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        .about-why-card:hover {
+            transform: translateY(-12px);
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.06);
+        }
+        .about-why-card .why-image {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            display: block;
+        }
+        .about-why-card .why-content {
+            padding: 28px 30px 32px;
+            text-align: center;
+        }
+        .about-why-card .why-icon {
+            font-size: 2.4rem;
+            color: #D4AF37;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .about-why-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #D4AF37;
+            margin-bottom: 12px;
+        }
+        .about-why-card p {
+            color: #c0c0c0;
+            line-height: 1.8;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        /* ============================================================
+           SECTION 4: NUMBERS / STATS
+           ============================================================ */
+        .about-stats-section {
+            background: #000;
+            text-align: center;
+            padding: 80px 5%;
+            position: relative;
+        }
+        .about-stats-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+        }
+        .about-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .about-stat-item {
+            background: rgba(20, 20, 30, 0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: 38px 25px;
+            border: 1px solid rgba(212, 175, 55, 0.08);
+            transition: all 0.5s ease;
+        }
+        .about-stat-item:hover {
+            transform: translateY(-8px);
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.05);
+        }
+        .about-stat-item .stat-number {
+            font-size: 4.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .about-stat-item .stat-label {
+            font-size: 1rem;
+            color: #b0b0b0;
+            margin-top: 0.5rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        .about-stat-item .stat-icon {
+            font-size: 3rem;
+            color: rgba(212, 175, 55, 0.15);
+            margin-bottom: 10px;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 992px) {
+            .about-mission-grid { grid-template-columns: repeat(2, 1fr); }
+            .about-mission-card:nth-child(2) { transform: translateY(0); }
+            .about-why-grid { grid-template-columns: repeat(2, 1fr); }
+            .about-stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .about-mission-grid { grid-template-columns: 1fr; }
+            .about-why-grid { grid-template-columns: 1fr; }
+            .about-stats-grid { grid-template-columns: 1fr 1fr; }
+            .about-story-card {
+                grid-template-columns: 1fr;
+            }
+            .about-story-card .story-image {
+                min-height: 250px;
+            }
+            .about-story-card .story-content {
+                padding: 30px 25px;
+            }
+            .about-story-card .story-content h2 {
+                font-size: 1.6rem;
+            }
+            .about-mission-card .card-image { height: 220px; }
+            .about-why-card .why-image { height: 200px; }
+            .about-stat-item .stat-number { font-size: 3rem; }
+            .about-hero .hero-desc { font-size: 1rem; }
+        }
+        @media (max-width: 480px) {
+            .about-stats-grid { grid-template-columns: 1fr 1fr; }
+            .about-stat-item .stat-number { font-size: 2.5rem; }
+            .about-stat-item { padding: 25px 15px; }
+        }
+
+        /* ===== FORECAST LINK HIDDEN BY DEFAULT ===== */
+        #forecastNavLink {
+            display: none;
+        }
+        #forecastNavLink.visible {
+            display: inline-block;
+        }
+
+        .subtitle {
+            color: #b0b0b0;
+            max-width: 650px;
+            margin: 15px auto 0;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="gps-tracker.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> GPS Tracker</a>
+                <!-- 🗺️ GPS MAP -->
+<a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                <a href="how-it-works.html" class="nav-link"><i class="fas fa-question-circle"></i> How It Works</a>
+                <a href="chatbot.html" class="nav-link"><i class="fas fa-robot"></i> Chat Assistant</a>
+                <!-- 🎫 SUPPORT TICKETS - Client & Admin -->
+<a href="support-tickets.html" class="nav-link" id="ticketsNavLink"><i class="fas fa-ticket-alt"></i> Support</a>
+               <!-- 🗺️ ROUTE LINKS - ROLE BASED -->
+<a href="route-dashboard.html" class="nav-link" id="routesNavLink"><i class="fas fa-route"></i> Routes</a>
+<a href="route-create.html" class="nav-link" id="createRouteNavLink"><i class="fas fa-plus-circle"></i> Create Route</a>
+<a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link" id="myRouteNavLink">
+    <i class="fas fa-info-circle"></i> My Route
+</a>
+                
+                <!-- 🏢 WAREHOUSE LINKS - ROLE BASED -->
+                <!-- ADMIN ONLY (hidden by default) -->
+                <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink" style="display:none;"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink" style="display:none;"><i class="fas fa-boxes"></i> Inventory</a>
+                
+                <!-- CLIENT ONLY -->
+                <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink"><i class="fas fa-warehouse"></i> My Storage</a>
+                
+                <!-- DRIVER ONLY -->
+                <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink" style="display:none;"><i class="fas fa-warehouse"></i> Pickups</a>
+                
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+    </nav>
+
+    <!-- ============================================================
+    ABOUT HERO WITH VIDEO BACKGROUND
+    ============================================================ -->
+    <section class="about-hero">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="about.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content" data-aos="fade-up">
+            <div class="hero-badge">ABOUT TAMYOKIY</div>
+            <h1>Who We <span class="gold">Are</span></h1>
+            <p class="hero-desc">We are not the biggest logistics company. We are not claiming to be number one. But we are honest. We work hard. And we deliver what we promise. That is TAMYOKIY. No fake stories. Just real logistics done right.</p>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ============================================================
+    SECTION 1: MISSION, VISION, VALUES - 3 PHOTOS
+    ============================================================ -->
+    <section class="about-mission-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag">OUR FOUNDATION</span>
+                <h2 class="section-title">Mission, Vision &amp; <span>Values</span></h2>
+                <div class="section-line"></div>
+                <p class="subtitle">The core principles that guide everything we do at TAMYOKIY Logistics. These are not just words. They are our way of life.</p>
+            </div>
+            <div class="about-mission-grid">
+
+                <!-- Card 1: Our Mission -->
+                <div class="about-mission-card" data-aos="fade-up">
+                    <img src="mission-photo.jpg" alt="Our Mission" class="card-image" onerror="this.style.display='none'">
+                    <div class="card-content">
+                        <div class="card-icon-wrapper"><i class="fas fa-flag-checkered"></i></div>
+                        <div class="card-number">01</div>
+                        <h3>Our Mission</h3>
+                        <p>To deliver excellence in logistics through innovation, reliability, and unwavering commitment to our clients' success. We believe that every shipment tells a story of trust. We are honored to be part of that story. Our mission is to make logistics feel effortless while delivering world-class reliability. We do not just move cargo. We move businesses forward. Every package, every pallet, and every container is handled with the same level of care and attention to detail. We are committed to continuous improvement. We embrace new technologies. And we always put our clients first. Because when our clients succeed, we succeed.</p>
+                        <div class="gold-line"></div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Our Vision -->
+                <div class="about-mission-card" data-aos="fade-up" data-aos-delay="100">
+                    <img src="vision-photo.jpg" alt="Our Vision" class="card-image" onerror="this.style.display='none'">
+                    <div class="card-content">
+                        <div class="card-icon-wrapper"><i class="fas fa-eye"></i></div>
+                        <div class="card-number">02</div>
+                        <h3>Our Vision</h3>
+                        <p>To become the world's most trusted logistics partner. We envision a world where logistics is no longer a challenge but a competitive advantage. A world where businesses can focus on what they do best. They know their supply chain is in safe hands. We are building towards a future where TAMYOKIY is synonymous with reliability, transparency, and excellence. A future where we are not just moving freight. We are moving the world forward. Our vision is bold. But we believe it is achievable through hard work, innovation, and an unwavering commitment to our core values.</p>
+                        <div class="gold-line"></div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Our Values -->
+                <div class="about-mission-card" data-aos="fade-up" data-aos-delay="200">
+                    <img src="values-photo.jpg" alt="Our Values" class="card-image" onerror="this.style.display='none'">
+                    <div class="card-content">
+                        <div class="card-icon-wrapper"><i class="fas fa-heart"></i></div>
+                        <div class="card-number">03</div>
+                        <h3>Our Values</h3>
+                        <p>Integrity, excellence, innovation, and a customer-first approach in everything we do. These are not just words on a wall. They are the principles that guide every decision we make. They guide every shipment we handle. And they guide every relationship we build. We believe that integrity means doing the right thing even when no one is watching. Excellence means never settling for good enough. Innovation means embracing new ideas to serve our clients better. And customer-first means putting our clients at the heart of everything we do. These values define who we are and who we aspire to be.</p>
+                        <div class="gold-line"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ============================================================
+    SECTION 2: OUR STORY - FULL WIDTH WITH PHOTO
+    ============================================================ -->
+    <section class="about-story-section">
+        <div class="container">
+            <div class="about-story-card" data-aos="fade-up">
+                <img src="history-photo.jpg" alt="Our History" class="story-image" onerror="this.style.display='none'">
+                <div class="story-content">
+                    <div class="story-tag">OUR STORY</div>
+                    <h2>How <span>TAMYOKIY</span> Was Born</h2>
+                    <div class="story-divider"></div>
+                    <p>TAMYOKIY Logistics was founded in 2026 with one simple yet powerful goal. To make logistics feel effortless for businesses while delivering world-class reliability. We saw an industry filled with complexity, hidden fees, and broken promises. And we knew we could do better.</p>
+                    <p>Behind every successful delivery is a team committed to excellence. Behind every satisfied client is a partner who truly cares. Behind every shipment is a story of trust, hard work, and dedication. We started with a small team, a big vision, and an unwavering commitment to honesty. No fake stories. No false claims. No hidden agendas. Just real logistics done right.</p>
+                    <p>Today we are proud to serve clients across multiple industries and countries. But our mission remains the same. To deliver excellence, build trust, and move the world forward one shipment at a time.</p>
+                    <p class="story-highlight">We Move Freight. You Move Forward.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ============================================================
+    SECTION 3: WHY TAMYOKIY - 3 PHOTOS
+    ============================================================ -->
+    <section class="about-why-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag">WHY TAMYOKIY</span>
+                <h2 class="section-title">Why Choose <span>Us</span></h2>
+                <div class="section-line"></div>
+                <p class="subtitle">We are not perfect but we are honest. We are not the biggest but we care the most. Here is why businesses choose TAMYOKIY as their logistics partner.</p>
+            </div>
+            <div class="about-why-grid">
+
+                <!-- Card 1: Honest Communication -->
+                <div class="about-why-card" data-aos="fade-up">
+                    <img src="why-about.jpg" alt="Honest Communication" class="why-image" onerror="this.style.display='none'">
+                    <div class="why-content">
+                        <span class="why-icon"><i class="fas fa-handshake"></i></span>
+                        <h3>Honest Communication</h3>
+                        <p>We tell you what we can do and what we cannot do. No fake promises. No hidden agendas. Just transparent and honest communication that builds trust. We believe that honesty is the foundation of any great partnership and we practice it every single day.</p>
+                    </div>
+                </div>
+
+                <!-- Card 2: Dedicated Team -->
+                <div class="about-why-card" data-aos="fade-up" data-aos-delay="100">
+                    <img src="team-about.jpg" alt="Dedicated Team" class="why-image" onerror="this.style.display='none'">
+                    <div class="why-content">
+                        <span class="why-icon"><i class="fas fa-users"></i></span>
+                        <h3>Dedicated Team</h3>
+                        <p>Every client gets a dedicated logistics expert who knows your business inside and out. We are not just moving cargo. We are building relationships. Our team is committed to your success and we go above and beyond to ensure your shipments arrive safely and on time.</p>
+                    </div>
+                </div>
+
+                <!-- Card 3: Proven Results -->
+                <div class="about-why-card" data-aos="fade-up" data-aos-delay="200">
+                    <img src="stats-about.jpg" alt="Proven Results" class="why-image" onerror="this.style.display='none'">
+                    <div class="why-content">
+                        <span class="why-icon"><i class="fas fa-chart-line"></i></span>
+                        <h3>Proven Results</h3>
+                        <p>We have a 99.9 percent on-time delivery rate. We have thousands of satisfied clients. And we are growing our presence across multiple countries. These are not just numbers. They are a testament to our commitment to excellence. We track every metric honestly and we are proud of the results we have achieved.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ============================================================
+    SECTION 4: NUMBERS - 4 STATS
+    ============================================================ -->
+    <section class="about-stats-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag">OUR NUMBERS</span>
+                <h2 class="section-title">TAMYOKIY by the <span>Numbers</span></h2>
+                <div class="section-line"></div>
+                <p class="subtitle">Real numbers. Real growth. No fake stories. We track every metric honestly and we are proud to share our progress with you.</p>
+            </div>
+            <div class="about-stats-grid">
+                <div class="about-stat-item" data-aos="zoom-in">
+                    <div class="stat-icon"><i class="fas fa-box"></i></div>
+                    <div class="stat-number" id="aboutStat1">0</div>
+                    <div class="stat-label">Shipments Delivered</div>
+                </div>
+                <div class="about-stat-item" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="stat-icon"><i class="fas fa-smile"></i></div>
+                    <div class="stat-number" id="aboutStat2">0</div>
+                    <div class="stat-label">Happy Clients</div>
+                </div>
+                <div class="about-stat-item" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                    <div class="stat-number" id="aboutStat3">0</div>
+                    <div class="stat-label">Countries Served</div>
+                </div>
+                <div class="about-stat-item" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="stat-icon"><i class="fas fa-star"></i></div>
+                    <div class="stat-number" id="aboutStat4">0</div>
+                    <div class="stat-label">Client Satisfaction Rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        // ============================================================
+        // ANIMATE ABOUT STATS
+        // ============================================================
+        function animateAboutStats() {
+            const stats = [
+                { id: 'aboutStat1', target: 15000, suffix: '+' },
+                { id: 'aboutStat2', target: 1200, suffix: '+' },
+                { id: 'aboutStat3', target: 50, suffix: '+' },
+                { id: 'aboutStat4', target: 99.9, suffix: '%' }
+            ];
+
+            stats.forEach(stat => {
+                let current = 0;
+                const target = stat.target;
+                const isFloat = stat.target % 1 !== 0;
+                const step = isFloat ? target / 60 : Math.ceil(target / 60);
+                const elem = document.getElementById(stat.id);
+                if (!elem) return;
+
+                const interval = setInterval(() => {
+                    if (isFloat) {
+                        current += step;
+                        if (current >= target) {
+                            elem.innerText = target.toFixed(1) + stat.suffix;
+                            clearInterval(interval);
+                        } else {
+                            elem.innerText = current.toFixed(1) + stat.suffix;
+                        }
+                    } else {
+                        current += step;
+                        if (current >= target) {
+                            elem.innerText = Math.floor(target) + stat.suffix;
+                            clearInterval(interval);
+                        } else {
+                            elem.innerText = Math.floor(current) + stat.suffix;
+                        }
+                    }
+                }, 30);
+            });
+        }
+
+        // Run animation when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(animateAboutStats, 500);
+        });
+
+        // Also run when section comes into view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateAboutStats();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+
+        const statsSection = document.querySelector('.about-stats-section');
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
+    </script>
+</body>
+</html>

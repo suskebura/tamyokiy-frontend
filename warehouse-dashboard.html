@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Dashboard | TAMYOKIY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #050505; color: #fff; }
+        .warehouse-dashboard { min-height: 100vh; padding-top: 120px; background: #050505; }
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .dashboard-header h1 {
+            color: #D4AF37;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .stats-grid-wh {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card-wh {
+            background: rgba(20,20,30,0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.15);
+            transition: all 0.3s ease;
+        }
+        .stat-card-wh:hover {
+            transform: translateY(-5px);
+            border-color: #D4AF37;
+        }
+        .stat-card-wh i {
+            font-size: 2.5rem;
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+        .stat-card-wh .number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .stat-card-wh .label {
+            color: #888;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        .quick-receive {
+            background: rgba(20,20,30,0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid rgba(212,175,55,0.1);
+            margin-bottom: 30px;
+        }
+        .quick-receive h3 {
+            color: #D4AF37;
+            margin-bottom: 15px;
+        }
+        .quick-receive .input-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .quick-receive .input-group input {
+            flex: 1;
+            padding: 12px 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+            min-width: 200px;
+        }
+        .quick-receive .input-group input:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+        .quick-receive .input-group select {
+            padding: 12px 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            min-width: 150px;
+        }
+        .btn-receive-quick {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            border-radius: 40px;
+            color: #050505;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn-receive-quick:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+        }
+        .warehouse-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        .warehouse-card-wh {
+            background: rgba(20,20,30,0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid rgba(212,175,55,0.1);
+            transition: all 0.3s ease;
+        }
+        .warehouse-card-wh:hover {
+            transform: translateY(-8px);
+            border-color: rgba(212,175,55,0.4);
+            box-shadow: 0 20px 60px rgba(212,175,55,0.08);
+        }
+        .warehouse-card-wh .wh-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .warehouse-card-wh .wh-name {
+            color: #D4AF37;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .warehouse-card-wh .wh-code {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        .warehouse-card-wh .wh-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .status-active { background: rgba(76,175,80,0.2); color: #4caf50; }
+        .status-inactive { background: rgba(158,158,158,0.2); color: #9e9e9e; }
+        .status-maintenance { background: rgba(255,152,0,0.2); color: #ff9800; }
+        .wh-capacity-bar { margin-top: 15px; }
+        .wh-capacity-bar .bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        .wh-capacity-bar .bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #D4AF37, #FFD700);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        .wh-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .wh-actions button {
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-receive {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            font-weight: 600;
+        }
+        .btn-receive:hover { transform: scale(1.05); }
+        .btn-edit-wh {
+            background: transparent;
+            border: 1px solid rgba(33,150,243,0.3);
+            color: #2196F3;
+        }
+        .btn-edit-wh:hover { background: rgba(33,150,243,0.1); }
+        .btn-delete-wh {
+            background: transparent;
+            border: 1px solid rgba(255,107,107,0.3);
+            color: #ff6b6b;
+        }
+        .btn-delete-wh:hover { background: rgba(255,107,107,0.1); }
+        .btn-gold-premium {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-gold-premium:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(212,175,55,0.4); }
+        .btn-outline-gold {
+            background: transparent;
+            border: 1px solid rgba(212,175,55,0.4);
+            color: #D4AF37;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-outline-gold:hover { background: rgba(212,175,55,0.1); border-color: #D4AF37; }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(20px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a2e, #16162a);
+            border-radius: 28px;
+            max-width: 550px;
+            width: 90%;
+            border: 1px solid rgba(212,175,55,0.2);
+            overflow: hidden;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+        }
+        .modal-header {
+            padding: 18px 25px;
+            background: rgba(212,175,55,0.08);
+            border-bottom: 1px solid rgba(212,175,55,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            color: #D4AF37;
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-close {
+            background: rgba(255,255,255,0.05);
+            border: none;
+            color: #888;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-close:hover { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+        .modal-body { padding: 25px; }
+        .modal-body input, .modal-body textarea, .modal-body select {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.15);
+            border-radius: 14px;
+            color: white;
+            font-size: 0.9rem;
+            margin-bottom: 14px;
+            transition: all 0.3s ease;
+        }
+        .modal-body input:focus, .modal-body textarea:focus, .modal-body select:focus {
+            outline: none;
+            border-color: #D4AF37;
+            background: rgba(212,175,55,0.05);
+            box-shadow: 0 0 20px rgba(212,175,55,0.05);
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+        .modal-buttons button {
+            padding: 12px 28px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        .modal-submit {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            box-shadow: 0 4px 15px rgba(212,175,55,0.3);
+        }
+        .modal-submit:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(212,175,55,0.4); }
+        .modal-cancel {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #888;
+        }
+        .modal-cancel:hover { border-color: #ff6b6b; color: #ff6b6b; }
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: rgba(255,255,255,0.4);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.4);
+        }
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #D4AF37;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 768px) {
+            .stats-grid-wh { grid-template-columns: repeat(2, 1fr); }
+            .warehouse-grid { grid-template-columns: 1fr; }
+            .quick-receive .input-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="how-it-works.html" class="nav-link"><i class="fas fa-question-circle"></i> How It Works</a>
+                <a href="chatbot.html" class="nav-link"><i class="fas fa-robot"></i> Chat Assistant</a>
+                <!-- 🆕 ROUTE LINKS -->
+                <a href="route-dashboard.html" class="nav-link"><i class="fas fa-route"></i> Routes</a>
+                <a href="route-create.html" class="nav-link"><i class="fas fa-plus-circle"></i> Create Route</a>
+                <a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link">
+                    <i class="fas fa-info-circle"></i> My Route
+                </a>
+                
+                <!-- 🏢 WAREHOUSE LINKS - ROLE BASED -->
+                <!-- ADMIN ONLY (hidden by default) -->
+                <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink" style="display:none;"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink" style="display:none;"><i class="fas fa-boxes"></i> Inventory</a>
+                
+                <!-- CLIENT ONLY -->
+                <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink"><i class="fas fa-warehouse"></i> My Storage</a>
+                
+                <!-- DRIVER ONLY -->
+                <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink" style="display:none;"><i class="fas fa-warehouse"></i> Pickups</a>
+                
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+
+    <section class="warehouse-dashboard">
+        <div class="container">
+            <div class="dashboard-header">
+                <h1><i class="fas fa-warehouse"></i> Warehouse Dashboard</h1>
+                <div>
+                    <button onclick="location.href='warehouse-inventory.html'" class="btn-gold-premium">
+                        <i class="fas fa-boxes"></i> View Inventory
+                    </button>
+                    <button onclick="showCreateWarehouseModal()" class="btn-gold-premium" style="margin-left:10px;">
+                        <i class="fas fa-plus"></i> Add Warehouse
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-grid-wh" id="whStats">
+                <div class="stat-card-wh"><i class="fas fa-spinner fa-pulse"></i><div class="number">---</div><div class="label">Loading...</div></div>
+            </div>
+
+            <!-- Quick Receive -->
+            <div class="quick-receive">
+                <h3><i class="fas fa-box"></i> Quick Receive Shipment</h3>
+                <div class="input-group">
+                    <input type="text" id="quickTracking" placeholder="Enter tracking number...">
+                    <select id="quickWarehouseSelect">
+                        <option value="">Select Warehouse</option>
+                    </select>
+                    <button onclick="quickReceive()" class="btn-receive-quick">
+                        <i class="fas fa-check"></i> Receive
+                    </button>
+                </div>
+                <div id="quickReceiveResult" style="margin-top:15px;"></div>
+            </div>
+
+            <!-- Warehouse Grid -->
+            <div class="warehouse-grid" id="warehouseGrid">
+                <div class="loading"><i class="fas fa-spinner fa-pulse"></i> Loading warehouses...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Create Warehouse Modal -->
+    <div id="warehouseModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="warehouseModalTitle"><i class="fas fa-warehouse"></i> Create Warehouse</h3>
+                <button class="modal-close" onclick="closeWarehouseModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="warehouseForm">
+                    <input type="hidden" id="warehouseEditId">
+                    <input type="text" id="whName" placeholder="Warehouse Name" required>
+                    <input type="text" id="whCode" placeholder="Warehouse Code (e.g., WH001)" required>
+                    <input type="text" id="whAddress" placeholder="Address" required>
+                    <input type="text" id="whCity" placeholder="City" required>
+                    <input type="text" id="whCountry" placeholder="Country" value="Ethiopia">
+                    <input type="text" id="whManager" placeholder="Manager Name">
+                    <input type="text" id="whPhone" placeholder="Phone Number">
+                    <input type="email" id="whEmail" placeholder="Email">
+                    <input type="number" id="whCapacity" placeholder="Total Capacity (items)" min="0" required>
+                    <select id="whStatus">
+                        <option value="active">🟢 Active</option>
+                        <option value="inactive">⚫ Inactive</option>
+                        <option value="maintenance">🟠 Maintenance</option>
+                    </select>
+                    <div style="display:flex; gap:10px;">
+                        <input type="time" id="whOpen" value="08:00" style="flex:1;">
+                        <input type="time" id="whClose" value="18:00" style="flex:1;">
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" class="modal-cancel" onclick="closeWarehouseModal()">Cancel</button>
+                        <button type="submit" class="modal-submit">Save Warehouse</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        AOS.init();
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        async function loadDashboard() {
+            await loadStats();
+            await loadWarehouses();
+            await loadWarehouseSelect();
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch('http://localhost:5000/api/warehouse/stats', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const stats = data.stats;
+                    document.getElementById('whStats').innerHTML = `
+                        <div class="stat-card-wh"><i class="fas fa-warehouse"></i><div class="number">${stats.totalWarehouses || 0}</div><div class="label">Total Warehouses</div></div>
+                        <div class="stat-card-wh"><i class="fas fa-box"></i><div class="number">${stats.totalInventory || 0}</div><div class="label">Total Inventory</div></div>
+                        <div class="stat-card-wh"><i class="fas fa-percent"></i><div class="number">${stats.capacity?.utilization || 0}%</div><div class="label">Capacity Utilization</div></div>
+                        <div class="stat-card-wh"><i class="fas fa-check-circle"></i><div class="number">${stats.inventoryByStatus?.delivered || 0}</div><div class="label">Delivered</div></div>
+                    `;
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadWarehouses() {
+            try {
+                const res = await fetch('http://localhost:5000/api/warehouse/warehouses', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const container = document.getElementById('warehouseGrid');
+                if (!data.success || data.warehouses.length === 0) {
+                    container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-warehouse"></i><p>No warehouses found</p></div>`;
+                    return;
+                }
+                container.innerHTML = data.warehouses.map(w => {
+                    const utilization = w.capacity.total > 0 ? Math.round((w.capacity.used / w.capacity.total) * 100) : 0;
+                    const statusClass = w.status === 'active' ? 'status-active' : w.status === 'maintenance' ? 'status-maintenance' : 'status-inactive';
+                    return `
+                        <div class="warehouse-card-wh">
+                            <div class="wh-header">
+                                <div>
+                                    <div class="wh-name">${escapeHtml(w.name)}</div>
+                                    <div class="wh-code">${escapeHtml(w.code)}</div>
+                                </div>
+                                <span class="wh-status ${statusClass}">${w.status.toUpperCase()}</span>
+                            </div>
+                            <div style="margin-top:12px; color:#b0b0b0; font-size:0.85rem;">
+                                <p><i class="fas fa-map-marker-alt" style="color:#D4AF37;"></i> ${escapeHtml(w.location?.city || 'N/A')}, ${escapeHtml(w.location?.country || 'N/A')}</p>
+                                <p><i class="fas fa-user" style="color:#D4AF37;"></i> ${escapeHtml(w.contact?.manager || 'No manager')}</p>
+                                <p><i class="fas fa-clock" style="color:#D4AF37;"></i> ${escapeHtml(w.operatingHours?.open || '08:00')} - ${escapeHtml(w.operatingHours?.close || '18:00')}</p>
+                            </div>
+                            <div class="wh-capacity-bar">
+                                <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#888;">
+                                    <span>Capacity: ${w.capacity.used}/${w.capacity.total}</span>
+                                    <span>${utilization}% used</span>
+                                </div>
+                                <div class="bar"><div class="fill" style="width:${utilization}%;"></div></div>
+                            </div>
+                            <div class="wh-actions">
+                                <button class="btn-receive" onclick="quickReceiveWithWarehouse('${w._id}')"><i class="fas fa-box"></i> Receive</button>
+                                <button class="btn-edit-wh" onclick="editWarehouse('${w._id}')"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="btn-delete-wh" onclick="deleteWarehouse('${w._id}')"><i class="fas fa-trash"></i> Delete</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadWarehouseSelect() {
+            try {
+                const res = await fetch('http://localhost:5000/api/warehouse/warehouses', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const select = document.getElementById('quickWarehouseSelect');
+                if (data.success) {
+                    select.innerHTML = '<option value="">Select Warehouse</option>' + 
+                        data.warehouses.map(w => `<option value="${w._id}">${escapeHtml(w.name)} (${escapeHtml(w.code)})</option>`).join('');
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function quickReceive() {
+            const tracking = document.getElementById('quickTracking').value.trim();
+            const warehouseId = document.getElementById('quickWarehouseSelect').value;
+            if (!tracking) { showToast('Enter tracking number', 'error'); return; }
+            if (!warehouseId) { showToast('Select a warehouse', 'error'); return; }
+            
+            try {
+                const whRes = await fetch(`http://localhost:5000/api/warehouse/warehouses/${warehouseId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const whData = await whRes.json();
+                if (!whData.success) { showToast('Warehouse not found', 'error'); return; }
+                
+                const res = await fetch('http://localhost:5000/api/warehouse/inventory/receive', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        trackingNumber: tracking,
+                        warehouseCode: whData.warehouse.code,
+                        notes: 'Quick receive from dashboard'
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`✅ ${data.message}`, 'success');
+                    document.getElementById('quickTracking').value = '';
+                    loadDashboard();
+                } else {
+                    showToast('❌ ' + data.message, 'error');
+                }
+            } catch (err) { showToast('Connection error', 'error'); }
+        }
+
+        function quickReceiveWithWarehouse(warehouseId) {
+            document.getElementById('quickWarehouseSelect').value = warehouseId;
+            document.getElementById('quickTracking').focus();
+        }
+
+        function showCreateWarehouseModal() {
+            document.getElementById('warehouseModalTitle').innerHTML = '<i class="fas fa-warehouse"></i> Create Warehouse';
+            document.getElementById('warehouseForm').reset();
+            document.getElementById('warehouseEditId').value = '';
+            document.getElementById('whCountry').value = 'Ethiopia';
+            document.getElementById('whOpen').value = '08:00';
+            document.getElementById('whClose').value = '18:00';
+            document.getElementById('warehouseModal').style.display = 'flex';
+        }
+
+        function closeWarehouseModal() {
+            document.getElementById('warehouseModal').style.display = 'none';
+        }
+
+        document.getElementById('warehouseForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const editId = document.getElementById('warehouseEditId').value;
+            const data = {
+                name: document.getElementById('whName').value,
+                code: document.getElementById('whCode').value.toUpperCase(),
+                location: {
+                    address: document.getElementById('whAddress').value,
+                    city: document.getElementById('whCity').value,
+                    country: document.getElementById('whCountry').value
+                },
+                contact: {
+                    phone: document.getElementById('whPhone').value,
+                    email: document.getElementById('whEmail').value,
+                    manager: document.getElementById('whManager').value
+                },
+                capacity: parseInt(document.getElementById('whCapacity').value) || 0,
+                status: document.getElementById('whStatus').value,
+                operatingHours: {
+                    open: document.getElementById('whOpen').value,
+                    close: document.getElementById('whClose').value
+                }
+            };
+            const url = editId ? `http://localhost:5000/api/warehouse/warehouses/${editId}` : 'http://localhost:5000/api/warehouse/warehouses';
+            const method = editId ? 'PUT' : 'POST';
+            try {
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showToast(`✅ ${editId ? 'Updated' : 'Created'} warehouse!`, 'success');
+                    closeWarehouseModal();
+                    loadDashboard();
+                } else {
+                    showToast('❌ ' + result.message, 'error');
+                }
+            } catch (err) { showToast('Connection error', 'error'); }
+        });
+
+        async function editWarehouse(warehouseId) {
+            try {
+                const res = await fetch(`http://localhost:5000/api/warehouse/warehouses/${warehouseId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (!data.success) { showToast('Error loading warehouse', 'error'); return; }
+                const w = data.warehouse;
+                document.getElementById('warehouseModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Warehouse';
+                document.getElementById('warehouseEditId').value = w._id;
+                document.getElementById('whName').value = w.name || '';
+                document.getElementById('whCode').value = w.code || '';
+                document.getElementById('whAddress').value = w.location?.address || '';
+                document.getElementById('whCity').value = w.location?.city || '';
+                document.getElementById('whCountry').value = w.location?.country || 'Ethiopia';
+                document.getElementById('whManager').value = w.contact?.manager || '';
+                document.getElementById('whPhone').value = w.contact?.phone || '';
+                document.getElementById('whEmail').value = w.contact?.email || '';
+                document.getElementById('whCapacity').value = w.capacity?.total || 0;
+                document.getElementById('whStatus').value = w.status || 'active';
+                document.getElementById('whOpen').value = w.operatingHours?.open || '08:00';
+                document.getElementById('whClose').value = w.operatingHours?.close || '18:00';
+                document.getElementById('warehouseModal').style.display = 'flex';
+            } catch (err) { showToast('Error loading warehouse', 'error'); }
+        }
+
+        async function deleteWarehouse(warehouseId) {
+            if (!confirm('Delete this warehouse?')) return;
+            try {
+                const res = await fetch(`http://localhost:5000/api/warehouse/warehouses/${warehouseId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ Warehouse deleted', 'success');
+                    loadDashboard();
+                } else {
+                    showToast('❌ ' + data.message, 'error');
+                }
+            } catch (err) { showToast('Connection error', 'error'); }
+        }
+
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m] || m)); }
+        function showToast(msg, type) { 
+            const colors = { success: '#4caf50', error: '#ff6b6b', info: '#D4AF37' };
+            const toast = document.createElement('div');
+            toast.style.cssText = `position:fixed; bottom:30px; right:30px; background:#1a1a2e; color:#fff; padding:14px 20px; border-radius:12px; border-left:4px solid ${colors[type] || '#D4AF37'}; z-index:99999; animation: slideInToast 0.3s ease; box-shadow:0 8px 32px rgba(0,0,0,0.4);`;
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3000);
+        }
+
+        loadDashboard();
+    </script>
+</body>
+</html>

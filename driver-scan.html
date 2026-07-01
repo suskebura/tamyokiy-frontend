@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan QR - TAMYOKIY Driver</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #050505;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .scan-container {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(20,20,30,0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 1px solid rgba(212,175,55,0.3);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .scan-container h2 {
+            color: #D4AF37;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .scan-container .subtitle {
+            color: #888;
+            margin-bottom: 25px;
+        }
+        #reader {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        #reader video {
+            border-radius: 16px;
+        }
+        .manual-input {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .manual-input input {
+            flex: 1;
+            padding: 14px 18px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+        }
+        .manual-input input:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+        .manual-input button {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            border-radius: 12px;
+            color: #050505;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(212,175,55,0.08);
+            border-radius: 16px;
+            border: 1px solid rgba(212,175,55,0.2);
+            display: none;
+        }
+        .result-box.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        .result-box .tracking {
+            color: #D4AF37;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        .result-box .status {
+            margin-top: 10px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            display: inline-block;
+            font-weight: 600;
+        }
+        .status-pending { background: rgba(255,165,0,0.2); color: #ffa500; }
+        .status-picked_up { background: rgba(0,255,255,0.2); color: #00ffff; }
+        .status-in_transit { background: rgba(102,102,255,0.2); color: #6666ff; }
+        .status-out_for_delivery { background: rgba(255,102,255,0.2); color: #ff66ff; }
+        .status-delivered { background: rgba(76,175,80,0.2); color: #4caf50; }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .action-buttons button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            min-width: 100px;
+        }
+        .btn-pickup { background: #2196F3; color: white; }
+        .btn-transit { background: #9c27b0; color: white; }
+        .btn-delivery { background: #ff9800; color: white; }
+        .btn-complete { background: #4caf50; color: white; }
+        .btn-cancel { background: transparent; border: 1px solid #888; color: #888; }
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            color: #D4AF37;
+            text-decoration: none;
+        }
+        .back-btn:hover { text-decoration: underline; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 600px) {
+            .scan-container { padding: 25px 16px; }
+            .manual-input { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scan-container">
+        <h2><i class="fas fa-qrcode"></i> Scan QR Code</h2>
+        <p class="subtitle">Point your camera at the shipment QR code</p>
+
+        <!-- QR Scanner -->
+        <div id="reader"></div>
+
+        <!-- Manual Input -->
+        <div class="manual-input">
+            <input type="text" id="manualTracking" placeholder="Or enter tracking number">
+            <button onclick="lookupShipment()"><i class="fas fa-search"></i></button>
+        </div>
+
+        <!-- Result -->
+        <div id="resultBox" class="result-box">
+            <div class="tracking" id="scanTracking">TAM123456789</div>
+            <div>
+                <span class="status" id="scanStatus">📦 Pending</span>
+            </div>
+            <p style="color:#888; margin-top:8px;" id="scanDetails">Receiver: John Doe | Weight: 5kg</p>
+            <div class="action-buttons" id="actionButtons">
+                <button class="btn-pickup" onclick="updateStatus('picked_up')">📦 Pick Up</button>
+                <button class="btn-transit" onclick="updateStatus('in_transit')">🚚 In Transit</button>
+                <button class="btn-delivery" onclick="updateStatus('out_for_delivery')">🏠 Out for Delivery</button>
+                <button class="btn-complete" onclick="completeDelivery()">✅ Complete</button>
+            </div>
+            <button class="btn-cancel" onclick="clearResult()" style="margin-top:10px; padding:8px 20px; border-radius:30px; cursor:pointer; background:transparent; border:1px solid #888; color:#888;">Close</button>
+        </div>
+
+        <a href="driver-dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+
+    <script>
+        let currentTrackingNumber = null;
+        let currentShipment = null;
+        const token = localStorage.getItem('token');
+
+        // ===== INIT QR SCANNER =====
+        function initScanner() {
+            const html5QrCode = new Html5Qrcode("reader");
+            
+            const config = {
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
+            };
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                onScanSuccess,
+                onScanError
+            );
+        }
+
+        function onScanSuccess(decodedText) {
+            // Extract tracking number from QR data
+            // QR contains: TAMYOKIY|TAM123456789|https://...
+            let trackingNumber = decodedText;
+            
+            // If it's a URL, extract tracking number
+            if (decodedText.includes('track=')) {
+                const params = new URLSearchParams(decodedText.split('?')[1]);
+                trackingNumber = params.get('track');
+            }
+            
+            if (trackingNumber) {
+                lookupTrackingNumber(trackingNumber);
+            }
+        }
+
+        function onScanError(err) {
+            // Silent fail - scanner keeps running
+        }
+
+        // ===== LOOKUP SHIPMENT =====
+        async function lookupShipment() {
+            const input = document.getElementById('manualTracking');
+            const trackingNumber = input.value.trim();
+            if (!trackingNumber) {
+                alert('Please enter a tracking number');
+                return;
+            }
+            await lookupTrackingNumber(trackingNumber);
+        }
+
+        async function lookupTrackingNumber(trackingNumber) {
+            try {
+                const res = await fetch(`http://localhost:5000/api/public/track/${trackingNumber}`);
+                const data = await res.json();
+                
+                if (!data.success) {
+                    alert('Shipment not found');
+                    return;
+                }
+
+                currentTrackingNumber = trackingNumber;
+                currentShipment = data.shipment;
+                displayResult(data.shipment);
+                
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        // ===== DISPLAY RESULT =====
+        function displayResult(shipment) {
+            const box = document.getElementById('resultBox');
+            const statusClass = `status-${shipment.status}`;
+            
+            document.getElementById('scanTracking').textContent = shipment.trackingNumber;
+            document.getElementById('scanStatus').textContent = shipment.status.toUpperCase().replace('_', ' ');
+            document.getElementById('scanStatus').className = `status ${statusClass}`;
+            document.getElementById('scanDetails').textContent = 
+                `Receiver: ${shipment.receiverName} | Weight: ${shipment.weight}kg`;
+            
+            // Show/hide action buttons based on status
+            const buttons = document.getElementById('actionButtons');
+            if (shipment.status === 'delivered' || shipment.status === 'failed') {
+                buttons.style.display = 'none';
+            } else {
+                buttons.style.display = 'flex';
+            }
+            
+            box.classList.add('show');
+            
+            // Stop scanner when result is found
+            try {
+                const scanner = document.querySelector('#reader video');
+                if (scanner && scanner.srcObject) {
+                    scanner.srcObject.getTracks().forEach(track => track.stop());
+                }
+            } catch(e) {}
+        }
+
+        // ===== UPDATE STATUS =====
+        async function updateStatus(status) {
+            if (!currentTrackingNumber) return;
+            
+            const statusLabels = {
+                'picked_up': '📦 Picked Up',
+                'in_transit': '🚚 In Transit',
+                'out_for_delivery': '🏠 Out for Delivery'
+            };
+            
+            if (!confirm(`Update to ${statusLabels[status] || status}?`)) return;
+            
+            try {
+                const res = await fetch(`http://localhost:5000/api/driver/shipments/${currentTrackingNumber}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ 
+                        status: status,
+                        note: `Driver scanned and updated to ${status}`
+                    })
+                });
+                
+                const data = await res.json();
+                if (data.success) {
+                    alert(`✅ Status updated to ${statusLabels[status] || status}`);
+                    // Refresh result
+                    await lookupTrackingNumber(currentTrackingNumber);
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        }
+
+        // ===== COMPLETE DELIVERY =====
+        function completeDelivery() {
+            if (!currentTrackingNumber) return;
+            // Redirect to delivery completion page
+            window.location.href = `driver-dashboard.html?complete=${currentTrackingNumber}`;
+        }
+
+        // ===== CLEAR RESULT =====
+        function clearResult() {
+            document.getElementById('resultBox').classList.remove('show');
+            currentTrackingNumber = null;
+            currentShipment = null;
+            // Restart scanner
+            initScanner();
+        }
+
+        // ===== CHECK AUTH =====
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', () => {
+            initScanner();
+            
+            // Check for URL param
+            const params = new URLSearchParams(window.location.search);
+            const track = params.get('track');
+            if (track) {
+                document.getElementById('manualTracking').value = track;
+                setTimeout(lookupShipment, 500);
+            }
+        });
+
+        // Enter key for manual input
+        document.getElementById('manualTracking').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') lookupShipment();
+        });
+    </script>
+</body>
+</html>

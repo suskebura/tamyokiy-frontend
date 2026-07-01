@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAMYOKIY Logistics | Track Shipment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .tracking-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 120px;
+        }
+        .tracking-card {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(20,20,30,0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            border: 1px solid rgba(212,175,55,0.3);
+            padding: 45px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .tracking-card:hover {
+            border-color: #D4AF37;
+            box-shadow: 0 10px 40px rgba(212,175,55,0.15);
+        }
+        .tracking-card i {
+            font-size: 3.5rem;
+            color: #D4AF37;
+            margin-bottom: 20px;
+        }
+        .tracking-card h2 {
+            color: #D4AF37;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .tracking-card p {
+            color: #b0b0b0;
+            margin-bottom: 30px;
+        }
+        .tracking-input input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 16px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .tracking-input input:focus {
+            outline: none;
+            border-color: #D4AF37;
+            background: rgba(212,175,55,0.05);
+        }
+        .tracking-input input::placeholder {
+            color: #888;
+        }
+        
+        /* ===== RESULT CARD ===== */
+        .result-card {
+            max-width: 900px;
+            margin: 40px auto;
+            background: rgba(20,20,30,0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(212,175,55,0.3);
+            padding: 35px;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .result-card h3 {
+            color: #D4AF37;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .detail-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(212,175,55,0.15);
+        }
+        .detail-label {
+            width: 140px;
+            color: #D4AF37;
+            font-weight: 600;
+        }
+        .detail-value {
+            color: #e0e0e0;
+            flex: 1;
+        }
+        
+        /* ===== STATUS BADGE ===== */
+        .status-badge-large {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .status-badge-large i {
+            font-size: 1.3rem;
+        }
+        
+        /* ===== PROGRESS BAR ===== */
+        .progress-container {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .progress-bar-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #D4AF37, #FFD700);
+            border-radius: 10px;
+            transition: width 1.5s ease;
+            width: 0%;
+        }
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #b0b0b0;
+        }
+        .progress-percentage {
+            font-weight: 700;
+            color: #D4AF37;
+            font-size: 1.2rem;
+        }
+        
+        /* ===== TIMELINE ===== */
+        .tracking-timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline-line {
+            position: absolute;
+            left: 30px;
+            top: 40px;
+            bottom: 40px;
+            width: 3px;
+            background: rgba(255,255,255,0.08);
+            z-index: 0;
+            border-radius: 4px;
+        }
+        .timeline-line .line-progress {
+            width: 100%;
+            background: linear-gradient(180deg, #D4AF37, #FFD700);
+            transition: height 1.5s ease;
+            border-radius: 4px;
+        }
+        .timeline-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 15px 0;
+            position: relative;
+            z-index: 1;
+            opacity: 0.4;
+            transition: all 0.5s ease;
+        }
+        .timeline-step.active {
+            opacity: 1;
+        }
+        .timeline-step.completed {
+            opacity: 1;
+        }
+        .timeline-step.completed .step-icon {
+            background: #4caf50;
+            border-color: #4caf50;
+        }
+        .timeline-step.active .step-icon {
+            background: #D4AF37;
+            border-color: #D4AF37;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(212,175,55,0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(212,175,55,0); }
+            100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+        }
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.5s ease;
+        }
+        .step-icon i {
+            font-size: 1rem;
+            color: #fff;
+        }
+        .step-content {
+            flex: 1;
+        }
+        .step-content .step-title {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .step-content .step-time {
+            font-size: 0.75rem;
+            color: #888;
+        }
+        
+        /* ===== DRIVER INFO ===== */
+        .driver-info-box {
+            background: rgba(33,150,243,0.06);
+            border: 1px solid rgba(33,150,243,0.15);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .driver-info-box .driver-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(33,150,243,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .driver-info-box .driver-avatar i {
+            font-size: 1.5rem;
+            color: #2196F3;
+        }
+        .driver-info-box .driver-details {
+            flex: 1;
+        }
+        .driver-info-box .driver-details .driver-name {
+            font-weight: 600;
+            color: #fff;
+        }
+        .driver-info-box .driver-details .driver-vehicle {
+            font-size: 0.85rem;
+            color: #888;
+        }
+        
+        /* ===== ESTIMATED DELIVERY ===== */
+        .est-delivery-box {
+            background: rgba(212,175,55,0.06);
+            border: 1px solid rgba(212,175,55,0.15);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .est-delivery-box .est-label {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        .est-delivery-box .est-date {
+            color: #D4AF37;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .est-delivery-box .est-days {
+            color: #888;
+            font-size: 0.8rem;
+        }
+        
+        /* ===== DELAY WARNING ===== */
+        .delay-warning {
+            background: rgba(255,107,107,0.12);
+            border: 1px solid rgba(255,107,107,0.4);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        .delay-warning .delay-title {
+            color: #ff6b6b;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+        .delay-warning .delay-details {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin: 5px 0 0 0;
+        }
+        .delay-warning .delay-info {
+            color: #888;
+            font-size: 0.75rem;
+            margin: 8px 0 0 0;
+        }
+        
+        /* ===== HISTORY ===== */
+        .history-section {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(212,175,55,0.2);
+        }
+        .history-section h4 {
+            color: #D4AF37;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .history-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .history-status {
+            color: #D4AF37;
+            font-weight: 600;
+            min-width: 120px;
+        }
+        .history-note {
+            color: #b0b0b0;
+            flex: 1;
+        }
+        .history-date {
+            color: #888;
+            font-size: 0.8rem;
+            min-width: 160px;
+        }
+        
+        /* ===== ERROR CARD ===== */
+        .error-card {
+            max-width: 500px;
+            margin: 40px auto;
+            background: rgba(20,20,30,0.85);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            border: 1px solid rgba(255,107,107,0.3);
+        }
+        .error-card i {
+            font-size: 3rem;
+            color: #ff6b6b;
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .tracking-card { padding: 30px; }
+            .detail-row { flex-direction: column; }
+            .detail-label { width: 100%; margin-bottom: 5px; }
+            .history-entry { flex-direction: column; text-align: center; }
+            .driver-info-box { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking.html" class="nav-link active"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="tracking-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="track.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="tracking-card" data-aos="fade-up">
+                <i class="fas fa-map-marker-alt"></i>
+                <h2>Track Your Shipment</h2>
+                <p>Enter your tracking number to see real-time updates on your package journey</p>
+                <div class="tracking-input">
+                    <input type="text" id="trackingNumber" placeholder="e.g., TAM123456789">
+                    <button onclick="trackShipment()" class="btn-gold" style="margin-top: 25px; width: 100%;">Track Shipment →</button>
+                </div>
+            </div>
+            <div id="trackingResult"></div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        AOS.init();
+
+        // ===== STATUS CONFIGURATION =====
+        const statusConfig = {
+            'pending': {
+                label: '📦 Package Received',
+                icon: 'fa-box',
+                color: '#ffa500',
+                progress: 20
+            },
+            'picked_up': {
+                label: '✅ Picked Up',
+                icon: 'fa-check-circle',
+                color: '#2196F3',
+                progress: 40
+            },
+            'in_transit': {
+                label: '🚚 In Transit',
+                icon: 'fa-truck',
+                color: '#9c27b0',
+                progress: 60
+            },
+            'out_for_delivery': {
+                label: '🏠 Out for Delivery',
+                icon: 'fa-truck-fast',
+                color: '#ff9800',
+                progress: 80
+            },
+            'delivered': {
+                label: '✔ Delivered',
+                icon: 'fa-check-double',
+                color: '#4caf50',
+                progress: 100
+            }
+        };
+
+        const statusOrder = ['pending', 'picked_up', 'in_transit', 'out_for_delivery', 'delivered'];
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // ===== CHECK FOR DELAYS =====
+        function checkDelay(shipment) {
+            // If delivered, no delay check needed
+            if (shipment.status === 'delivered') return null;
+            
+            // If no estimated delivery date, return null
+            if (!shipment.estimatedDelivery) return null;
+            
+            const today = new Date();
+            const estDate = new Date(shipment.estimatedDelivery);
+            
+            // Reset time to compare dates only
+            today.setHours(0, 0, 0, 0);
+            estDate.setHours(0, 0, 0, 0);
+            
+            if (today > estDate) {
+                const daysLate = Math.ceil((today - estDate) / (1000 * 60 * 60 * 24));
+                return daysLate;
+            }
+            return null;
+        }
+
+        async function trackShipment() {
+            const trackingNumber = document.getElementById('trackingNumber').value.trim();
+            if (!trackingNumber) { showToast('Please enter a tracking number', 'error'); return; }
+            
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Tracking...';
+            btn.disabled = true;
+            
+            try {
+                const res = await fetch(`http://localhost:5000/api/tracking/${trackingNumber}`);
+                const s = await res.json();
+                if (s.message === 'Shipment not found') {
+                    document.getElementById('trackingResult').innerHTML = `
+                        <div class="error-card">
+                            <i class="fas fa-search"></i>
+                            <h3 style="color:#ff6b6b;">Shipment Not Found</h3>
+                            <p>Please check your tracking number and try again.</p>
+                        </div>`;
+                    return;
+                }
+                displayShipment(s);
+            } catch (err) { showToast('Error: ' + err.message, 'error'); }
+            finally { btn.textContent = originalText; btn.disabled = false; }
+        }
+
+        function displayShipment(s) {
+            const currentIndex = statusOrder.indexOf(s.status);
+            const progress = ((currentIndex + 1) / statusOrder.length) * 100;
+            const statusInfo = statusConfig[s.status] || statusConfig['pending'];
+            
+            // ===== Build Timeline =====
+            let timelineHtml = '';
+            statusOrder.forEach((status, index) => {
+                const isCompleted = index <= currentIndex;
+                const isActive = index === currentIndex;
+                const historyEntry = s.trackingHistory?.find(h => h.status === status);
+                const time = historyEntry ? new Date(historyEntry.updatedAt).toLocaleString() : '';
+                const config = statusConfig[status];
+                
+                timelineHtml += `
+                    <div class="timeline-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}">
+                        <div class="step-icon" style="${isCompleted ? `background: ${config.color}; border-color: ${config.color};` : ''}">
+                            <i class="fas ${config.icon}"></i>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">${config.label}</div>
+                            <div class="step-time">${time || 'Pending...'}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            // ===== Progress Line =====
+            const lineProgress = (currentIndex / (statusOrder.length - 1)) * 100;
+            
+            // ===== Driver Info =====
+            let driverHtml = '';
+            if (s.assignedDriverName) {
+                driverHtml = `
+                    <div class="driver-info-box">
+                        <div class="driver-avatar">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="driver-details">
+                            <div class="driver-name">🚚 ${escapeHtml(s.assignedDriverName)}</div>
+                            <div class="driver-vehicle">${s.assignedDriverVehicle || 'Driver assigned'}</div>
+                        </div>
+                        <div style="font-size:0.8rem; color:#888;">
+                            <i class="fas fa-phone"></i> Contact available
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // ===== Estimated Delivery with Delay Warning =====
+            let estDeliveryHtml = '';
+            let delayHtml = '';
+            
+            if (s.estimatedDelivery) {
+                const estDate = new Date(s.estimatedDelivery);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                estDate.setHours(0, 0, 0, 0);
+                
+                const daysLeft = Math.ceil((estDate - today) / (1000 * 60 * 60 * 24));
+                const daysLate = checkDelay(s);
+                
+                let daysText = '';
+                let delayStatus = '';
+                
+                if (s.status === 'delivered') {
+                    daysText = '✅ Delivered';
+                } else if (daysLate) {
+                    daysText = `⚠️ ${daysLate} day${daysLate > 1 ? 's' : ''} late`;
+                    delayStatus = 'delayed';
+                } else if (daysLeft > 0) {
+                    daysText = `${daysLeft} day${daysLeft > 1 ? 's' : ''} left`;
+                } else if (daysLeft === 0) {
+                    daysText = '📦 Arriving today!';
+                } else {
+                    daysText = '📅 Delivery completed';
+                }
+                
+                estDeliveryHtml = `
+                    <div class="est-delivery-box" style="${delayStatus === 'delayed' ? 'border-color: #ff6b6b; background: rgba(255,107,107,0.08);' : ''}">
+                        <div class="est-label">📅 Estimated Delivery</div>
+                        <div class="est-date" style="${delayStatus === 'delayed' ? 'color: #ff6b6b;' : ''}">
+                            ${estDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
+                        </div>
+                        <div class="est-days" style="${delayStatus === 'delayed' ? 'color: #ff6b6b; font-weight: 600;' : ''}">
+                            ${daysText}
+                        </div>
+                    </div>
+                `;
+                
+                if (daysLate && s.status !== 'delivered') {
+                    delayHtml = `
+                        <div class="delay-warning">
+                            <p class="delay-title">⚠️ <strong>Shipment Delayed</strong></p>
+                            <p class="delay-details">
+                                Expected: ${estDate.toLocaleDateString()}
+                                <br>
+                                Currently: ${daysLate} day${daysLate > 1 ? 's' : ''} behind schedule
+                            </p>
+                            <p class="delay-info">
+                                <i class="fas fa-info-circle"></i> We apologize for the delay. Please contact support for more information.
+                            </p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // ===== Build Tracking History =====
+            let historyHtml = '';
+            if (s.trackingHistory && s.trackingHistory.length > 0) {
+                historyHtml = `
+                    <div class="history-section">
+                        <h4><i class="fas fa-history"></i> Tracking History</h4>
+                `;
+                [...s.trackingHistory].reverse().forEach(entry => {
+                    const config = statusConfig[entry.status];
+                    historyHtml += `
+                        <div class="history-entry">
+                            <div class="history-status">${config ? config.label : entry.status}</div>
+                            <div class="history-note">${escapeHtml(entry.note || '')}</div>
+                            <div class="history-date">${new Date(entry.updatedAt).toLocaleString()}</div>
+                        </div>
+                    `;
+                });
+                historyHtml += '</div>';
+            }
+            
+            // ===== Service Type Display =====
+            const serviceType = s.serviceType || 'standard';
+            let serviceIcon = '';
+            if (serviceType === 'express') serviceIcon = ' ⚡';
+            else if (serviceType === 'overnight') serviceIcon = ' 🌙';
+            
+            // ===== Build Full Result =====
+            document.getElementById('trackingResult').innerHTML = `
+                <div class="result-card">
+                    <h3><i class="fas fa-box"></i> Shipment Details</h3>
+                    
+                    <!-- Status Badge -->
+                    <div style="text-align:center; margin: 15px 0 20px 0;">
+                        <span class="status-badge-large" style="background:${statusInfo.color}20; color:${statusInfo.color}; border:1px solid ${statusInfo.color}40;">
+                            <i class="fas ${statusInfo.icon}"></i>
+                            ${statusInfo.label}
+                        </span>
+                    </div>
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress-container">
+                        <div class="progress-bar-track">
+                            <div class="progress-bar-fill" style="width: ${progress}%;"></div>
+                        </div>
+                        <div class="progress-label">
+                            <span>Delivery Progress</span>
+                            <span class="progress-percentage">${Math.round(progress)}%</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Shipment Info -->
+                    <div class="detail-row"><div class="detail-label">Tracking Number</div><div class="detail-value"><strong>${escapeHtml(s.trackingNumber)}</strong></div></div>
+                    <div class="detail-row"><div class="detail-label">Sender</div><div class="detail-value">${escapeHtml(s.senderName)}</div></div>
+                    <div class="detail-row"><div class="detail-label">Sender Address</div><div class="detail-value">${escapeHtml(s.senderAddress)}</div></div>
+                    <div class="detail-row"><div class="detail-label">Receiver</div><div class="detail-value">${escapeHtml(s.receiverName)}</div></div>
+                    <div class="detail-row"><div class="detail-label">Receiver Address</div><div class="detail-value">${escapeHtml(s.receiverAddress)}</div></div>
+                    <div class="detail-row"><div class="detail-label">Weight</div><div class="detail-value">${s.weight} kg</div></div>
+                    <div class="detail-row"><div class="detail-label">Service Type</div><div class="detail-value">
+                        <span style="text-transform: capitalize;">
+                            ${escapeHtml(serviceType)}${serviceIcon}
+                        </span>
+                    </div></div>
+                    <div class="detail-row"><div class="detail-label">Created Date</div><div class="detail-value">${new Date(s.createdAt).toLocaleString()}</div></div>
+                    
+                    ${estDeliveryHtml}
+                    ${delayHtml}
+                    ${driverHtml}
+                    
+                    <!-- Timeline -->
+                    <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(212,175,55,0.2);">
+                        <h4 style="color:#D4AF37; margin-bottom:15px;"><i class="fas fa-route"></i> Delivery Journey</h4>
+                        <div class="tracking-timeline">
+                            <div class="timeline-line">
+                                <div class="line-progress" style="height: ${lineProgress}%;"></div>
+                            </div>
+                            ${timelineHtml}
+                        </div>
+                    </div>
+                    
+                    ${historyHtml}
+                </div>
+            `;
+            
+            document.getElementById('trackingResult').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Enter key support
+        document.getElementById('trackingNumber').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                trackShipment();
+            }
+        });
+    </script>
+</body>
+</html>

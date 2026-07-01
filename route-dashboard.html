@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Management | TAMYOKIY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #050505; color: #fff; }
+        .route-page { min-height: 100vh; padding-top: 120px; background: #050505; }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            color: #D4AF37;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: rgba(20,20,30,0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.15);
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212,175,55,0.4);
+        }
+        .stat-card i {
+            font-size: 2rem;
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .stat-card .label {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .btn-gold-premium {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-gold-premium:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(212,175,55,0.4); }
+        .btn-outline-gold {
+            background: transparent;
+            border: 1px solid rgba(212,175,55,0.4);
+            color: #D4AF37;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-outline-gold:hover { background: rgba(212,175,55,0.1); border-color: #D4AF37; }
+
+        .route-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .route-card {
+            background: rgba(20,20,30,0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid rgba(212,175,55,0.1);
+            transition: all 0.3s ease;
+        }
+        .route-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(212,175,55,0.4);
+            box-shadow: 0 20px 60px rgba(212,175,55,0.08);
+        }
+        .route-card .route-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .route-card .route-name {
+            color: #D4AF37;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .route-card .route-number {
+            color: #888;
+            font-size: 0.75rem;
+        }
+        .route-card .route-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .status-planned { background: rgba(33,150,243,0.2); color: #2196F3; }
+        .status-in_progress { background: rgba(255,152,0,0.2); color: #ff9800; }
+        .status-completed { background: rgba(76,175,80,0.2); color: #4caf50; }
+        .status-cancelled { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+
+        .route-card .route-driver {
+            margin-top: 12px;
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
+        .route-card .route-driver i {
+            color: #D4AF37;
+            width: 20px;
+        }
+
+        .progress-bar {
+            margin-top: 15px;
+        }
+        .progress-bar .bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .progress-bar .bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #D4AF37, #FFD700);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        .progress-bar .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .route-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .route-actions button {
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        .route-actions .btn-track { background: rgba(33,150,243,0.15); color: #2196F3; border: 1px solid rgba(33,150,243,0.2); }
+        .route-actions .btn-track:hover { background: #2196F3; color: #050505; }
+        .route-actions .btn-edit { background: rgba(212,175,55,0.15); color: #D4AF37; border: 1px solid rgba(212,175,55,0.2); }
+        .route-actions .btn-edit:hover { background: #D4AF37; color: #050505; }
+        .route-actions .btn-delete { background: rgba(255,107,107,0.15); color: #ff6b6b; border: 1px solid rgba(255,107,107,0.2); }
+        .route-actions .btn-delete:hover { background: #ff6b6b; color: #050505; }
+        .route-actions .btn-start { background: rgba(76,175,80,0.15); color: #4caf50; border: 1px solid rgba(76,175,80,0.2); }
+        .route-actions .btn-start:hover { background: #4caf50; color: #050505; }
+
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            align-items: center;
+            background: rgba(20,20,30,0.3);
+            padding: 15px 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(212,175,55,0.08);
+        }
+        .filter-bar select, .filter-bar input {
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.15);
+            border-radius: 10px;
+            color: white;
+            font-size: 0.85rem;
+        }
+        .filter-bar select:focus, .filter-bar input:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+        .filter-bar input { flex: 1; min-width: 150px; }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: rgba(255,255,255,0.4);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+            color: #D4AF37;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.4);
+        }
+        .loading i {
+            font-size: 2.5rem;
+            color: #D4AF37;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            color: #050505;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .route-grid { grid-template-columns: 1fr; }
+            .filter-bar { flex-direction: column; }
+            .filter-bar input { width: 100%; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== 🔐 ADMIN ONLY ACCESS CHECK ===== -->
+    <script>
+    (function() {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        console.log('🔐 Route Dashboard - Access Check:');
+        console.log('   Token:', token ? '✅ Present' : '❌ Missing');
+        console.log('   User:', user.name || 'Not logged in');
+        console.log('   Role:', user.role || 'None');
+        
+        if (!token) {
+            alert('⚠️ Please login first!');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        if (user.role !== 'admin') {
+            alert('⛔ Access Denied! This page is for Administrators only.');
+            window.location.href = 'dashboard.html';
+            return;
+        }
+        
+        console.log('✅ Admin access granted to Route Dashboard');
+    })();
+    </script>
+
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="warehouse-dashboard.html" class="nav-link"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a>
+                <a href="route-dashboard.html" class="nav-link active"><i class="fas fa-route"></i> Routes</a>
+                <a href="route-create.html" class="nav-link"><i class="fas fa-plus-circle"></i> Create Route</a>
+                <a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link">
+                    <i class="fas fa-info-circle"></i> My Route
+                </a>
+                <a href="admin.html" class="nav-link"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="route-page">
+        <div class="container">
+            <div class="page-header">
+                <h1>
+                    <i class="fas fa-route"></i> Route Management
+                    <span class="admin-badge"><i class="fas fa-crown"></i> ADMIN</span>
+                </h1>
+                <div>
+                    <button onclick="location.href='route-create.html'" class="btn-gold-premium">
+                        <i class="fas fa-plus"></i> Create Route
+                    </button>
+                    <button onclick="loadRoutes()" class="btn-outline-gold" style="margin-left:10px;">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="stats-grid" id="routeStats">
+                <div class="stat-card"><i class="fas fa-spinner fa-pulse"></i><div class="number">---</div><div class="label">Loading...</div></div>
+            </div>
+
+            <div class="filter-bar">
+                <select id="statusFilter" onchange="loadRoutes()">
+                    <option value="">All Status</option>
+                    <option value="planned">📋 Planned</option>
+                    <option value="in_progress">🚚 In Progress</option>
+                    <option value="completed">✅ Completed</option>
+                    <option value="cancelled">❌ Cancelled</option>
+                </select>
+                <input type="text" id="searchInput" placeholder="🔍 Search routes..." onkeyup="loadRoutes()">
+                <button onclick="clearFilters()" class="btn-outline-gold" style="padding:8px 16px; font-size:0.8rem;">Clear</button>
+            </div>
+
+            <div id="routesContainer">
+                <div class="loading"><i class="fas fa-spinner fa-pulse"></i> Loading routes...</div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        AOS.init();
+        
+        // Admin check already done at top
+        const token = localStorage.getItem('token');
+        let allRoutes = [];
+
+        async function loadRoutes() {
+            const status = document.getElementById('statusFilter')?.value || '';
+            const search = document.getElementById('searchInput')?.value || '';
+
+            try {
+                await loadStats();
+                let url = 'http://localhost:5000/api/routes?limit=100';
+                if (status) url += `&status=${status}`;
+
+                const res = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (!data.success) {
+                    document.getElementById('routesContainer').innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle" style="color:#ff6b6b;"></i>
+                            <p style="color:#ff6b6b;">Error loading routes</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                allRoutes = data.routes || [];
+                let filtered = allRoutes;
+                if (search) {
+                    filtered = allRoutes.filter(r => 
+                        r.name?.toLowerCase().includes(search.toLowerCase()) ||
+                        r.routeNumber?.toLowerCase().includes(search.toLowerCase()) ||
+                        r.driverName?.toLowerCase().includes(search.toLowerCase())
+                    );
+                }
+
+                displayRoutes(filtered);
+
+            } catch (err) {
+                console.error('Error loading routes:', err);
+                document.getElementById('routesContainer').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color:#ff6b6b;"></i>
+                        <p style="color:#ff6b6b;">Error loading routes</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch('http://localhost:5000/api/routes/stats/summary', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const stats = data.stats;
+                    document.getElementById('routeStats').innerHTML = `
+                        <div class="stat-card"><i class="fas fa-route"></i><div class="number">${stats.totalRoutes || 0}</div><div class="label">Total Routes</div></div>
+                        <div class="stat-card"><i class="fas fa-clock"></i><div class="number">${stats.inProgress || 0}</div><div class="label">In Progress</div></div>
+                        <div class="stat-card"><i class="fas fa-check-circle" style="color:#4caf50;"></i><div class="number">${stats.completed || 0}</div><div class="label">Completed</div></div>
+                        <div class="stat-card"><i class="fas fa-map-pin"></i><div class="number">${stats.totalStops || 0}</div><div class="label">Total Stops</div></div>
+                        <div class="stat-card"><i class="fas fa-percent"></i><div class="number">${stats.completionRate || 0}%</div><div class="label">Completion Rate</div></div>
+                        <div class="stat-card"><i class="fas fa-users"></i><div class="number">${stats.activeDrivers || 0}</div><div class="label">Active Drivers</div></div>
+                    `;
+                }
+            } catch (err) {
+                console.error('Error loading stats:', err);
+            }
+        }
+
+        function displayRoutes(routes) {
+            const container = document.getElementById('routesContainer');
+
+            if (routes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-route"></i>
+                        <p>No routes found</p>
+                        <p style="font-size:0.85rem; color:#666; margin-top:10px;">Create your first route!</p>
+                        <button onclick="location.href='route-create.html'" class="btn-gold-premium" style="margin-top:15px;">
+                            <i class="fas fa-plus"></i> Create Route
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="route-grid">
+                    ${routes.map(route => {
+                        const progress = route.totalStops > 0 ? Math.round((route.completedStops / route.totalStops) * 100) : 0;
+                        const statusClass = `status-${route.status}`;
+                        const statusLabels = {
+                            'planned': '📋 Planned',
+                            'in_progress': '🚚 In Progress',
+                            'completed': '✅ Completed',
+                            'cancelled': '❌ Cancelled'
+                        };
+
+                        return `
+                            <div class="route-card">
+                                <div class="route-header">
+                                    <div>
+                                        <div class="route-name">${escapeHtml(route.name)}</div>
+                                        <div class="route-number">${escapeHtml(route.routeNumber)}</div>
+                                    </div>
+                                    <span class="route-status ${statusClass}">${statusLabels[route.status] || route.status}</span>
+                                </div>
+
+                                <div class="route-driver">
+                                    <p><i class="fas fa-user"></i> Driver: ${route.driverName ? escapeHtml(route.driverName) : '<span style="color:#ff9800;">Not Assigned</span>'}</p>
+                                    ${route.driverVehicle ? `<p><i class="fas fa-truck"></i> Vehicle: ${escapeHtml(route.driverVehicle)}</p>` : ''}
+                                    <p><i class="fas fa-map-pin"></i> Stops: ${route.completedStops}/${route.totalStops}</p>
+                                </div>
+
+                                <div class="progress-bar">
+                                    <div class="bar">
+                                        <div class="fill" style="width: ${progress}%;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>Progress</span>
+                                        <span>${progress}%</span>
+                                    </div>
+                                </div>
+
+                                <div class="route-actions">
+                                    <button class="btn-track" onclick="viewRoute('${route._id}')">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                    ${route.status === 'planned' ? `
+                                        <button class="btn-start" onclick="startRoute('${route._id}')">
+                                            <i class="fas fa-play"></i> Start
+                                        </button>
+                                    ` : ''}
+                                    ${route.status !== 'completed' && route.status !== 'cancelled' ? `
+                                        <button class="btn-edit" onclick="editRoute('${route._id}')">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                    ` : ''}
+                                    ${route.status !== 'completed' ? `
+                                        <button class="btn-delete" onclick="deleteRoute('${route._id}', '${escapeHtml(route.name)}')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function viewRoute(routeId) {
+            window.location.href = `route-details.html?id=${routeId}`;
+        }
+
+        function editRoute(routeId) {
+            window.location.href = `route-create.html?id=${routeId}`;
+        }
+
+        async function startRoute(routeId) {
+            if (!confirm('Start this route? This will change status to "In Progress".')) return;
+
+            try {
+                const res = await fetch(`http://localhost:5000/api/routes/${routeId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status: 'in_progress' })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ Route started!', 'success');
+                    loadRoutes();
+                } else {
+                    showToast('❌ ' + data.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ Connection error', 'error');
+            }
+        }
+
+        async function deleteRoute(routeId, routeName) {
+            if (!confirm(`Delete route "${routeName}"?`)) return;
+
+            try {
+                const res = await fetch(`http://localhost:5000/api/routes/${routeId}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ Route deleted', 'success');
+                    loadRoutes();
+                } else {
+                    showToast('❌ ' + data.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ Connection error', 'error');
+            }
+        }
+
+        function clearFilters() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('searchInput').value = '';
+            loadRoutes();
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const colors = {
+                success: '#4caf50',
+                error: '#ff6b6b',
+                info: '#D4AF37'
+            };
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: #1a1a2e;
+                color: #fff;
+                padding: 14px 24px;
+                border-radius: 12px;
+                border-left: 4px solid ${colors[type] || '#D4AF37'};
+                z-index: 99999;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                font-size: 0.95rem;
+                animation: slideIn 0.3s ease;
+                max-width: 400px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        loadRoutes();
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+            }
+        });
+    </script>
+</body>
+</html>

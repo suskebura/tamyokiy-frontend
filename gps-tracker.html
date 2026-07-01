@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Location Tracker | TAMYOKIY Logistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .gps-section {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+        }
+        .gps-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .gps-card {
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            border: 1px solid rgba(212,175,55,0.3);
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+        .gps-card h2 {
+            color: #D4AF37;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .location-display {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .location-display .coordinates {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #D4AF37;
+            font-family: monospace;
+        }
+        .location-display .address {
+            color: #b0b0b0;
+            font-size: 1rem;
+            margin-top: 8px;
+        }
+        .location-display .status {
+            margin-top: 10px;
+            padding: 8px 20px;
+            border-radius: 30px;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .status-accurate {
+            background: rgba(76,175,80,0.2);
+            color: #4caf50;
+        }
+        .status-searching {
+            background: rgba(255,165,0,0.2);
+            color: #ffa500;
+            animation: pulse 1.5s infinite;
+        }
+        .status-error {
+            background: rgba(255,107,107,0.2);
+            color: #ff6b6b;
+        }
+        .status-waiting {
+            background: rgba(158,158,158,0.2);
+            color: #9e9e9e;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-gold:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(212,175,55,0.4);
+        }
+        .btn-gold:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(212,175,55,0.3);
+            color: #D4AF37;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-outline:hover {
+            background: rgba(212,175,55,0.1);
+            border-color: #D4AF37;
+        }
+        .btn-danger-outline {
+            background: transparent;
+            border: 1px solid rgba(255,107,107,0.3);
+            color: #ff6b6b;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-danger-outline:hover {
+            background: rgba(255,107,107,0.1);
+            border-color: #ff6b6b;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .location-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .location-detail-item {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.08);
+        }
+        .location-detail-item .label {
+            color: #888;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .location-detail-item .value {
+            color: #e0e0e0;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        .location-detail-item .value.gold {
+            color: #D4AF37;
+        }
+        .location-history {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .location-history::-webkit-scrollbar {
+            width: 4px;
+        }
+        .location-history::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.02);
+        }
+        .location-history::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 10px;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            font-size: 0.85rem;
+            color: #b0b0b0;
+        }
+        .history-item .h-time {
+            color: #666;
+            font-size: 0.7rem;
+        }
+        .history-item .h-coords {
+            color: #D4AF37;
+            font-family: monospace;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.3);
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+            color: #D4AF37;
+        }
+        .accuracy-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .accuracy-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #ffa500, #4caf50);
+            border-radius: 10px;
+            transition: width 1s ease;
+        }
+        @media (max-width: 768px) {
+            .location-details {
+                grid-template-columns: 1fr 1fr;
+            }
+            .location-display .coordinates {
+                font-size: 1.2rem;
+            }
+            .gps-card {
+                padding: 20px;
+            }
+        }
+        @media (max-width: 480px) {
+            .location-details {
+                grid-template-columns: 1fr;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn-group button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <!-- 🆕 REAL-TIME DASHBOARD - ADMIN ONLY -->
+<a href="realtime-dashboard.html" class="nav-link" id="realtimeNavLink" style="display:none;"><i class="fas fa-chart-line"></i> Live</a>
+                <a href="gps-tracker.html" class="nav-link active"><i class="fas fa-map-marker-alt"></i> GPS Tracker</a>
+                <a href="how-it-works.html" class="nav-link"><i class="fas fa-question-circle"></i> How It Works</a>
+                <a href="chatbot.html" class="nav-link"><i class="fas fa-robot"></i> Chat Assistant</a>
+                
+                <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink"><i class="fas fa-warehouse"></i> My Storage</a>
+                <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink" style="display:none;"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink" style="display:none;"><i class="fas fa-boxes"></i> Inventory</a>
+                <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink" style="display:none;"><i class="fas fa-warehouse"></i> Pickups</a>
+                
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="gps-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="gps.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="gps-container">
+                <!-- Welcome Card -->
+                <div class="gps-card" data-aos="fade-up">
+                    <h2><i class="fas fa-map-marker-alt"></i> GPS Location Tracker</h2>
+                    <p style="color: #888; margin-bottom: 15px;">Capture your current location for delivery verification and tracking</p>
+                    
+                    <!-- Location Display -->
+                    <div class="location-display" id="locationDisplay">
+                        <div id="locationStatus" class="status status-waiting">⏳ Waiting to get location...</div>
+                        <div class="coordinates" id="coordsDisplay">-- --</div>
+                        <div class="address" id="addressDisplay">Click "Get Location" to start</div>
+                        <div class="accuracy-bar" id="accuracyBar">
+                            <div class="fill" id="accuracyFill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="btn-group">
+                        <button onclick="getLocation()" class="btn-gold" id="getLocationBtn">
+                            <i class="fas fa-location-dot"></i> Get Location
+                        </button>
+                        <button onclick="startTracking()" class="btn-outline" id="startTrackingBtn">
+                            <i class="fas fa-play"></i> Start Tracking
+                        </button>
+                        <button onclick="stopTracking()" class="btn-danger-outline" id="stopTrackingBtn" style="display:none;">
+                            <i class="fas fa-stop"></i> Stop Tracking
+                        </button>
+                        <button onclick="saveLocation()" class="btn-outline" id="saveLocationBtn">
+                            <i class="fas fa-save"></i> Save Location
+                        </button>
+                        <button onclick="clearHistory()" class="btn-danger-outline">
+                            <i class="fas fa-trash"></i> Clear History
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Location Details -->
+                <div class="gps-card" data-aos="fade-up" data-aos-delay="100">
+                    <h2><i class="fas fa-info-circle"></i> Location Details</h2>
+                    <div class="location-details">
+                        <div class="location-detail-item">
+                            <div class="label">📅 Date & Time</div>
+                            <div class="value" id="dateTimeDisplay">--</div>
+                        </div>
+                        <div class="location-detail-item">
+                            <div class="label">🎯 Accuracy</div>
+                            <div class="value" id="accuracyDisplay">--</div>
+                        </div>
+                        <div class="location-detail-item">
+                            <div class="label">📊 Altitude</div>
+                            <div class="value" id="altitudeDisplay">--</div>
+                        </div>
+                        <div class="location-detail-item">
+                            <div class="label">📱 Device</div>
+                            <div class="value" id="deviceDisplay">--</div>
+                        </div>
+                        <div class="location-detail-item">
+                            <div class="label">🌐 Speed</div>
+                            <div class="value" id="speedDisplay">--</div>
+                        </div>
+                        <div class="location-detail-item">
+                            <div class="label">🧭 Heading</div>
+                            <div class="value" id="headingDisplay">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location History -->
+                <div class="gps-card" data-aos="fade-up" data-aos-delay="200">
+                    <h2><i class="fas fa-history"></i> Location History</h2>
+                    <div id="historyContainer">
+                        <div class="empty-state">
+                            <i class="fas fa-map-pin"></i>
+                            <p>No locations saved yet</p>
+                            <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Get your location and save it</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+
+        // ============================================================
+        // 🌍 GPS TRACKER - BROWSER GEOLOCATION API (FREE - NO API KEY)
+        // ============================================================
+
+        let watchId = null;
+        let locationHistory = [];
+        let currentPosition = null;
+        let isTracking = false;
+
+        // ============================================================
+        // GET LOCATION (One Time)
+        // ============================================================
+
+        function getLocation() {
+            const btn = document.getElementById('getLocationBtn');
+            const statusEl = document.getElementById('locationStatus');
+            
+            // Check if browser supports Geolocation
+            if (!navigator.geolocation) {
+                statusEl.className = 'status status-error';
+                statusEl.textContent = '❌ Geolocation is not supported by your browser';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Getting location...';
+            
+            statusEl.className = 'status status-searching';
+            statusEl.textContent = '🔍 Searching for GPS signal...';
+            
+            navigator.geolocation.getCurrentPosition(
+                // Success
+                function(position) {
+                    currentPosition = position;
+                    updateLocationDisplay(position);
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-location-dot"></i> Get Location';
+                    statusEl.className = 'status status-accurate';
+                    statusEl.textContent = '✅ Location captured successfully!';
+                },
+                // Error
+                function(error) {
+                    console.error('GPS Error:', error);
+                    let errorMsg = '❌ Error: ';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMsg += 'Permission denied. Please allow location access.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMsg += 'Location unavailable. Please try again.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMsg += 'Location request timed out. Please try again.';
+                            break;
+                        default:
+                            errorMsg += 'Unknown error. Please try again.';
+                    }
+                    statusEl.className = 'status status-error';
+                    statusEl.textContent = errorMsg;
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-location-dot"></i> Get Location';
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // ============================================================
+        // START TRACKING (Continuous Updates)
+        // ============================================================
+
+        function startTracking() {
+            if (!navigator.geolocation) {
+                showToast('Geolocation not supported', 'error');
+                return;
+            }
+
+            if (watchId) {
+                stopTracking();
+            }
+
+            const statusEl = document.getElementById('locationStatus');
+            statusEl.className = 'status status-searching';
+            statusEl.textContent = '🔍 Tracking started...';
+
+            document.getElementById('startTrackingBtn').style.display = 'none';
+            document.getElementById('stopTrackingBtn').style.display = 'inline-flex';
+
+            watchId = navigator.geolocation.watchPosition(
+                // Success
+                function(position) {
+                    currentPosition = position;
+                    updateLocationDisplay(position);
+                    statusEl.className = 'status status-accurate';
+                    statusEl.textContent = '📍 Tracking active...';
+                    isTracking = true;
+                },
+                // Error
+                function(error) {
+                    console.error('Tracking Error:', error);
+                    statusEl.className = 'status status-error';
+                    statusEl.textContent = '❌ Tracking error. Please try again.';
+                    stopTracking();
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // ============================================================
+        // STOP TRACKING
+        // ============================================================
+
+        function stopTracking() {
+            if (watchId) {
+                navigator.geolocation.clearWatch(watchId);
+                watchId = null;
+            }
+            isTracking = false;
+            document.getElementById('startTrackingBtn').style.display = 'inline-flex';
+            document.getElementById('stopTrackingBtn').style.display = 'none';
+            
+            const statusEl = document.getElementById('locationStatus');
+            statusEl.className = 'status status-waiting';
+            statusEl.textContent = '⏹️ Tracking stopped';
+        }
+
+        // ============================================================
+        // UPDATE LOCATION DISPLAY
+        // ============================================================
+
+        function updateLocationDisplay(position) {
+            const coords = position.coords;
+            const lat = coords.latitude.toFixed(6);
+            const lng = coords.longitude.toFixed(6);
+            const accuracy = coords.accuracy ? Math.round(coords.accuracy) : 0;
+
+            // Update coordinates
+            document.getElementById('coordsDisplay').textContent = `${lat}, ${lng}`;
+
+            // Update accuracy bar
+            const accuracyPercent = Math.min(100, 100 - (accuracy / 100));
+            document.getElementById('accuracyFill').style.width = accuracyPercent + '%';
+
+            // Update details
+            const now = new Date();
+            document.getElementById('dateTimeDisplay').textContent = now.toLocaleString();
+            document.getElementById('accuracyDisplay').textContent = accuracy > 0 ? `±${accuracy}m` : 'Unknown';
+            document.getElementById('altitudeDisplay').textContent = coords.altitude ? `${Math.round(coords.altitude)}m` : 'N/A';
+            document.getElementById('deviceDisplay').textContent = getDeviceInfo();
+            document.getElementById('speedDisplay').textContent = coords.speed ? `${(coords.speed * 3.6).toFixed(1)} km/h` : '0 km/h';
+            document.getElementById('headingDisplay').textContent = coords.heading ? `${Math.round(coords.heading)}°` : 'N/A';
+
+            // Reverse geocode (get address from coordinates)
+            reverseGeocode(lat, lng);
+
+            // Update accuracy bar color
+            const fill = document.getElementById('accuracyFill');
+            if (accuracy < 20) {
+                fill.style.background = 'linear-gradient(90deg, #4caf50, #8bc34a)';
+            } else if (accuracy < 50) {
+                fill.style.background = 'linear-gradient(90deg, #ffa500, #ffc107)';
+            } else {
+                fill.style.background = 'linear-gradient(90deg, #ff6b6b, #ff9800)';
+            }
+        }
+
+        // ============================================================
+        // REVERSE GEOCODE (Get Address from Coordinates - FREE)
+        // ============================================================
+
+        function reverseGeocode(lat, lng) {
+            const addressEl = document.getElementById('addressDisplay');
+            addressEl.textContent = '🌍 Looking up address...';
+
+            // Using OpenStreetMap Nominatim (FREE - No API Key)
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        addressEl.textContent = `📍 ${data.display_name}`;
+                    } else {
+                        addressEl.textContent = '📌 Address not found';
+                    }
+                })
+                .catch(() => {
+                    addressEl.textContent = '📌 Address lookup failed';
+                });
+        }
+
+        // ============================================================
+        // SAVE LOCATION
+        // ============================================================
+
+        function saveLocation() {
+            if (!currentPosition) {
+                showToast('Please get your location first', 'error');
+                return;
+            }
+
+            const coords = currentPosition.coords;
+            const lat = coords.latitude.toFixed(6);
+            const lng = coords.longitude.toFixed(6);
+            const now = new Date();
+
+            const locationData = {
+                id: Date.now(),
+                lat: lat,
+                lng: lng,
+                timestamp: now.toLocaleString(),
+                accuracy: coords.accuracy ? Math.round(coords.accuracy) : 0,
+                address: document.getElementById('addressDisplay').textContent
+            };
+
+            locationHistory.unshift(locationData);
+            updateHistory();
+
+            showToast('📍 Location saved successfully!', 'success');
+        }
+
+        // ============================================================
+        // UPDATE HISTORY
+        // ============================================================
+
+        function updateHistory() {
+            const container = document.getElementById('historyContainer');
+
+            if (locationHistory.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-map-pin"></i>
+                        <p>No locations saved yet</p>
+                        <p style="font-size: 0.85rem; color: #666; margin-top: 5px;">Get your location and save it</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="location-history">
+                    ${locationHistory.map(item => `
+                        <div class="history-item">
+                            <div>
+                                <div>📍 ${item.address.substring(0, 50)}${item.address.length > 50 ? '...' : ''}</div>
+                                <div class="h-coords">${item.lat}, ${item.lng}</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div class="h-time">${item.timestamp}</div>
+                                <div style="color:#888; font-size:0.7rem;">±${item.accuracy}m</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // ============================================================
+        // CLEAR HISTORY
+        // ============================================================
+
+        function clearHistory() {
+            if (locationHistory.length === 0) {
+                showToast('No history to clear', 'info');
+                return;
+            }
+            if (confirm('Clear all saved locations?')) {
+                locationHistory = [];
+                updateHistory();
+                showToast('History cleared', 'success');
+            }
+        }
+
+        // ============================================================
+        // DEVICE INFO
+        // ============================================================
+
+        function getDeviceInfo() {
+            const ua = navigator.userAgent;
+            if (ua.includes('iPhone')) return 'iPhone';
+            if (ua.includes('iPad')) return 'iPad';
+            if (ua.includes('Android')) return 'Android';
+            if (ua.includes('Windows')) return 'Windows';
+            if (ua.includes('Mac')) return 'Mac';
+            return 'Desktop';
+        }
+
+        // ============================================================
+        // TOAST NOTIFICATION
+        // ============================================================
+
+        function showToast(message, type = 'info') {
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    z-index: 99999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    max-width: 400px;
+                `;
+                document.body.appendChild(toastContainer);
+            }
+
+            const toast = document.createElement('div');
+            const colors = {
+                success: '#4caf50',
+                error: '#ff6b6b',
+                info: '#D4AF37',
+                warning: '#ff9800'
+            };
+
+            toast.style.cssText = `
+                background: #1a1a2e;
+                color: #fff;
+                padding: 14px 20px;
+                border-radius: 12px;
+                border-left: 4px solid ${colors[type] || '#D4AF37'};
+                box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                animation: slideInToast 0.4s ease;
+                font-size: 0.9rem;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            `;
+
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️',
+                warning: '⚠️'
+            };
+
+            toast.innerHTML = `
+                <span style="font-size: 1.1rem;">${icons[type] || 'ℹ️'}</span>
+                <span>${message}</span>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOutToast 0.4s ease forwards';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 400);
+            }, 3000);
+        }
+
+        // ============================================================
+        // UPDATE NAVIGATION FOR LOGGED IN USERS
+        // ============================================================
+        
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (token && user.name) {
+            const authLink = document.getElementById('authNavLink');
+            if (authLink) {
+                authLink.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
+                authLink.href = '#';
+                authLink.onclick = function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'index.html';
+                };
+            }
+            
+            const userNameSpan = document.getElementById('userNameDisplay');
+            if (userNameSpan) {
+                userNameSpan.style.display = 'inline-flex';
+                userNameSpan.style.alignItems = 'center';
+                userNameSpan.style.gap = '8px';
+                userNameSpan.style.background = 'rgba(212, 175, 55, 0.15)';
+                userNameSpan.style.padding = '5px 12px 5px 8px';
+                userNameSpan.style.borderRadius = '40px';
+                userNameSpan.innerHTML = `<i class="fas fa-user-circle" style="font-size: 1.2rem;"></i> ${user.name}`;
+            }
+            
+            const warehouseServiceLink = document.getElementById('warehouseServiceLink');
+            if (warehouseServiceLink && user.role === 'client') {
+                warehouseServiceLink.style.display = 'inline-block';
+            }
+            
+            if (user.role !== 'admin') {
+                const adminLink = document.getElementById('adminNavLink');
+                if (adminLink) adminLink.style.display = 'none';
+                const forecastLink = document.getElementById('forecastNavLink');
+                if (forecastLink) forecastLink.style.display = 'none';
+            }
+        }
+
+        console.log('✅ GPS Tracker loaded successfully!');
+        console.log('📌 Click "Get Location" to capture your GPS coordinates');
+    </script>
+</body>
+</html>

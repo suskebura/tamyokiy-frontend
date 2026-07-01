@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Inventory | TAMYOKIY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #050505; color: #fff; }
+        .inventory-page { min-height: 100vh; padding-top: 120px; background: #050505; }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .dashboard-header h1 {
+            color: #D4AF37;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .filter-bar-inv {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+        .filter-bar-inv input, .filter-bar-inv select {
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.15);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.9rem;
+        }
+        .filter-bar-inv input:focus, .filter-bar-inv select:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+        .filter-bar-inv input { flex: 1; min-width: 200px; }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(20,20,30,0.3);
+            border-radius: 16px;
+            border: 1px solid rgba(212,175,55,0.08);
+        }
+        .bulk-actions .label {
+            color: #888;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .status-select-inv {
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .status-select-inv:focus { outline: none; border-color: #D4AF37; }
+
+        .inventory-table-wrap {
+            overflow-x: auto;
+            background: rgba(20,20,30,0.3);
+            border-radius: 20px;
+            border: 1px solid rgba(212,175,55,0.08);
+            padding: 5px;
+        }
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        .inventory-table th {
+            padding: 14px 16px;
+            text-align: left;
+            color: #D4AF37;
+            border-bottom: 2px solid rgba(212,175,55,0.2);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .inventory-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(212,175,55,0.06);
+            color: rgba(255,255,255,0.85);
+            vertical-align: middle;
+        }
+        .inventory-table tr:hover td {
+            background: rgba(212,175,55,0.04);
+        }
+        .inventory-table tr:last-child td { border-bottom: none; }
+
+        .status-badge-inv {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-received { background: rgba(255,165,0,0.2); color: #ffa500; }
+        .status-sorted { background: rgba(33,150,243,0.2); color: #2196F3; }
+        .status-packed { background: rgba(156,39,176,0.2); color: #9c27b0; }
+        .status-loaded { background: rgba(0,188,212,0.2); color: #00bcd4; }
+        .status-dispatched { background: rgba(76,175,80,0.2); color: #4caf50; }
+        .status-delivered { background: rgba(76,175,80,0.3); color: #2e7d32; }
+
+        .btn-gold-premium {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-gold-premium:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(212,175,55,0.4); }
+        .btn-outline-gold {
+            background: transparent;
+            border: 1px solid rgba(212,175,55,0.4);
+            color: #D4AF37;
+            padding: 10px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-outline-gold:hover { background: rgba(212,175,55,0.1); border-color: #D4AF37; }
+        .btn-danger-small {
+            background: transparent;
+            border: 1px solid rgba(255,107,107,0.3);
+            color: #ff6b6b;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+        }
+        .btn-danger-small:hover { background: rgba(255,107,107,0.2); }
+
+        .pagination {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+        .pagination button {
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.15);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .pagination button:hover { background: rgba(212,175,55,0.1); }
+        .pagination button.active {
+            background: #D4AF37;
+            color: #050505;
+            border-color: #D4AF37;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.4);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.4);
+        }
+        .loading i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #D4AF37;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .checkbox-custom {
+            width: 18px;
+            height: 18px;
+            accent-color: #D4AF37;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .filter-bar-inv { flex-direction: column; }
+            .filter-bar-inv input { width: 100%; min-width: unset; }
+            .bulk-actions { flex-direction: column; align-items: stretch; }
+            .inventory-table { font-size: 0.75rem; }
+            .inventory-table th, .inventory-table td { padding: 10px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="how-it-works.html" class="nav-link"><i class="fas fa-question-circle"></i> How It Works</a>
+                <a href="chatbot.html" class="nav-link"><i class="fas fa-robot"></i> Chat Assistant</a>
+                <!-- 🆕 ROUTE LINKS -->
+                <a href="route-dashboard.html" class="nav-link"><i class="fas fa-route"></i> Routes</a>
+                <a href="route-create.html" class="nav-link"><i class="fas fa-plus-circle"></i> Create Route</a>
+                <a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link">
+                    <i class="fas fa-info-circle"></i> My Route
+                </a>
+                
+                <!-- 🏢 WAREHOUSE LINKS - ROLE BASED -->
+                <!-- ADMIN ONLY (hidden by default) -->
+                <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink" style="display:none;"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink" style="display:none;"><i class="fas fa-boxes"></i> Inventory</a>
+                
+                <!-- CLIENT ONLY -->
+                <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink"><i class="fas fa-warehouse"></i> My Storage</a>
+                
+                <!-- DRIVER ONLY -->
+                <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink" style="display:none;"><i class="fas fa-warehouse"></i> Pickups</a>
+                
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+    </nav>
+
+    <section class="inventory-page">
+        <div class="container">
+            <!-- Header -->
+            <div class="dashboard-header">
+                <h1><i class="fas fa-boxes"></i> Warehouse Inventory</h1>
+                <div>
+                    <button onclick="location.href='warehouse-dashboard.html'" class="btn-outline-gold">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </button>
+                    <button onclick="loadInventory()" class="btn-gold-premium" style="margin-left:10px;">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-bar-inv">
+                <select id="invWarehouseFilter" onchange="loadInventory()" class="status-select-inv" style="min-width:180px;">
+                    <option value="">All Warehouses</option>
+                </select>
+                <input type="text" id="invSearch" placeholder="🔍 Search tracking number..." onkeyup="loadInventory()">
+                <select id="invStatusFilter" onchange="loadInventory()" class="status-select-inv">
+                    <option value="">All Status</option>
+                    <option value="received">📋 Received</option>
+                    <option value="sorted">📊 Sorted</option>
+                    <option value="packed">📦 Packed</option>
+                    <option value="loaded">🚛 Loaded</option>
+                    <option value="dispatched">🚚 Dispatched</option>
+                    <option value="delivered">✅ Delivered</option>
+                </select>
+                <button onclick="loadInventory()" class="btn-gold-premium">Apply</button>
+                <button onclick="clearFilters()" class="btn-outline-gold">Clear</button>
+            </div>
+
+            <!-- Bulk Actions -->
+            <div class="bulk-actions">
+                <span class="label"><i class="fas fa-tasks"></i> Bulk Update:</span>
+                <select id="bulkStatusSelect" class="status-select-inv">
+                    <option value="">Select Status</option>
+                    <option value="sorted">📊 Sort</option>
+                    <option value="packed">📦 Pack</option>
+                    <option value="loaded">🚛 Load</option>
+                    <option value="dispatched">🚚 Dispatch</option>
+                    <option value="delivered">✅ Deliver</option>
+                </select>
+                <button onclick="bulkStatusUpdate()" class="btn-gold-premium" style="padding:8px 20px; font-size:0.85rem;">
+                    <i class="fas fa-arrow-right"></i> Apply to Selected
+                </button>
+                <span style="color:#555; font-size:0.75rem; margin-left:5px;">
+                    <i class="fas fa-info-circle"></i> Select items using checkboxes
+                </span>
+                <span id="selectedCount" style="color:#D4AF37; font-size:0.8rem; font-weight:600; margin-left:auto;">0 selected</span>
+            </div>
+
+            <!-- Table -->
+            <div class="inventory-table-wrap">
+                <div id="inventoryTableContainer">
+                    <div class="loading"><i class="fas fa-spinner fa-pulse"></i> Loading inventory...</div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination"></div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        AOS.init();
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = 'login.html';
+
+        let currentPage = 1;
+        let totalPages = 1;
+        let selectedItems = new Set();
+
+        // ===== LOAD WAREHOUSE FILTER =====
+        async function loadWarehouseFilter() {
+            try {
+                const res = await fetch('http://localhost:5000/api/warehouse/warehouses', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const select = document.getElementById('invWarehouseFilter');
+                if (data.success && data.warehouses) {
+                    select.innerHTML = '<option value="">All Warehouses</option>' + 
+                        data.warehouses.map(w => `<option value="${w._id}">${escapeHtml(w.name)} (${escapeHtml(w.code)})</option>`).join('');
+                }
+            } catch (err) { console.error('Error loading warehouse filter:', err); }
+        }
+
+        // ===== LOAD INVENTORY =====
+        async function loadInventory(page = 1) {
+            currentPage = page;
+            const warehouseId = document.getElementById('invWarehouseFilter')?.value || '';
+            const status = document.getElementById('invStatusFilter')?.value || '';
+            const search = document.getElementById('invSearch')?.value || '';
+
+            let url = `http://localhost:5000/api/warehouse/inventory/${warehouseId || 'all'}?page=${page}&limit=50`;
+            if (status) url += `&status=${status}`;
+            if (search) url += `&search=${encodeURIComponent(search)}`;
+
+            try {
+                const res = await fetch(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const container = document.getElementById('inventoryTableContainer');
+
+                if (!data.success || !data.inventory || data.inventory.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No inventory items found</p>
+                            <p style="font-size:0.85rem; margin-top:10px; color:#666;">Create a shipment and receive it at a warehouse</p>
+                        </div>
+                    `;
+                    document.getElementById('pagination').innerHTML = '';
+                    return;
+                }
+
+                const inventory = data.inventory || [];
+                totalPages = data.pages || 1;
+
+                const statusLabels = {
+                    'received': '📋 Received',
+                    'sorted': '📊 Sorted',
+                    'packed': '📦 Packed',
+                    'loaded': '🚛 Loaded',
+                    'dispatched': '🚚 Dispatched',
+                    'delivered': '✅ Delivered'
+                };
+                const statusClasses = {
+                    'received': 'status-received',
+                    'sorted': 'status-sorted',
+                    'packed': 'status-packed',
+                    'loaded': 'status-loaded',
+                    'dispatched': 'status-dispatched',
+                    'delivered': 'status-delivered'
+                };
+
+                container.innerHTML = `
+                    <table class="inventory-table">
+                        <thead>
+                            <tr>
+                                <th style="width:40px;">
+                                    <input type="checkbox" class="checkbox-custom" id="selectAll" onchange="toggleSelectAll()">
+                                </th>
+                                <th>Tracking</th>
+                                <th>Warehouse</th>
+                                <th>Status</th>
+                                <th>Location</th>
+                                <th>Driver</th>
+                                <th>Received</th>
+                                <th style="min-width:140px;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${inventory.map(item => `
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="checkbox-custom item-checkbox" value="${item._id}" onchange="updateSelected()">
+                                    </td>
+                                    <td>
+                                        <strong style="color:#D4AF37; font-size:0.9rem;">${escapeHtml(item.trackingNumber)}</strong>
+                                    </td>
+                                    <td>${escapeHtml(item.warehouseId?.name || 'N/A')}</td>
+                                    <td>
+                                        <span class="status-badge-inv ${statusClasses[item.status] || ''}">
+                                            ${statusLabels[item.status] || item.status}
+                                        </span>
+                                    </td>
+                                    <td style="font-size:0.8rem; color:#888;">
+                                        ${item.location?.aisle ? `Aisle ${escapeHtml(item.location.aisle)}` : '-'}
+                                        ${item.location?.shelf ? ` / Shelf ${escapeHtml(item.location.shelf)}` : ''}
+                                        ${item.location?.bin ? ` / Bin ${escapeHtml(item.location.bin)}` : ''}
+                                    </td>
+                                    <td>${item.assignedDriverName ? escapeHtml(item.assignedDriverName) : '-'}</td>
+                                    <td style="font-size:0.8rem; color:#888;">${new Date(item.receivedAt).toLocaleDateString()}</td>
+                                    <td>
+                                        ${item.status !== 'delivered' ? `
+                                            <select class="status-select-inv" onchange="updateStatus('${item._id}', this.value)" style="font-size:0.7rem; padding:4px 8px; min-width:80px;">
+                                                <option value="">Update</option>
+                                                ${item.status === 'received' ? '<option value="sorted">📊 Sort</option>' : ''}
+                                                ${item.status === 'sorted' ? '<option value="packed">📦 Pack</option>' : ''}
+                                                ${item.status === 'packed' ? '<option value="loaded">🚛 Load</option>' : ''}
+                                                ${item.status === 'loaded' ? '<option value="dispatched">🚚 Dispatch</option>' : ''}
+                                                ${item.status === 'dispatched' ? '<option value="delivered">✅ Deliver</option>' : ''}
+                                            </select>
+                                        ` : '<span style="color:#4caf50; font-weight:600;">✅ Done</span>'}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+
+                renderPagination();
+
+            } catch (err) {
+                console.error('Error loading inventory:', err);
+                document.getElementById('inventoryTableContainer').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color:#ff6b6b;"></i>
+                        <p style="color:#ff6b6b;">Error loading inventory</p>
+                        <p style="font-size:0.85rem; margin-top:10px; color:#666;">${err.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // ===== RENDER PAGINATION =====
+        function renderPagination() {
+            const container = document.getElementById('pagination');
+            if (totalPages <= 1) { container.innerHTML = ''; return; }
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="${i === currentPage ? 'active' : ''}" onclick="loadInventory(${i})">${i}</button>`;
+            }
+            container.innerHTML = html;
+        }
+
+        // ===== SELECT ALL =====
+        function toggleSelectAll() {
+            const checked = document.getElementById('selectAll').checked;
+            document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = checked);
+            updateSelected();
+        }
+
+        // ===== UPDATE SELECTED COUNT =====
+        function updateSelected() {
+            selectedItems = new Set();
+            document.querySelectorAll('.item-checkbox:checked').forEach(cb => selectedItems.add(cb.value));
+            document.getElementById('selectedCount').textContent = `${selectedItems.size} selected`;
+        }
+
+        // ===== UPDATE SINGLE STATUS =====
+        async function updateStatus(inventoryId, status) {
+            if (!status) return;
+            if (!confirm(`Update this item to "${status}"?`)) return;
+            try {
+                const res = await fetch(`http://localhost:5000/api/warehouse/inventory/${inventoryId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`✅ Status updated to ${status}`, 'success');
+                    loadInventory(currentPage);
+                } else {
+                    showToast('❌ ' + data.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ Connection error', 'error');
+            }
+        }
+
+        // ===== BULK STATUS UPDATE =====
+        async function bulkStatusUpdate() {
+            const status = document.getElementById('bulkStatusSelect').value;
+            if (!status) { showToast('Select a status first', 'error'); return; }
+            if (selectedItems.size === 0) { showToast('Select items first', 'error'); return; }
+            if (!confirm(`Update ${selectedItems.size} items to "${status}"?`)) return;
+
+            let success = 0, failed = 0;
+            for (const id of selectedItems) {
+                try {
+                    const res = await fetch(`http://localhost:5000/api/warehouse/inventory/${id}/status`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({ status })
+                    });
+                    const data = await res.json();
+                    if (data.success) success++; else failed++;
+                } catch (err) { failed++; }
+            }
+            showToast(`✅ ${success} updated, ${failed} failed`, success > 0 ? 'success' : 'error');
+            selectedItems.clear();
+            document.getElementById('selectAll').checked = false;
+            document.getElementById('selectedCount').textContent = '0 selected';
+            loadInventory(currentPage);
+        }
+
+        // ===== CLEAR FILTERS =====
+        function clearFilters() {
+            document.getElementById('invWarehouseFilter').value = '';
+            document.getElementById('invSearch').value = '';
+            document.getElementById('invStatusFilter').value = '';
+            loadInventory(1);
+        }
+
+        // ===== ESCAPE HTML =====
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
+        }
+
+        // ===== SHOW TOAST =====
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const colors = {
+                success: '#4caf50',
+                error: '#ff6b6b',
+                info: '#D4AF37'
+            };
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: #1a1a2e;
+                color: #fff;
+                padding: 14px 24px;
+                border-radius: 12px;
+                border-left: 4px solid ${colors[type] || '#D4AF37'};
+                z-index: 99999;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                font-size: 0.95rem;
+                animation: slideIn 0.3s ease;
+                max-width: 400px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ===== INIT =====
+        loadWarehouseFilter();
+        loadInventory();
+
+        // Close modals on ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
+            }
+        });
+    </script>
+</body>
+</html>

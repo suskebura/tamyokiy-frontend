@@ -1,0 +1,2567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Tracking | TAMYOKIY Logistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- ===== LEAFLET CSS (FREE - NO API KEY) ===== -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        /* ===== ALL YOUR EXISTING STYLES (keep them) ===== */
+        .map-section {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+        }
+        .map-container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(33,150,243,0.2), rgba(20,20,30,0.7));
+            backdrop-filter: blur(15px);
+            border-radius: 32px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(33,150,243,0.4);
+        }
+        .welcome-card h1 {
+            color: #2196F3;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .welcome-card p {
+            color: #b0b0b0;
+            margin-top: 5px;
+        }
+        
+        .map-card {
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(33,150,243,0.3);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        .map-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .map-card .card-header h3 {
+            color: #2196F3;
+            font-size: 1.1rem;
+        }
+        .map-card .card-header .badge {
+            background: rgba(33,150,243,0.15);
+            color: #2196F3;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        .map-card .card-header .live-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            animation: pulseBadge 2s infinite;
+        }
+        @keyframes pulseBadge {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 16px;
+            border: 1px solid rgba(33,150,243,0.15);
+        }
+        
+        .location-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .location-info .info-item {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(33,150,243,0.08);
+        }
+        .location-info .info-item .label {
+            color: #888;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .location-info .info-item .value {
+            color: #e0e0e0;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-gold:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(33,150,243,0.3);
+            color: #2196F3;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-outline:hover {
+            background: rgba(33,150,243,0.1);
+            border-color: #2196F3;
+        }
+        .btn-whatsapp {
+            background: #25D366;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-whatsapp:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(37,211,102,0.3);
+        }
+        .btn-telegram {
+            background: #0088cc;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-telegram:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(0,136,204,0.3);
+        }
+        .btn-danger-outline {
+            background: transparent;
+            border: 1px solid rgba(255,107,107,0.3);
+            color: #ff6b6b;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-danger-outline:hover {
+            background: rgba(255,107,107,0.1);
+            border-color: #ff6b6b;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .share-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            border: 1px solid rgba(33,150,243,0.1);
+        }
+        .share-options .share-label {
+            color: #888;
+            font-size: 0.8rem;
+            width: 100%;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(33,150,243,0.08);
+        }
+        .feature-tabs button {
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .feature-tabs .tab-active {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            color: white;
+        }
+        .feature-tabs .tab-inactive {
+            background: transparent;
+            border: 1px solid rgba(33,150,243,0.2);
+            color: #888;
+        }
+        .feature-tabs .tab-inactive:hover {
+            border-color: #2196F3;
+            color: #2196F3;
+        }
+        .feature-tabs .tab-danger {
+            border-color: rgba(255,107,107,0.3);
+            color: #ff6b6b;
+        }
+        .feature-tabs .tab-danger:hover {
+            background: rgba(255,107,107,0.1);
+        }
+
+        .shipment-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(212,175,55,0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(212,175,55,0.15);
+            display: none;
+        }
+        .shipment-section.show {
+            display: block;
+        }
+        .shipment-section .section-label {
+            color: #D4AF37;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 30px;
+            color: white;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            min-width: 150px;
+        }
+        .input-group input:focus {
+            border-color: #D4AF37;
+            background: rgba(212,175,55,0.05);
+        }
+        .input-group input::placeholder {
+            color: #666;
+        }
+        .btn-group-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn-group-actions button {
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-link-shipment {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            color: #050505;
+        }
+        .btn-link-shipment:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+        }
+        .btn-attach-location {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+        }
+        .btn-attach-location:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(76,175,80,0.3);
+        }
+        .btn-track-shipment {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            color: white;
+        }
+        .btn-track-shipment:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(33,150,243,0.3);
+        }
+        .btn-clear-shipment {
+            background: transparent;
+            border: 1px solid rgba(255,107,107,0.3);
+            color: #ff6b6b;
+        }
+        .btn-clear-shipment:hover {
+            background: rgba(255,107,107,0.1);
+            border-color: #ff6b6b;
+        }
+
+        .info-display {
+            margin-top: 10px;
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(212,175,55,0.08);
+            display: none;
+        }
+        .info-display.show {
+            display: block;
+            animation: fadeSlideUp 0.3s ease;
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            color: #b0b0b0;
+            font-size: 0.85rem;
+        }
+        .info-row .info-label {
+            color: #888;
+        }
+        .info-row .info-value {
+            color: #D4AF37;
+            font-weight: 600;
+        }
+        .info-row .info-value.green {
+            color: #4caf50;
+        }
+        .info-row .info-value.blue {
+            color: #2196F3;
+        }
+
+        .warehouse-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,152,0,0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255,152,0,0.15);
+            display: none;
+        }
+        .warehouse-section.show {
+            display: block;
+        }
+        .warehouse-section .section-label {
+            color: #ff9800;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .warehouse-section .input-group input {
+            border-color: rgba(255,152,0,0.2);
+        }
+        .warehouse-section .input-group input:focus {
+            border-color: #ff9800;
+        }
+        .btn-warehouse-add {
+            background: linear-gradient(135deg, #ff9800, #ffc107);
+            color: #050505;
+        }
+        .btn-warehouse-add:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(255,152,0,0.3);
+        }
+        .btn-warehouse-view {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            color: white;
+        }
+        .btn-warehouse-view:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(33,150,243,0.3);
+        }
+        .btn-warehouse-nearby {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+        }
+        .btn-warehouse-nearby:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(76,175,80,0.3);
+        }
+
+        .route-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(33,150,243,0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(33,150,243,0.15);
+            display: none;
+        }
+        .route-section.show {
+            display: block;
+        }
+        .route-section .section-label {
+            color: #2196F3;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .btn-start-route {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            color: white;
+        }
+        .btn-start-route:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(33,150,243,0.3);
+        }
+        .btn-stop-route {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+        .btn-stop-route:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(255,107,107,0.3);
+        }
+        .btn-save-route {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            color: #050505;
+        }
+        .btn-save-route:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+        }
+
+        .live-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(156,39,176,0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(156,39,176,0.15);
+            display: none;
+        }
+        .live-section.show {
+            display: block;
+        }
+        .live-section .section-label {
+            color: #9c27b0;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .report-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(76,175,80,0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(76,175,80,0.15);
+            display: none;
+        }
+        .report-section.show {
+            display: block;
+        }
+        .report-section .section-label {
+            color: #4caf50;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .btn-generate-report {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+        }
+        .btn-generate-report:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(76,175,80,0.3);
+        }
+        .btn-export-report {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            color: #050505;
+        }
+        .btn-export-report:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+        }
+
+        .report-display {
+            margin-top: 10px;
+            padding: 15px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(76,175,80,0.08);
+            display: none;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .report-display.show {
+            display: block;
+        }
+        .report-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: #b0b0b0;
+            font-size: 0.8rem;
+        }
+        .report-item .report-time {
+            color: #666;
+        }
+        .report-item .report-coords {
+            color: #D4AF37;
+            font-weight: 600;
+        }
+        .report-item .report-status {
+            color: #4caf50;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.3);
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+            color: #2196F3;
+        }
+
+        .custom-popup {
+            font-family: 'Inter', sans-serif;
+            color: #050505;
+            padding: 10px;
+            min-width: 180px;
+        }
+        .custom-popup .popup-title {
+            color: #D4AF37;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .custom-popup .popup-coords {
+            color: #666;
+            font-size: 0.85rem;
+            margin: 3px 0;
+        }
+        .custom-popup .popup-address {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        .custom-popup .popup-shipment {
+            color: #2196F3;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .warehouse-popup {
+            font-family: 'Inter', sans-serif;
+            padding: 10px;
+            min-width: 200px;
+        }
+        .warehouse-popup .wh-title {
+            color: #ff9800;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .warehouse-popup .wh-info {
+            color: #666;
+            font-size: 0.85rem;
+            margin: 3px 0;
+        }
+        .warehouse-popup .wh-status {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .location-info {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            #map {
+                height: 350px;
+            }
+            .welcome-card h1 {
+                font-size: 1.3rem;
+            }
+            .map-card {
+                padding: 15px;
+            }
+            .share-options {
+                flex-direction: column;
+            }
+            .share-options button {
+                width: 100%;
+                justify-content: center;
+            }
+            .feature-tabs {
+                flex-direction: column;
+            }
+            .feature-tabs button {
+                width: 100%;
+                justify-content: center;
+            }
+            .input-group {
+                flex-direction: column;
+            }
+            .btn-group-actions {
+                flex-direction: column;
+            }
+            .btn-group-actions button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="gps-tracker.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> GPS Tracker</a>
+                <a href="gps-map.html" class="nav-link active"><i class="fas fa-map"></i> GPS Map</a>
+                <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="map-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="gps.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="map-container">
+                <!-- Welcome Card -->
+                <div class="welcome-card" data-aos="fade-up">
+                    <h1><i class="fas fa-map"></i> GPS Tracking System</h1>
+                    <p>Attach location | Shipments | Warehouses | Live tracking | Reports</p>
+                </div>
+
+                <!-- Map Card -->
+                <div class="map-card" data-aos="fade-up">
+                    <div class="card-header">
+                        <h3><i class="fas fa-location-dot"></i> Live Map</h3>
+                        <span class="badge" id="mapStatus">📍 Waiting for location...</span>
+                        <span class="live-badge" id="liveBadge" style="display:none;">● LIVE</span>
+                    </div>
+
+                    <div id="map"></div>
+
+                    <div class="location-info" id="locationInfo">
+                        <div class="info-item">
+                            <div class="label">📍 Latitude</div>
+                            <div class="value" id="latDisplay">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">📍 Longitude</div>
+                            <div class="value" id="lngDisplay">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">🎯 Accuracy</div>
+                            <div class="value" id="accuracyDisplay">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">📦 Shipment</div>
+                            <div class="value" id="shipmentDisplay">None</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="label">🏢 Warehouses</div>
+                            <div class="value" id="warehouseDisplay">0</div>
+                        </div>
+                    </div>
+
+                    <div class="share-options">
+                        <div class="share-label">
+                            <i class="fas fa-share-alt"></i> Share GPS Coordinates:
+                        </div>
+                        <button onclick="shareWhatsApp()" class="btn-whatsapp">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </button>
+                        <button onclick="shareTelegram()" class="btn-telegram">
+                            <i class="fab fa-telegram"></i> Telegram
+                        </button>
+                        <button onclick="copyLocationLink()" class="btn-gold">
+                            <i class="fas fa-copy"></i> Copy Link
+                        </button>
+                        <button onclick="copyCoordinates()" class="btn-outline">
+                            <i class="fas fa-map-pin"></i> Copy Coords
+                        </button>
+                    </div>
+
+                    <div class="feature-tabs">
+                        <button class="tab-active" onclick="showFeature('shipment')" id="tabShipment">
+                            <i class="fas fa-link"></i> Shipment
+                        </button>
+                        <button class="tab-inactive" onclick="showFeature('warehouse')" id="tabWarehouse">
+                            <i class="fas fa-warehouse"></i> Warehouse
+                        </button>
+                        <button class="tab-inactive" onclick="showFeature('route')" id="tabRoute">
+                            <i class="fas fa-route"></i> Route
+                        </button>
+                        <button class="tab-inactive" onclick="showFeature('live')" id="tabLive">
+                            <i class="fas fa-satellite-dish"></i> Live
+                        </button>
+                        <button class="tab-inactive" onclick="showFeature('report')" id="tabReport">
+                            <i class="fas fa-file-alt"></i> Report
+                        </button>
+                        <button class="tab-danger" onclick="resetAll()" id="tabReset">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+
+                    <!-- ===== 1. SHIPMENT SECTION ===== -->
+                    <div class="shipment-section show" id="shipmentSection">
+                        <div class="section-label">
+                            <i class="fas fa-link"></i> Attach Location to Shipment:
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="shipmentTrackingInput" placeholder="Enter tracking number (e.g., TAM123456789)">
+                            <div class="btn-group-actions">
+                                <button onclick="linkShipment()" class="btn-link-shipment">
+                                    <i class="fas fa-link"></i> Link
+                                </button>
+                                <button onclick="attachLocationToShipment()" class="btn-attach-location">
+                                    <i class="fas fa-map-pin"></i> Attach
+                                </button>
+                                <button onclick="trackShipment()" class="btn-track-shipment">
+                                    <i class="fas fa-map-marker-alt"></i> Track
+                                </button>
+                                <button onclick="clearShipmentLink()" class="btn-clear-shipment">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                        <div id="shipmentInfoDisplay" class="info-display">
+                            <div class="info-row">
+                                <span class="info-label">📦 Tracking Number:</span>
+                                <span class="info-value" id="displayTrackingNumber">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">📤 Sender:</span>
+                                <span class="info-value" id="displaySender">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">📥 Receiver:</span>
+                                <span class="info-value" id="displayReceiver">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">📊 Status:</span>
+                                <span class="info-value" id="displayStatus">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">📍 Location Attached:</span>
+                                <span class="info-value" id="displayLocationAttached">No</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== 2. WAREHOUSE SECTION ===== -->
+                    <div class="warehouse-section" id="warehouseSection">
+                        <div class="section-label">
+                            <i class="fas fa-warehouse"></i> Warehouse Location Tracking:
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="warehouseInput" placeholder="Enter warehouse name or code (e.g., WH001)">
+                            <div class="btn-group-actions">
+                                <button onclick="addWarehouseLocation()" class="btn-warehouse-add">
+                                    <i class="fas fa-plus"></i> Add Warehouse
+                                </button>
+                                <button onclick="viewAllWarehouses()" class="btn-warehouse-view">
+                                    <i class="fas fa-eye"></i> View All
+                                </button>
+                                <button onclick="findNearbyWarehouses()" class="btn-warehouse-nearby">
+                                    <i class="fas fa-search-location"></i> Nearby
+                                </button>
+                            </div>
+                        </div>
+                        <div id="warehouseInfoDisplay" class="info-display">
+                            <div class="info-row">
+                                <span class="info-label">🏢 Total Warehouses:</span>
+                                <span class="info-value blue" id="totalWarehouses">0</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">📦 Total Inventory:</span>
+                                <span class="info-value" id="totalInventory">0</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">📍 Nearby Warehouses:</span>
+                                <span class="info-value green" id="nearbyWarehouses">0</span>
+                            </div>
+                        </div>
+                        <div id="warehouseListDisplay" class="report-display">
+                            <div class="report-item" style="border-bottom: 2px solid #ff9800; font-weight: 700;">
+                                <span class="report-time">🏢 Name</span>
+                                <span class="report-coords">📍 Location</span>
+                                <span class="report-status">📊 Status</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== 3. ROUTE SECTION ===== -->
+                    <div class="route-section" id="routeSection">
+                        <div class="section-label">
+                            <i class="fas fa-route"></i> Track Delivery Route:
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="routeTrackingInput" placeholder="Enter tracking number for route">
+                            <div class="btn-group-actions">
+                                <button onclick="startRouteTracking()" class="btn-start-route">
+                                    <i class="fas fa-play"></i> Start Route
+                                </button>
+                                <button onclick="stopRouteTracking()" class="btn-stop-route">
+                                    <i class="fas fa-stop"></i> Stop Route
+                                </button>
+                                <button onclick="saveRouteToDatabase()" class="btn-save-route">
+                                    <i class="fas fa-save"></i> Save Route
+                                </button>
+                            </div>
+                        </div>
+                        <div id="routeInfoDisplay" class="info-display">
+                            <div class="info-row">
+                                <span class="info-label">🚚 Route Status:</span>
+                                <span class="info-value" id="routeStatus">Not started</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">📍 Stops:</span>
+                                <span class="info-value" id="routeStops">0</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">📏 Distance:</span>
+                                <span class="info-value" id="routeDistance">0 km</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">⏱️ Duration:</span>
+                                <span class="info-value" id="routeDuration">0 min</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== 4. LIVE TRACKING SECTION ===== -->
+                    <div class="live-section" id="liveSection">
+                        <div class="section-label">
+                            <i class="fas fa-satellite-dish"></i> Real-Time Driver Tracking:
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="liveTrackingInput" placeholder="Enter driver ID or tracking number">
+                            <div class="btn-group-actions">
+                                <button onclick="startLiveTracking()" class="btn-start-route">
+                                    <i class="fas fa-play"></i> Start Live
+                                </button>
+                                <button onclick="stopLiveTracking()" class="btn-stop-route">
+                                    <i class="fas fa-stop"></i> Stop Live
+                                </button>
+                                <button onclick="updateDriverLocation()" class="btn-warehouse-view">
+                                    <i class="fas fa-sync-alt"></i> Update
+                                </button>
+                            </div>
+                        </div>
+                        <div id="liveInfoDisplay" class="info-display">
+                            <div class="info-row">
+                                <span class="info-label">👤 Driver:</span>
+                                <span class="info-value" id="driverName">Not tracking</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">📍 Status:</span>
+                                <span class="info-value" id="driverStatus">Offline</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">🚚 Vehicle:</span>
+                                <span class="info-value" id="driverVehicle">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">📦 Shipment:</span>
+                                <span class="info-value" id="driverShipment">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== 5. REPORT SECTION ===== -->
+                    <div class="report-section" id="reportSection">
+                        <div class="section-label">
+                            <i class="fas fa-file-alt"></i> Location Report:
+                        </div>
+                        <div class="btn-group-actions">
+                            <button onclick="generateLocationReport()" class="btn-generate-report">
+                                <i class="fas fa-file-alt"></i> Generate Report
+                            </button>
+                            <button onclick="exportLocationReport()" class="btn-export-report">
+                                <i class="fas fa-file-export"></i> Export CSV
+                            </button>
+                            <button onclick="clearLocationReport()" class="btn-clear-shipment">
+                                <i class="fas fa-trash"></i> Clear
+                            </button>
+                        </div>
+                        <div id="reportDisplay" class="report-display">
+                            <div class="report-item" style="border-bottom: 2px solid #4caf50; font-weight: 700;">
+                                <span class="report-time">📅 Date</span>
+                                <span class="report-coords">📍 Coordinates</span>
+                                <span class="report-status">📊 Status</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button onclick="getLocation()" class="btn-gold" id="getLocationBtn">
+                            <i class="fas fa-location-dot"></i> Get My Location
+                        </button>
+                        <button onclick="showCurrentLocation()" class="btn-outline" id="showLocationBtn">
+                            <i class="fas fa-crosshairs"></i> Center Map
+                        </button>
+                        <button onclick="addMarkerAtLocation()" class="btn-outline">
+                            <i class="fas fa-map-marker-alt"></i> Add Marker
+                        </button>
+                        <button onclick="clearMarkers()" class="btn-danger-outline">
+                            <i class="fas fa-trash"></i> Clear Markers
+                        </button>
+                        <button onclick="window.location.href='gps-tracker.html'" class="btn-outline">
+                            <i class="fas fa-arrow-left"></i> Back to GPS
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <!-- ===== LEAFLET JS ===== -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <script>
+        AOS.init();
+
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // ===== VARIABLES =====
+        let map = null;
+        let marker = null;
+        let circle = null;
+        let currentPosition = null;
+        let customMarkers = [];
+        let markerCount = 0;
+        let currentAddress = '';
+        let linkedShipment = null;
+        let shipmentMarker = null;
+        
+        let warehouses = [];
+        let warehouseMarkers = [];
+        
+        let routeControl = null;
+        let routePoints = [];
+        let routeMarkers = [];
+        let isRouteTracking = false;
+        let routeStartTime = null;
+        
+        let liveInterval = null;
+        let driverMarker = null;
+        let isLiveTracking = false;
+        let driverPath = [];
+        let driverPolyline = null;
+        let liveTrackingNumber = null;
+        
+        let locationReport = [];
+        let reportCount = 0;
+
+        const defaultLat = 9.0245;
+        const defaultLng = 38.7485;
+
+        // ============================================================
+        // INITIALIZE MAP
+        // ============================================================
+
+        function initMap(lat, lng) {
+            console.log('🗺️ Initializing map at:', lat, lng);
+            
+            map = L.map('map', {
+                center: [lat, lng],
+                zoom: 15,
+                zoomControl: true
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            const icon = L.divIcon({
+                html: '<i class="fas fa-map-pin" style="color:#D4AF37; font-size:2.5rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));"></i>',
+                iconSize: [30, 42],
+                iconAnchor: [15, 42],
+                className: 'custom-marker'
+            });
+
+            marker = L.marker([lat, lng], { icon: icon }).addTo(map);
+
+            circle = L.circle([lat, lng], {
+                radius: 100,
+                color: '#2196F3',
+                fillColor: '#2196F3',
+                fillOpacity: 0.1,
+                weight: 2,
+                dashArray: '5, 5'
+            }).addTo(map);
+
+            updateMarkerPopup(lat, lng);
+
+            document.getElementById('latDisplay').textContent = lat.toFixed(6);
+            document.getElementById('lngDisplay').textContent = lng.toFixed(6);
+            document.getElementById('mapStatus').textContent = '📍 Location loaded';
+            document.getElementById('mapStatus').style.color = '#4caf50';
+
+            reverseGeocode(lat, lng);
+            
+            console.log('✅ Map initialized successfully');
+        }
+
+        // ============================================================
+        // UPDATE MARKER POPUP
+        // ============================================================
+
+        function updateMarkerPopup(lat, lng, address = null) {
+            if (!marker) return;
+            
+            const addressText = address || currentAddress || 'Loading address...';
+            currentAddress = addressText;
+            
+            let shipmentHtml = '';
+            if (linkedShipment) {
+                shipmentHtml = `
+                    <div class="popup-shipment">
+                        📦 ${linkedShipment.trackingNumber}
+                        <br>
+                        📊 ${linkedShipment.status || 'N/A'}
+                    </div>
+                `;
+            }
+            
+            marker.bindPopup(`
+                <div class="custom-popup">
+                    <div class="popup-title">📍 My Location</div>
+                    <div class="popup-coords">Lat: ${lat.toFixed(6)}</div>
+                    <div class="popup-coords">Lng: ${lng.toFixed(6)}</div>
+                    <div class="popup-address">${addressText}</div>
+                    ${shipmentHtml}
+                </div>
+            `);
+        }
+
+        // ============================================================
+        // GET LOCATION
+        // ============================================================
+
+        function getLocation() {
+            console.log('📡 getLocation() called');
+            
+            const btn = document.getElementById('getLocationBtn');
+            const statusEl = document.getElementById('mapStatus');
+
+            if (!navigator.geolocation) {
+                console.error('❌ Geolocation not supported');
+                statusEl.textContent = '❌ Geolocation not supported';
+                statusEl.style.color = '#ff6b6b';
+                showToast('Geolocation not supported by your browser', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Getting location...';
+            statusEl.textContent = '🔍 Searching for GPS signal...';
+            statusEl.style.color = '#ff9800';
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    console.log('✅ GPS acquired:', position);
+                    currentPosition = position;
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const accuracy = position.coords.accuracy || 0;
+
+                    updateMap(lat, lng, accuracy);
+
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-location-dot"></i> Get My Location';
+                    statusEl.textContent = '✅ Location captured!';
+                    statusEl.style.color = '#4caf50';
+
+                    addToLocationReport(lat, lng, 'Location captured');
+
+                    showToast('📍 Location captured successfully!', 'success');
+                },
+                function(error) {
+                    console.error('❌ GPS Error:', error);
+                    let errorMsg = '❌ Error: ';
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMsg += 'Permission denied. Please allow location access.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMsg += 'Location unavailable. Please try again.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMsg += 'Location request timed out. Please try again.';
+                            break;
+                        default:
+                            errorMsg += 'Unknown error. Please try again.';
+                    }
+                    statusEl.textContent = errorMsg;
+                    statusEl.style.color = '#ff6b6b';
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-location-dot"></i> Get My Location';
+                    showToast(errorMsg, 'error');
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 15000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        // ============================================================
+        // UPDATE MAP
+        // ============================================================
+
+        function updateMap(lat, lng, accuracy) {
+            console.log('🗺️ Updating map to:', lat, lng);
+            
+            if (marker) {
+                marker.setLatLng([lat, lng]);
+            }
+
+            if (circle) {
+                circle.setLatLng([lat, lng]);
+                circle.setRadius(accuracy || 100);
+            }
+
+            if (map) {
+                map.setView([lat, lng], 16);
+            }
+
+            updateMarkerPopup(lat, lng);
+
+            document.getElementById('latDisplay').textContent = lat.toFixed(6);
+            document.getElementById('lngDisplay').textContent = lng.toFixed(6);
+            document.getElementById('accuracyDisplay').textContent = accuracy ? `±${Math.round(accuracy)}m` : 'Unknown';
+            document.getElementById('mapStatus').textContent = '📍 Location updated';
+            document.getElementById('mapStatus').style.color = '#4caf50';
+
+            reverseGeocode(lat, lng);
+            
+            console.log('✅ Map updated');
+        }
+
+        // ============================================================
+        // SHOW CURRENT LOCATION
+        // ============================================================
+
+        function showCurrentLocation() {
+            console.log('🎯 showCurrentLocation() called');
+            
+            if (!currentPosition) {
+                showToast('Please get your location first', 'error');
+                return;
+            }
+
+            const lat = currentPosition.coords.latitude;
+            const lng = currentPosition.coords.longitude;
+
+            if (map) {
+                map.setView([lat, lng], 18);
+                showToast('📍 Centered on your location', 'success');
+                console.log('✅ Map centered at:', lat, lng);
+            }
+        }
+
+        // ============================================================
+        // REVERSE GEOCODE
+        // ============================================================
+
+        function reverseGeocode(lat, lng) {
+            console.log('🌍 Reverse geocoding:', lat, lng);
+            
+            const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        currentAddress = data.display_name;
+                        updateMarkerPopup(lat, lng, data.display_name);
+                        console.log('✅ Address found:', data.display_name);
+                    }
+                })
+                .catch(() => {
+                    console.log('⚠️ Address lookup failed');
+                });
+        }
+
+        // ============================================================
+        // GET GPS COORDINATES TEXT
+        // ============================================================
+
+        function getCoordinatesText() {
+            if (!currentPosition) {
+                return null;
+            }
+            const lat = currentPosition.coords.latitude;
+            const lng = currentPosition.coords.longitude;
+            const accuracy = currentPosition.coords.accuracy || 0;
+            
+            let shipmentText = '';
+            if (linkedShipment) {
+                shipmentText = `\n📦 Shipment: ${linkedShipment.trackingNumber}\n📊 Status: ${linkedShipment.status || 'N/A'}`;
+            }
+            
+            return `📍 GPS Coordinates:\nLatitude: ${lat.toFixed(6)}\nLongitude: ${lng.toFixed(6)}\nAccuracy: ±${Math.round(accuracy)}m\nAddress: ${currentAddress || 'Unknown'}${shipmentText}`;
+        }
+
+        function getShareUrl() {
+            if (!currentPosition) {
+                return null;
+            }
+            const lat = currentPosition.coords.latitude;
+            const lng = currentPosition.coords.longitude;
+            const baseUrl = window.location.origin + window.location.pathname;
+            let url = `${baseUrl}?lat=${lat}&lng=${lng}`;
+            
+            if (linkedShipment) {
+                url += `&track=${linkedShipment.trackingNumber}`;
+            }
+            
+            return url;
+        }
+
+        // ============================================================
+        // 📱 SHARE FUNCTIONS
+        // ============================================================
+
+        function shareWhatsApp() {
+            console.log('📱 shareWhatsApp() called');
+            if (!currentPosition) { showToast('Please get your location first', 'error'); return; }
+            const shareUrl = getShareUrl();
+            const coordsText = getCoordinatesText();
+            const message = `${coordsText}\n\n🔗 Map Link: ${shareUrl}`;
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+            showToast('📱 Opening WhatsApp...', 'info');
+        }
+
+        function shareTelegram() {
+            console.log('📱 shareTelegram() called');
+            if (!currentPosition) { showToast('Please get your location first', 'error'); return; }
+            const shareUrl = getShareUrl();
+            const coordsText = getCoordinatesText();
+            const message = `${coordsText}\n\n🔗 Map Link: ${shareUrl}`;
+            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(message)}`;
+            window.open(telegramUrl, '_blank');
+            showToast('📱 Opening Telegram...', 'info');
+        }
+
+        function copyLocationLink() {
+            console.log('📋 copyLocationLink() called');
+            if (!currentPosition) { showToast('Please get your location first', 'error'); return; }
+            const shareUrl = getShareUrl();
+            copyToClipboard(shareUrl);
+        }
+
+        function copyCoordinates() {
+            console.log('📋 copyCoordinates() called');
+            if (!currentPosition) { showToast('Please get your location first', 'error'); return; }
+            const coordsText = getCoordinatesText();
+            copyToClipboard(coordsText);
+            showToast('✅ Coordinates copied!', 'success');
+        }
+
+        // ============================================================
+        // 📋 COPY TO CLIPBOARD
+        // ============================================================
+
+        function copyToClipboard(text) {
+            console.log('📋 copyToClipboard called');
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text)
+                    .then(() => { showToast('✅ Copied to clipboard!', 'success'); })
+                    .catch(() => { copyWithTextarea(text); });
+            } else {
+                copyWithTextarea(text);
+            }
+        }
+
+        function copyWithTextarea(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.top = '-9999px';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('✅ Copied to clipboard!', 'success');
+            } catch (err) {
+                showToast('📋 Copy this: ' + text.substring(0, 30) + '...', 'info');
+            }
+            textarea.remove();
+        }
+
+        // ============================================================
+        // 📦 1. SHIPMENT FUNCTIONS
+        // ============================================================
+
+        async function linkShipment() {
+            console.log('📦 linkShipment() called');
+            const input = document.getElementById('shipmentTrackingInput');
+            const trackingNumber = input.value.trim();
+            if (!trackingNumber) { showToast('Please enter a tracking number', 'error'); return; }
+
+            showToast('🔍 Looking up shipment...', 'info');
+
+            try {
+                const res = await fetch(`http://localhost:5000/api/public/track/${trackingNumber}`);
+                const data = await res.json();
+                
+                if (!data.success) {
+                    showToast('❌ Shipment not found', 'error');
+                    return;
+                }
+
+                linkedShipment = data.shipment;
+                
+                document.getElementById('displayTrackingNumber').textContent = linkedShipment.trackingNumber;
+                document.getElementById('displaySender').textContent = linkedShipment.senderName || 'N/A';
+                document.getElementById('displayReceiver').textContent = linkedShipment.receiverName || 'N/A';
+                document.getElementById('displayStatus').textContent = linkedShipment.status || 'N/A';
+                document.getElementById('displayLocationAttached').textContent = 'No';
+                document.getElementById('shipmentInfoDisplay').classList.add('show');
+                document.getElementById('shipmentDisplay').textContent = linkedShipment.trackingNumber;
+                
+                if (currentPosition) {
+                    updateMarkerPopup(
+                        currentPosition.coords.latitude,
+                        currentPosition.coords.longitude,
+                        currentAddress
+                    );
+                }
+                
+                showToast(`✅ Shipment ${trackingNumber} linked!`, 'success');
+                console.log('✅ Shipment linked:', linkedShipment);
+                
+            } catch (err) {
+                console.error('❌ Link shipment error:', err);
+                showToast('❌ Error looking up shipment', 'error');
+            }
+        }
+
+        async function attachLocationToShipment() {
+            console.log('📍 attachLocationToShipment() called');
+            
+            if (!linkedShipment) {
+                showToast('Please link a shipment first', 'error');
+                return;
+            }
+            
+            if (!currentPosition) {
+                showToast('Please get your location first', 'error');
+                return;
+            }
+
+            const lat = currentPosition.coords.latitude;
+            const lng = currentPosition.coords.longitude;
+            
+            addToLocationReport(lat, lng, `Attached to shipment ${linkedShipment.trackingNumber}`);
+            
+            document.getElementById('displayLocationAttached').textContent = `✅ ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            document.getElementById('displayLocationAttached').style.color = '#4caf50';
+            
+            const attachIcon = L.divIcon({
+                html: '<i class="fas fa-check-circle" style="color:#4caf50; font-size:2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));"></i>',
+                iconSize: [30, 36],
+                iconAnchor: [15, 36],
+                className: 'custom-marker'
+            });
+            
+            const attachMarker = L.marker([lat, lng], { icon: attachIcon }).addTo(map);
+            attachMarker.bindPopup(`
+                <div style="font-family: 'Inter', sans-serif; padding: 5px;">
+                    <strong style="color: #4caf50;">✅ Location Attached</strong><br>
+                    <span style="color: #666;">Shipment: ${linkedShipment.trackingNumber}</span><br>
+                    <span style="color: #666;">Lat: ${lat.toFixed(6)}</span><br>
+                    <span style="color: #666;">Lng: ${lng.toFixed(6)}</span>
+                </div>
+            `);
+            customMarkers.push(attachMarker);
+            
+            showToast(`✅ Location attached to ${linkedShipment.trackingNumber}!`, 'success');
+            console.log(`✅ Location attached to shipment:`, linkedShipment.trackingNumber);
+        }
+
+        function trackShipment() {
+            console.log('🗺️ trackShipment() called');
+            const input = document.getElementById('shipmentTrackingInput');
+            const trackingNumber = input.value.trim();
+            if (!trackingNumber) { showToast('Please enter a tracking number', 'error'); return; }
+            window.open(`tracking-public.html?track=${trackingNumber}`, '_blank');
+            showToast('📦 Opening tracking page...', 'info');
+        }
+
+        function clearShipmentLink() {
+            console.log('🗑️ clearShipmentLink() called');
+            linkedShipment = null;
+            document.getElementById('shipmentTrackingInput').value = '';
+            document.getElementById('shipmentInfoDisplay').classList.remove('show');
+            document.getElementById('shipmentDisplay').textContent = 'None';
+            if (shipmentMarker) { map.removeLayer(shipmentMarker); shipmentMarker = null; }
+            if (currentPosition) {
+                updateMarkerPopup(currentPosition.coords.latitude, currentPosition.coords.longitude, currentAddress);
+            }
+            showToast('🗑️ Shipment link cleared', 'info');
+        }
+
+        // ============================================================
+        // 🏢 2. WAREHOUSE FUNCTIONS
+        // ============================================================
+
+        async function addWarehouseLocation() {
+            console.log('🏢 addWarehouseLocation() called');
+            
+            const input = document.getElementById('warehouseInput');
+            const warehouseName = input.value.trim();
+            
+            if (!warehouseName) {
+                showToast('Please enter a warehouse name', 'error');
+                return;
+            }
+            
+            if (!currentPosition) {
+                showToast('Please get your location first', 'error');
+                return;
+            }
+
+            const lat = currentPosition.coords.latitude;
+            const lng = currentPosition.coords.longitude;
+            
+            const warehouseData = {
+                name: warehouseName,
+                code: `WH-${Date.now().toString().slice(-6)}`,
+                location: {
+                    address: currentAddress || 'Unknown',
+                    city: 'Addis Ababa',
+                    country: 'Ethiopia',
+                    coordinates: {
+                        lat: lat,
+                        lng: lng
+                    }
+                },
+                contact: {
+                    phone: 'N/A',
+                    email: 'N/A',
+                    manager: 'N/A'
+                },
+                capacity: 100,
+                status: 'active',
+                operatingHours: {
+                    open: '08:00',
+                    close: '18:00'
+                }
+            };
+
+            try {
+                showToast('💾 Saving warehouse to database...', 'info');
+                
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:5000/api/warehouse/warehouses', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(warehouseData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const warehouse = data.warehouse;
+                    warehouses.push(warehouse);
+                    addWarehouseMarker(warehouse);
+                    updateWarehouseDisplay();
+                    addToLocationReport(lat, lng, `Warehouse added: ${warehouseName}`);
+                    input.value = '';
+                    showToast(`🏢 Warehouse "${warehouseName}" saved to database!`, 'success');
+                } else {
+                    showToast('❌ Error: ' + (data.message || 'Unknown error'), 'error');
+                }
+            } catch (err) {
+                console.error('❌ Save warehouse error:', err);
+                showToast('❌ Connection error: ' + err.message, 'error');
+            }
+        }
+
+        async function loadWarehousesFromDB() {
+            console.log('📥 Loading warehouses from database...');
+            
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:5000/api/warehouse/warehouses', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.warehouses) {
+                    warehouses = data.warehouses;
+                    
+                    warehouseMarkers.forEach(m => {
+                        if (map) map.removeLayer(m);
+                    });
+                    warehouseMarkers = [];
+                    
+                    warehouses.forEach(w => {
+                        addWarehouseMarker(w);
+                    });
+                    
+                    updateWarehouseDisplay();
+                    
+                    console.log(`✅ Loaded ${warehouses.length} warehouses from database`);
+                } else {
+                    warehouses = [];
+                    updateWarehouseDisplay();
+                }
+            } catch (err) {
+                console.error('❌ Load warehouses error:', err);
+                warehouses = [];
+                updateWarehouseDisplay();
+            }
+        }
+
+        function addWarehouseMarker(warehouse) {
+            const lat = warehouse.location?.coordinates?.lat || warehouse.lat;
+            const lng = warehouse.location?.coordinates?.lng || warehouse.lng;
+            const name = warehouse.name;
+            
+            const whIcon = L.divIcon({
+                html: '<i class="fas fa-warehouse" style="color:#ff9800; font-size:2.5rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));"></i>',
+                iconSize: [30, 42],
+                iconAnchor: [15, 42],
+                className: 'custom-marker'
+            });
+            
+            const whMarker = L.marker([lat, lng], { icon: whIcon }).addTo(map);
+            whMarker.bindPopup(`
+                <div class="warehouse-popup">
+                    <div class="wh-title">🏢 ${name}</div>
+                    <div class="wh-info">📦 Code: ${warehouse.code || 'N/A'}</div>
+                    <div class="wh-info">📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
+                    <div class="wh-info">🏙️ ${warehouse.location?.city || 'N/A'}</div>
+                    <div class="wh-info">📦 Capacity: ${warehouse.capacity || 0}</div>
+                    <div class="wh-status">✅ ${warehouse.status || 'active'}</div>
+                </div>
+            `);
+            
+            warehouseMarkers.push(whMarker);
+        }
+
+        function updateWarehouseDisplay() {
+            const total = warehouses.length;
+            
+            document.getElementById('totalWarehouses').textContent = total;
+            document.getElementById('warehouseDisplay').textContent = total;
+            document.getElementById('warehouseInfoDisplay').classList.add('show');
+            
+            updateWarehouseList();
+        }
+
+        function updateWarehouseList() {
+            const display = document.getElementById('warehouseListDisplay');
+            display.classList.add('show');
+            
+            let html = `
+                <div class="report-item" style="border-bottom: 2px solid #ff9800; font-weight: 700;">
+                    <span class="report-time">🏢 Name</span>
+                    <span class="report-coords">📍 Location</span>
+                    <span class="report-status">📊 Status</span>
+                </div>
+            `;
+            
+            warehouses.forEach(w => {
+                const lat = w.location?.coordinates?.lat || w.lat;
+                const lng = w.location?.coordinates?.lng || w.lng;
+                html += `
+                    <div class="report-item">
+                        <span class="report-time">${w.name}</span>
+                        <span class="report-coords">${lat?.toFixed(4) || 'N/A'}, ${lng?.toFixed(4) || 'N/A'}</span>
+                        <span class="report-status">✅ ${w.status || 'active'}</span>
+                    </div>
+                `;
+            });
+            
+            display.innerHTML = html;
+        }
+
+        function viewAllWarehouses() {
+            console.log('👁️ viewAllWarehouses() called');
+            
+            if (warehouses.length === 0) {
+                showToast('No warehouses added yet', 'info');
+                return;
+            }
+            
+            const bounds = [];
+            warehouses.forEach(w => {
+                const lat = w.location?.coordinates?.lat || w.lat;
+                const lng = w.location?.coordinates?.lng || w.lng;
+                if (lat && lng) {
+                    bounds.push([lat, lng]);
+                }
+            });
+            if (currentPosition) {
+                bounds.push([currentPosition.coords.latitude, currentPosition.coords.longitude]);
+            }
+            if (bounds.length > 0) {
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
+            
+            updateWarehouseList();
+            showToast(`🏢 Showing ${warehouses.length} warehouses`, 'info');
+        }
+
+        function findNearbyWarehouses() {
+            console.log('🔍 findNearbyWarehouses() called');
+            
+            if (!currentPosition) {
+                showToast('Please get your location first', 'error');
+                return;
+            }
+            
+            if (warehouses.length === 0) {
+                showToast('No warehouses to search', 'info');
+                return;
+            }
+
+            const userLat = currentPosition.coords.latitude;
+            const userLng = currentPosition.coords.longitude;
+            
+            const nearby = warehouses.map(w => {
+                const lat = w.location?.coordinates?.lat || w.lat;
+                const lng = w.location?.coordinates?.lng || w.lng;
+                const dist = L.latLng(userLat, userLng).distanceTo(L.latLng(lat, lng));
+                return { ...w, distance: dist, lat: lat, lng: lng };
+            }).sort((a, b) => a.distance - b.distance);
+            
+            const within10km = nearby.filter(w => w.distance < 10000);
+            const count = within10km.length;
+            
+            document.getElementById('nearbyWarehouses').textContent = count;
+            
+            if (count > 0) {
+                const nearest = within10km[0];
+                showToast(`📍 Nearest warehouse: ${nearest.name} (${(nearest.distance/1000).toFixed(1)}km away)`, 'success');
+                
+                const highlightIcon = L.divIcon({
+                    html: '<i class="fas fa-star" style="color:#FFD700; font-size:2.5rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));"></i>',
+                    iconSize: [30, 42],
+                    iconAnchor: [15, 42],
+                    className: 'custom-marker'
+                });
+                
+                const highlightMarker = L.marker([nearest.lat, nearest.lng], { icon: highlightIcon }).addTo(map);
+                highlightMarker.bindPopup(`
+                    <div style="font-family: 'Inter', sans-serif; padding: 5px;">
+                        <strong style="color: #FFD700;">⭐ Nearest Warehouse</strong><br>
+                        <span style="color: #666;">${nearest.name}</span><br>
+                        <span style="color: #666;">${(nearest.distance/1000).toFixed(1)} km away</span>
+                    </div>
+                `);
+                
+                const bounds = L.latLngBounds([
+                    [userLat, userLng],
+                    [nearest.lat, nearest.lng]
+                ]);
+                map.fitBounds(bounds, { padding: [50, 50] });
+                
+            } else {
+                showToast('No warehouses within 10km', 'info');
+            }
+            
+            updateWarehouseList();
+        }
+
+        // ============================================================
+        // 💾 3. SAVE ROUTE TO DATABASE
+        // ============================================================
+
+        async function saveRouteToDatabase() {
+            console.log('💾 saveRouteToDatabase() called');
+            
+            if (routePoints.length < 2) {
+                showToast('Need at least 2 points to save a route', 'error');
+                return;
+            }
+            
+            const trackingNumber = document.getElementById('routeTrackingInput').value.trim();
+            if (!trackingNumber) {
+                showToast('Please enter a tracking number', 'error');
+                return;
+            }
+            
+            let totalDistance = 0;
+            for (let i = 1; i < routePoints.length; i++) {
+                const p1 = L.latLng(routePoints[i-1][0], routePoints[i-1][1]);
+                const p2 = L.latLng(routePoints[i][0], routePoints[i][1]);
+                totalDistance += p1.distanceTo(p2);
+            }
+            
+            const duration = Math.floor((Date.now() - routeStartTime) / 60000);
+            
+            const routeData = {
+                name: `Route ${trackingNumber} - ${new Date().toLocaleDateString()}`,
+                description: `Delivery route for ${trackingNumber}`,
+                driverId: null,
+                status: 'completed',
+                stops: routePoints.map((point, index) => ({
+                    stopOrder: index + 1,
+                    type: index === 0 ? 'pickup' : 'delivery',
+                    address: currentAddress || 'Unknown',
+                    receiverName: `Stop ${index + 1}`,
+                    status: 'completed',
+                    completedAt: new Date()
+                })),
+                totalDistance: totalDistance / 1000,
+                estimatedDuration: duration,
+                totalStops: routePoints.length,
+                completedStops: routePoints.length,
+                completedAt: new Date()
+            };
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:5000/api/routes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(routeData)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(`✅ Route saved! Route Number: ${data.routeNumber || 'N/A'}`, 'success');
+                } else {
+                    showToast('❌ Error saving route: ' + data.message, 'error');
+                }
+            } catch (err) {
+                console.error('❌ Save route error:', err);
+                showToast('❌ Connection error', 'error');
+            }
+        }
+
+        // ============================================================
+        // 🗺️ 4. ROUTE TRACKING
+        // ============================================================
+
+        function startRouteTracking() {
+            console.log('🚚 startRouteTracking() called');
+            
+            if (!currentPosition) {
+                showToast('Please get your location first', 'error');
+                return;
+            }
+
+            if (isRouteTracking) {
+                showToast('Route already tracking', 'info');
+                return;
+            }
+
+            const input = document.getElementById('routeTrackingInput');
+            const trackingNumber = input.value.trim();
+            
+            if (!trackingNumber) {
+                showToast('Please enter a tracking number', 'error');
+                return;
+            }
+
+            isRouteTracking = true;
+            routeStartTime = Date.now();
+            routePoints = [];
+            routeMarkers = [];
+            
+            const startLat = currentPosition.coords.latitude;
+            const startLng = currentPosition.coords.longitude;
+            routePoints.push([startLat, startLng]);
+            
+            const startIcon = L.divIcon({
+                html: '<i class="fas fa-flag-checkered" style="color:#4caf50; font-size:2rem;"></i>',
+                iconSize: [30, 36],
+                iconAnchor: [15, 36],
+                className: 'custom-marker'
+            });
+            
+            const startMarker = L.marker([startLat, startLng], { icon: startIcon }).addTo(map);
+            startMarker.bindPopup(`🚚 Route Started\n📍 ${startLat.toFixed(6)}, ${startLng.toFixed(6)}\n📦 ${trackingNumber}`);
+            routeMarkers.push(startMarker);
+            
+            document.getElementById('routeInfoDisplay').classList.add('show');
+            document.getElementById('routeStatus').textContent = '🟢 In Progress';
+            document.getElementById('routeStatus').style.color = '#4caf50';
+            document.getElementById('routeStops').textContent = '1';
+            document.getElementById('routeDistance').textContent = '0 km';
+            document.getElementById('routeDuration').textContent = '0 min';
+            
+            addToLocationReport(startLat, startLng, `Route started - ${trackingNumber}`);
+            
+            showToast(`🚚 Route tracking started for ${trackingNumber}`, 'success');
+            console.log('✅ Route tracking started');
+        }
+
+        function stopRouteTracking() {
+            console.log('🛑 stopRouteTracking() called');
+            
+            if (!isRouteTracking) {
+                showToast('No active route tracking', 'info');
+                return;
+            }
+            
+            isRouteTracking = false;
+            
+            if (routeControl) {
+                map.removeControl(routeControl);
+                routeControl = null;
+            }
+            
+            document.getElementById('routeStatus').textContent = '✅ Completed';
+            document.getElementById('routeStatus').style.color = '#4caf50';
+            
+            if (currentPosition) {
+                const lat = currentPosition.coords.latitude;
+                const lng = currentPosition.coords.longitude;
+                routePoints.push([lat, lng]);
+                
+                const endIcon = L.divIcon({
+                    html: '<i class="fas fa-flag-checkered" style="color:#ff6b6b; font-size:2rem;"></i>',
+                    iconSize: [30, 36],
+                    iconAnchor: [15, 36],
+                    className: 'custom-marker'
+                });
+                
+                const endMarker = L.marker([lat, lng], { icon: endIcon }).addTo(map);
+                endMarker.bindPopup(`🏁 Route Ended\n📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+                routeMarkers.push(endMarker);
+                
+                addToLocationReport(lat, lng, 'Route ended');
+            }
+            
+            saveRouteToDatabase();
+            
+            const totalStops = routePoints.length;
+            const totalDist = document.getElementById('routeDistance').textContent;
+            const totalDuration = document.getElementById('routeDuration').textContent;
+            
+            showToast(`✅ Route completed! ${totalStops} stops, ${totalDist}, ${totalDuration}`, 'success');
+            console.log('✅ Route tracking stopped and saved');
+        }
+
+        // ============================================================
+        // 📡 5. LIVE TRACKING - UPDATED WITH PATH AND BACKEND
+        // ============================================================
+
+        function startLiveTracking() {
+            console.log('📡 startLiveTracking() called');
+            
+            if (isLiveTracking) {
+                showToast('Live tracking already running', 'info');
+                return;
+            }
+
+            const input = document.getElementById('liveTrackingInput');
+            const trackingNumber = input.value.trim();
+            
+            if (!trackingNumber) {
+                showToast('Please enter a tracking number or driver ID', 'error');
+                return;
+            }
+
+            liveTrackingNumber = trackingNumber;
+            isLiveTracking = true;
+            document.getElementById('liveBadge').style.display = 'inline-block';
+            document.getElementById('liveInfoDisplay').classList.add('show');
+            document.getElementById('driverName').textContent = 'Driver ' + trackingNumber;
+            document.getElementById('driverStatus').textContent = '🟢 Online';
+            document.getElementById('driverStatus').style.color = '#4caf50';
+            document.getElementById('driverVehicle').textContent = '🚚 Tracking...';
+            document.getElementById('driverShipment').textContent = trackingNumber;
+            
+            // Get current location and start tracking
+            if (currentPosition) {
+                updateDriverMarker(currentPosition.coords.latitude, currentPosition.coords.longitude);
+            }
+            
+            // Start sending location updates every 5 seconds
+            liveInterval = setInterval(() => {
+                if (currentPosition) {
+                    const lat = currentPosition.coords.latitude;
+                    const lng = currentPosition.coords.longitude;
+                    
+                    // Update marker
+                    updateDriverMarker(lat, lng);
+                    
+                    // Send to backend
+                    sendDriverLocation(lat, lng, trackingNumber);
+                }
+            }, 5000);
+            
+            showToast(`📡 Live tracking started for ${trackingNumber}`, 'success');
+            console.log('✅ Live tracking started');
+        }
+
+        function stopLiveTracking() {
+            console.log('🛑 stopLiveTracking() called');
+            
+            if (!isLiveTracking) {
+                showToast('No active live tracking', 'info');
+                return;
+            }
+            
+            isLiveTracking = false;
+            liveTrackingNumber = null;
+            document.getElementById('liveBadge').style.display = 'none';
+            document.getElementById('driverStatus').textContent = '⚫ Offline';
+            document.getElementById('driverStatus').style.color = '#888';
+            
+            if (liveInterval) {
+                clearInterval(liveInterval);
+                liveInterval = null;
+            }
+            
+            // Remove driver marker
+            if (driverMarker) {
+                map.removeLayer(driverMarker);
+                driverMarker = null;
+            }
+            
+            // Remove path
+            if (driverPolyline) {
+                map.removeLayer(driverPolyline);
+                driverPolyline = null;
+                driverPath = [];
+            }
+            
+            showToast('🛑 Live tracking stopped', 'info');
+            console.log('✅ Live tracking stopped');
+        }
+
+        function updateDriverMarker(lat, lng) {
+            const driverIcon = L.divIcon({
+                html: '<i class="fas fa-truck" style="color:#2196F3; font-size:2.5rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));"></i>',
+                iconSize: [30, 42],
+                iconAnchor: [15, 42],
+                className: 'custom-marker'
+            });
+            
+            if (driverMarker) {
+                driverMarker.setLatLng([lat, lng]);
+                driverMarker.setPopupContent(`
+                    <div style="font-family: 'Inter', sans-serif; padding: 5px;">
+                        <strong style="color: #2196F3;">🚚 Live Driver</strong><br>
+                        <span style="color: #666;">Lat: ${lat.toFixed(6)}</span><br>
+                        <span style="color: #666;">Lng: ${lng.toFixed(6)}</span>
+                        ${liveTrackingNumber ? `<br><span style="color: #888;">📦 ${liveTrackingNumber}</span>` : ''}
+                    </div>
+                `);
+            } else {
+                driverMarker = L.marker([lat, lng], { 
+                    icon: driverIcon,
+                    title: '🚚 Driver'
+                }).addTo(map);
+                
+                driverMarker.bindPopup(`
+                    <div style="font-family: 'Inter', sans-serif; padding: 5px;">
+                        <strong style="color: #2196F3;">🚚 Live Driver</strong><br>
+                        <span style="color: #666;">Lat: ${lat.toFixed(6)}</span><br>
+                        <span style="color: #666;">Lng: ${lng.toFixed(6)}</span>
+                        ${liveTrackingNumber ? `<br><span style="color: #888;">📦 ${liveTrackingNumber}</span>` : ''}
+                    </div>
+                `);
+            }
+            
+            // Add to path
+            driverPath.push([lat, lng]);
+            updateDriverPath();
+            
+            // Center map on driver
+            map.panTo([lat, lng]);
+        }
+
+        function updateDriverPath() {
+            if (driverPolyline) {
+                map.removeLayer(driverPolyline);
+            }
+            
+            if (driverPath.length > 1) {
+                driverPolyline = L.polyline(driverPath, {
+                    color: '#2196F3',
+                    weight: 3,
+                    opacity: 0.7,
+                    dashArray: '8, 8'
+                }).addTo(map);
+            }
+        }
+
+        async function sendDriverLocation(lat, lng, trackingNumber) {
+            try {
+                const token = localStorage.getItem('token');
+                const user = JSON.parse(localStorage.getItem('user') || '{}');
+                
+                // Only send if user is a driver
+                if (user.role !== 'driver') {
+                    return;
+                }
+                
+                const response = await fetch('http://localhost:5000/api/driver-location/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        lat: lat,
+                        lng: lng,
+                        accuracy: currentPosition?.coords?.accuracy || 0,
+                        speed: currentPosition?.coords?.speed || 0,
+                        status: 'delivering',
+                        trackingNumber: trackingNumber || null,
+                        address: currentAddress || null
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    console.log('📍 Location sent to backend:', lat, lng);
+                }
+            } catch (err) {
+                console.error('❌ Send location error:', err);
+            }
+        }
+
+        function updateDriverLocation() {
+            console.log('🔄 updateDriverLocation() called');
+            
+            if (!isLiveTracking) {
+                showToast('Start live tracking first', 'error');
+                return;
+            }
+            
+            if (currentPosition && driverMarker) {
+                updateDriverMarker(currentPosition.coords.latitude, currentPosition.coords.longitude);
+                showToast('📍 Driver location updated', 'success');
+                addToLocationReport(
+                    currentPosition.coords.latitude, 
+                    currentPosition.coords.longitude, 
+                    'Manual driver update'
+                );
+            }
+        }
+
+        // ============================================================
+        // 📄 6. LOCATION REPORT
+        // ============================================================
+
+        function addToLocationReport(lat, lng, status) {
+            reportCount++;
+            locationReport.push({
+                id: reportCount,
+                lat: lat.toFixed(6),
+                lng: lng.toFixed(6),
+                address: currentAddress || 'Unknown',
+                status: status || 'Location update',
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        function generateLocationReport() {
+            console.log('📄 generateLocationReport() called');
+            
+            if (locationReport.length === 0) {
+                showToast('No location data to report', 'error');
+                return;
+            }
+
+            const display = document.getElementById('reportDisplay');
+            display.classList.add('show');
+            
+            let html = `
+                <div class="report-item" style="border-bottom: 2px solid #D4AF37; font-weight: 700;">
+                    <span class="report-time">📅 Date</span>
+                    <span class="report-coords">📍 Coordinates</span>
+                    <span class="report-status">📊 Status</span>
+                </div>
+            `;
+            
+            const recent = locationReport.slice(-20);
+            recent.forEach(item => {
+                const date = new Date(item.timestamp);
+                html += `
+                    <div class="report-item">
+                        <span class="report-time">${date.toLocaleString()}</span>
+                        <span class="report-coords">${item.lat}, ${item.lng}</span>
+                        <span class="report-status">${item.status}</span>
+                    </div>
+                `;
+            });
+            
+            display.innerHTML = html;
+            showToast(`📄 Report generated with ${locationReport.length} locations`, 'success');
+            console.log('✅ Location report generated');
+        }
+
+        function exportLocationReport() {
+            console.log('📤 exportLocationReport() called');
+            
+            if (locationReport.length === 0) {
+                showToast('No data to export', 'error');
+                return;
+            }
+
+            let csv = 'ID,Latitude,Longitude,Address,Status,Timestamp\n';
+            locationReport.forEach(item => {
+                csv += `${item.id},${item.lat},${item.lng},"${item.address}","${item.status}",${item.timestamp}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `location_report_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showToast('📤 Report exported successfully!', 'success');
+            console.log('✅ Report exported');
+        }
+
+        function clearLocationReport() {
+            console.log('🗑️ clearLocationReport() called');
+            locationReport = [];
+            reportCount = 0;
+            document.getElementById('reportDisplay').classList.remove('show');
+            document.getElementById('reportDisplay').innerHTML = `
+                <div class="report-item" style="border-bottom: 2px solid #4caf50; font-weight: 700;">
+                    <span class="report-time">📅 Date</span>
+                    <span class="report-coords">📍 Coordinates</span>
+                    <span class="report-status">📊 Status</span>
+                </div>
+            `;
+            showToast('🗑️ Report cleared', 'info');
+        }
+
+        // ============================================================
+        // 📍 MARKERS
+        // ============================================================
+
+        function addMarkerAtLocation() {
+            console.log('📍 addMarkerAtLocation() called');
+            if (!currentPosition) { showToast('Please get your location first', 'error'); return; }
+
+            const lat = currentPosition.coords.latitude;
+            const lng = currentPosition.coords.longitude;
+            markerCount++;
+            
+            const customIcon = L.divIcon({
+                html: `<i class="fas fa-map-marker-alt" style="color:#ff6b6b; font-size:2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));"></i>`,
+                iconSize: [24, 36],
+                iconAnchor: [12, 36],
+                className: 'custom-marker'
+            });
+
+            const newMarker = L.marker([lat, lng], { icon: customIcon }).addTo(map);
+            newMarker.bindPopup(`
+                <div style="font-family: 'Inter', sans-serif; padding: 5px;">
+                    <strong style="color: #ff6b6b;">📍 Marker #${markerCount}</strong><br>
+                    <span style="color: #666;">Lat: ${lat.toFixed(6)}</span><br>
+                    <span style="color: #666;">Lng: ${lng.toFixed(6)}</span>
+                    ${linkedShipment ? `<br><span style="color: #D4AF37;">📦 ${linkedShipment.trackingNumber}</span>` : ''}
+                </div>
+            `);
+            
+            customMarkers.push(newMarker);
+            addToLocationReport(lat, lng, `Marker ${markerCount} added`);
+            showToast(`📍 Marker #${markerCount} added!`, 'success');
+            console.log(`✅ Marker #${markerCount} added`);
+        }
+
+        function clearMarkers() {
+            console.log('🗑️ clearMarkers() called');
+            if (customMarkers.length === 0) { showToast('No markers to clear', 'info'); return; }
+            customMarkers.forEach(m => map.removeLayer(m));
+            customMarkers = [];
+            markerCount = 0;
+            showToast('🗑️ All markers cleared', 'info');
+        }
+
+        // ============================================================
+        // 🧹 RESET ALL
+        // ============================================================
+
+        function resetAll() {
+            console.log('🔄 resetAll() called');
+            
+            if (!confirm('Reset all tracking data?')) return;
+            
+            if (isRouteTracking) { stopRouteTracking(); }
+            if (isLiveTracking) { stopLiveTracking(); }
+            clearShipmentLink();
+            clearMarkers();
+            clearLocationReport();
+            
+            warehouses = [];
+            warehouseMarkers.forEach(m => map.removeLayer(m));
+            warehouseMarkers = [];
+            document.getElementById('totalWarehouses').textContent = '0';
+            document.getElementById('nearbyWarehouses').textContent = '0';
+            document.getElementById('warehouseDisplay').textContent = '0';
+            document.getElementById('warehouseListDisplay').classList.remove('show');
+            
+            routeMarkers.forEach(m => map.removeLayer(m));
+            routeMarkers = [];
+            routePoints = [];
+            
+            if (routeControl) {
+                map.removeControl(routeControl);
+                routeControl = null;
+            }
+            
+            driverPath = [];
+            if (driverPolyline) {
+                map.removeLayer(driverPolyline);
+                driverPolyline = null;
+            }
+            if (driverMarker) {
+                map.removeLayer(driverMarker);
+                driverMarker = null;
+            }
+            
+            showToast('🔄 All tracking data reset', 'info');
+            console.log('✅ All reset complete');
+        }
+
+        // ============================================================
+        // 📋 SHOW FEATURE
+        // ============================================================
+
+        function showFeature(feature) {
+            console.log('📋 showFeature called:', feature);
+            
+            document.getElementById('shipmentSection').classList.remove('show');
+            document.getElementById('warehouseSection').classList.remove('show');
+            document.getElementById('routeSection').classList.remove('show');
+            document.getElementById('liveSection').classList.remove('show');
+            document.getElementById('reportSection').classList.remove('show');
+            
+            document.querySelectorAll('.feature-tabs button').forEach(btn => {
+                btn.className = 'tab-inactive';
+            });
+            
+            const tabs = {
+                'shipment': { element: 'shipmentSection', tab: 'tabShipment', className: 'tab-active' },
+                'warehouse': { element: 'warehouseSection', tab: 'tabWarehouse', className: 'tab-active' },
+                'route': { element: 'routeSection', tab: 'tabRoute', className: 'tab-active' },
+                'live': { element: 'liveSection', tab: 'tabLive', className: 'tab-active' },
+                'report': { element: 'reportSection', tab: 'tabReport', className: 'tab-active' }
+            };
+            
+            const selected = tabs[feature];
+            if (selected) {
+                document.getElementById(selected.element).classList.add('show');
+                document.getElementById(selected.tab).className = selected.className;
+            }
+        }
+
+        // ============================================================
+        // CHECK URL PARAMETERS
+        // ============================================================
+
+        function checkSharedLocation() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const lat = urlParams.get('lat');
+            const lng = urlParams.get('lng');
+            const track = urlParams.get('track');
+            
+            if (lat && lng) {
+                console.log('📍 Shared location detected from URL:', lat, lng);
+                const latNum = parseFloat(lat);
+                const lngNum = parseFloat(lng);
+                
+                if (!isNaN(latNum) && !isNaN(lngNum)) {
+                    currentPosition = {
+                        coords: {
+                            latitude: latNum,
+                            longitude: lngNum,
+                            accuracy: 0
+                        }
+                    };
+                    updateMap(latNum, lngNum, 0);
+                    showToast('📍 Viewing shared location', 'info');
+                }
+            }
+            
+            if (track) {
+                console.log('📦 Shipment tracking detected from URL:', track);
+                document.getElementById('shipmentTrackingInput').value = track;
+                setTimeout(linkShipment, 500);
+            }
+        }
+
+        // ============================================================
+        // SHOW TOAST
+        // ============================================================
+
+        function showToast(message, type = 'info') {
+            console.log('🔔 Toast:', type, '-', message);
+            
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    z-index: 99999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    max-width: 400px;
+                `;
+                document.body.appendChild(toastContainer);
+
+                if (!document.getElementById('toastStyles')) {
+                    const style = document.createElement('style');
+                    style.id = 'toastStyles';
+                    style.textContent = `
+                        @keyframes slideInToast {
+                            from { opacity: 0; transform: translateX(40px); }
+                            to { opacity: 1; transform: translateX(0); }
+                        }
+                        @keyframes slideOutToast {
+                            from { opacity: 1; transform: translateX(0); }
+                            to { opacity: 0; transform: translateX(40px); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+
+            const toast = document.createElement('div');
+            const colors = {
+                success: '#4caf50',
+                error: '#ff6b6b',
+                info: '#2196F3',
+                warning: '#ff9800'
+            };
+
+            toast.style.cssText = `
+                background: #1a1a2e;
+                color: #fff;
+                padding: 14px 20px;
+                border-radius: 12px;
+                border-left: 4px solid ${colors[type] || '#2196F3'};
+                box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                animation: slideInToast 0.4s ease;
+                font-size: 0.9rem;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            `;
+
+            const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+            toast.innerHTML = `<span style="font-size: 1.1rem;">${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOutToast 0.4s ease forwards';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 400);
+            }, 3000);
+        }
+
+        // ============================================================
+        // UPDATE NAVIGATION
+        // ============================================================
+
+        if (user.name) {
+            const authLink = document.getElementById('authNavLink');
+            if (authLink) {
+                authLink.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
+                authLink.href = '#';
+                authLink.onclick = function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'index.html';
+                };
+            }
+            const userNameSpan = document.getElementById('userNameDisplay');
+            if (userNameSpan) {
+                userNameSpan.style.display = 'inline-flex';
+                userNameSpan.style.alignItems = 'center';
+                userNameSpan.style.gap = '8px';
+                userNameSpan.style.background = 'rgba(33,150,243,0.15)';
+                userNameSpan.style.padding = '5px 12px 5px 8px';
+                userNameSpan.style.borderRadius = '40px';
+                userNameSpan.innerHTML = `<i class="fas fa-user-circle" style="font-size: 1.2rem;"></i> ${user.name}`;
+            }
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+
+        console.log('🗺️ GPS Tracking System loaded');
+        console.log('👤 User:', user.name || 'Not logged in');
+
+        initMap(defaultLat, defaultLng);
+        checkSharedLocation();
+
+        setTimeout(() => {
+            getLocation();
+            loadWarehousesFromDB();
+        }, 1000);
+
+        console.log('✅ Ready!');
+        console.log('📦 1. Attach Location to Shipment');
+        console.log('🏢 2. Warehouse Location Tracking (Connected to Database)');
+        console.log('🗺️ 3. Route Tracking (Saves to Database)');
+        console.log('📡 4. Live Driver Tracking (Saves to Database)');
+        console.log('📄 5. Location Report');
+    </script>
+</body>
+</html>

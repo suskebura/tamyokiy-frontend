@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Assistant | TAMYOKIY Logistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .chat-section {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+        }
+        .chat-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            border: 1px solid rgba(212,175,55,0.3);
+            overflow: hidden;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            padding: 20px 30px;
+            background: rgba(212,175,55,0.1);
+            border-bottom: 1px solid rgba(212,175,55,0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+        .chat-header .avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #050505;
+        }
+        .chat-header .info h3 {
+            color: #D4AF37;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .chat-header .info p {
+            color: #888;
+            margin: 0;
+            font-size: 0.8rem;
+        }
+        .chat-header .status {
+            color: #4caf50;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: auto;
+        }
+        .chat-header .status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .chat-messages::-webkit-scrollbar {
+            width: 5px;
+        }
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.02);
+        }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 16px;
+            animation: slideIn 0.3s ease;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message.user {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            color: #050505;
+            border-bottom-right-radius: 4px;
+        }
+        .message.bot {
+            align-self: flex-start;
+            background: rgba(255,255,255,0.06);
+            color: #e0e0e0;
+            border-bottom-left-radius: 4px;
+            border: 1px solid rgba(212,175,55,0.1);
+        }
+        .message .time {
+            font-size: 0.6rem;
+            opacity: 0.5;
+            margin-top: 5px;
+            display: block;
+        }
+        .message .typing {
+            display: flex;
+            gap: 5px;
+            padding: 5px 0;
+        }
+        .message .typing span {
+            width: 8px;
+            height: 8px;
+            background: #888;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        .message .typing span:nth-child(2) { animation-delay: 0.2s; }
+        .message .typing span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 10px 30px;
+            background: rgba(255,255,255,0.02);
+            border-top: 1px solid rgba(212,175,55,0.05);
+            flex-shrink: 0;
+        }
+        .quick-actions button {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(212,175,55,0.2);
+            background: transparent;
+            color: #D4AF37;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .quick-actions button:hover {
+            background: rgba(212,175,55,0.1);
+            border-color: #D4AF37;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            padding: 15px 30px;
+            background: rgba(255,255,255,0.02);
+            border-top: 1px solid rgba(212,175,55,0.1);
+            flex-shrink: 0;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 12px 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 30px;
+            color: white;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .chat-input input:focus {
+            border-color: #D4AF37;
+            background: rgba(212,175,55,0.05);
+        }
+        .chat-input input::placeholder {
+            color: #666;
+        }
+        .chat-input button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            border-radius: 30px;
+            color: #050505;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .chat-input button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+        }
+        .chat-input button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 30px 20px;
+            color: #888;
+        }
+        .welcome-message i {
+            font-size: 3rem;
+            color: #D4AF37;
+            opacity: 0.3;
+            margin-bottom: 15px;
+        }
+        .welcome-message h3 {
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+        .welcome-message p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                height: 90vh;
+                border-radius: 16px;
+            }
+            .chat-header {
+                padding: 15px 20px;
+            }
+            .chat-messages {
+                padding: 15px 20px;
+            }
+            .chat-input {
+                padding: 12px 20px;
+                flex-wrap: wrap;
+            }
+            .chat-input input {
+                min-width: 100px;
+            }
+            .quick-actions {
+                padding: 8px 20px;
+            }
+            .quick-actions button {
+                font-size: 0.7rem;
+                padding: 6px 12px;
+            }
+            .message {
+                max-width: 90%;
+                font-size: 0.9rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .chat-header .status {
+                display: none;
+            }
+            .chat-input input {
+                font-size: 0.85rem;
+            }
+            .chat-input button {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <!-- 🆕 REAL-TIME DASHBOARD - ADMIN ONLY -->
+<a href="realtime-dashboard.html" class="nav-link" id="realtimeNavLink" style="display:none;"><i class="fas fa-chart-line"></i> Live</a>
+<!-- 🗺️ GPS MAP -->
+<a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                <a href="how-it-works.html" class="nav-link"><i class="fas fa-question-circle"></i> How It Works</a>
+                <a href="chatbot.html" class="nav-link active"><i class="fas fa-robot"></i> Chat Assistant</a>
+                
+                <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink"><i class="fas fa-warehouse"></i> My Storage</a>
+                <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink" style="display:none;"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink" style="display:none;"><i class="fas fa-boxes"></i> Inventory</a>
+                <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink" style="display:none;"><i class="fas fa-warehouse"></i> Pickups</a>
+                
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="chat-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="chat.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="chat-container" data-aos="fade-up">
+                <div class="chat-header">
+                    <div class="avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="info">
+                        <h3>🤖 TAMYOKIY Assistant</h3>
+                        <p>Your logistics helpdesk 24/7</p>
+                    </div>
+                    <div class="status">
+                        <span>Online</span>
+                    </div>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="welcome-message" id="welcomeMessage">
+                        <i class="fas fa-comment-dots"></i>
+                        <h3>👋 Welcome to TAMYOKIY Assistant!</h3>
+                        <p>I'm here to help you with:<br>
+                        📦 Creating shipments &nbsp;|&nbsp; 📍 Tracking packages<br>
+                        🏢 Warehouse storage &nbsp;|&nbsp; 🚚 Requesting dispatch<br>
+                        💳 Making payments &nbsp;|&nbsp; 📄 Viewing invoices<br>
+                        🗺️ Routes &nbsp;|&nbsp; 👤 Account &nbsp;|&nbsp; 📞 Support</p>
+                        <p style="color: #666; font-size: 0.85rem; margin-top: 10px;">
+                            💡 Try asking: "How do I create a shipment?" or "What is a route?"
+                        </p>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <button onclick="askQuestion('How do I create a shipment?')">📦 Create</button>
+                    <button onclick="askQuestion('How to track my package?')">📍 Track</button>
+                    <button onclick="askQuestion('How to use warehouse storage?')">🏢 Storage</button>
+                    <button onclick="askQuestion('How to request dispatch?')">🚚 Dispatch</button>
+                    <button onclick="askQuestion('What payment methods are accepted?')">💳 Pay</button>
+                    <button onclick="askQuestion('How to get an invoice?')">📄 Invoice</button>
+                    <button onclick="askQuestion('What is a route?')">🗺️ Route</button>
+                    <button onclick="askQuestion('How to rate my driver?')">⭐ Rate</button>
+                    <button onclick="askQuestion('How to contact support?')">📞 Support</button>
+                    <button onclick="clearChat()" style="border-color: rgba(255,107,107,0.3); color: #ff6b6b;">🗑️ Clear</button>
+                </div>
+
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="Type your question here..." onkeypress="if(event.key==='Enter') sendMessage()">
+                    <button onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i> Send
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+
+        // ============================================================
+        // 🤖 CHATBOT - FIXED WITH WORKING BUTTONS
+        // ============================================================
+
+        // All questions and answers
+        const botAnswers = {
+            createShipment: {
+                match: ['create shipment', 'make shipment', 'new shipment', 'send package', 'how to ship', 'create shipping', 'ship package'],
+                response: '📦 To create a shipment:\n\n1️⃣ Go to your Dashboard\n2️⃣ Click "Create New Shipment"\n3️⃣ Fill in Sender Name & Address\n4️⃣ Fill in Receiver Name & Address\n5️⃣ Enter Package Weight (kg)\n6️⃣ Choose Service Type:\n   • 📦 Standard (5-18 days)\n   • ⚡ Express (2-6 days)\n   • 🌙 Overnight (1 day)\n7️⃣ Click "Create Shipment"\n\n✅ You will get a tracking number!'
+            },
+            shippingCost: {
+                match: ['how much', 'shipping cost', 'delivery cost', 'price of shipping', 'cost of shipping', 'what is the cost'],
+                response: '💰 Shipping Costs:\n\n📦 Standard: $10 + $5 per kg\n⚡ Express: $20 + $8 per kg\n🌙 Overnight: $40 + $12 per kg\n\n📋 Examples:\n• 5kg Standard = $35\n• 10kg Express = $100\n• 2kg Overnight = $64'
+            },
+            serviceTypes: {
+                match: ['standard shipping', 'express shipping', 'overnight shipping', 'shipping options', 'delivery speed', 'service type', 'what is standard', 'what is express', 'what is overnight'],
+                response: '🚚 Service Types:\n\n📦 Standard Shipping:\n• Delivery: 5-18 days\n• Cost: $10 + $5 per kg\n\n⚡ Express Shipping:\n• Delivery: 2-6 days\n• Cost: $20 + $8 per kg\n\n🌙 Overnight Shipping:\n• Delivery: 1 day\n• Cost: $40 + $12 per kg\n\n💡 Choose based on your needs!'
+            },
+            tracking: {
+                match: ['track my package', 'tracking number', 'where is my package', 'shipment status', 'check status', 'find my package'],
+                response: '📍 To track your package:\n\n1️⃣ Go to the Track page\n2️⃣ Enter your Tracking Number\n3️⃣ Click "Track"\n\n📊 Tracking Statuses:\n• 📋 Pending: Awaiting pickup\n• 📦 Picked Up: Package with driver\n• 🚚 In Transit: On the way\n• 🚛 Out for Delivery: Almost there!\n• ✅ Delivered: Package received'
+            },
+            warehouse: {
+                match: ['warehouse storage', 'store items', 'my storage', 'warehouse service', 'storage service', 'how to store'],
+                response: '🏢 Warehouse Storage:\n\n📦 What you can do:\n1️⃣ Ship items to our warehouse\n2️⃣ View all stored items in "My Storage"\n3️⃣ Track storage days and costs\n4️⃣ Request dispatch anytime\n\n💰 Storage Cost: $2 per day per item\n🔒 Secure and climate-controlled storage'
+            },
+            storageCost: {
+                match: ['storage cost', 'warehouse cost', 'daily cost', 'storage fee', 'cost per day', 'storage price'],
+                response: '💰 Storage Costs:\n\n💵 Daily Rate: $2 per item per day\n\n📋 Examples:\n• 1 item for 5 days = $10\n• 3 items for 10 days = $60\n• 10 items for 30 days = $600\n\n💡 No minimum storage days'
+            },
+            dispatch: {
+                match: ['request dispatch', 'dispatch request', 'ship from warehouse', 'send from storage', 'release item'],
+                response: '🚚 To request dispatch:\n\n1️⃣ Go to "My Storage" page\n2️⃣ Find the item you want to ship\n3️⃣ Click "Request Dispatch"\n4️⃣ Enter delivery address\n5️⃣ Enter receiver name\n6️⃣ Click "Confirm Dispatch"\n\n✅ Your item will be shipped within 24 hours'
+            },
+            payment: {
+                match: ['payment methods', 'how to pay', 'pay with', 'credit card', 'apple pay', 'google pay', 'paypal', 'payment options'],
+                response: '💳 Accepted Payment Methods:\n\n✅ Credit/Debit Card\n   • Visa, Mastercard, Amex, Discover\n\n✅ Apple Pay\n   • Pay with your Apple device\n\n✅ Google Pay\n   • Pay with your Android device\n\n✅ PayPal\n   • Use your PayPal account\n\n🔒 All payments are secure and encrypted'
+            },
+            invoice: {
+                match: ['view invoice', 'get invoice', 'download invoice', 'invoice', 'receipt', 'payment receipt'],
+                response: '📄 To view your invoices:\n\n1️⃣ Go to your Dashboard\n2️⃣ Scroll to "My Invoices" section\n3️⃣ Click "View" on any invoice\n4️⃣ Download or print as PDF\n\n📋 What\'s on your invoice:\n• Invoice number\n• Tracking number\n• Amount paid\n• Tax details\n• Payment method'
+            },
+            route: {
+                match: ['what is a route', 'what is route', 'route meaning', 'define route', 'route definition', 'delivery route'],
+                response: '🗺️ What is a Route?\n\nA Route is a planned delivery path that a driver follows to deliver multiple packages.\n\n🚚 How it works:\n1️⃣ Admin creates routes by grouping shipments\n2️⃣ Driver is assigned to the route\n3️⃣ Driver follows stops in order\n4️⃣ Each stop is a pickup or delivery\n\n💡 You (Client) don\'t need to create routes!'
+            },
+            services: {
+                match: ['what services', 'do you offer', 'logistics services', 'shipping services', 'what do you do'],
+                response: '📦 TAMYOKIY Services:\n\n✅ Freight Transport\n✅ Last-Mile Delivery\n✅ Fleet Management\n✅ Warehousing\n✅ International Shipping\n✅ 24/7 Support\n✅ Supply Chain Consulting\n✅ Cargo Insurance\n\n💡 Visit our Services page for more details!'
+            },
+            account: {
+                match: ['update profile', 'change password', 'profile picture', 'edit account', 'account settings', 'my account'],
+                response: '👤 Account Management:\n\n📋 What you can do:\n1️⃣ Go to Profile page\n2️⃣ Update your name or email\n3️⃣ Upload profile picture\n4️⃣ Change password\n5️⃣ View account details\n\n🔒 Your data is secure and private'
+            },
+            deleteAccount: {
+                match: ['delete account', 'remove account', 'close account', 'deactivate account'],
+                response: '⚠️ Delete Account:\n\n❗ WARNING: This is permanent!\n\n📋 To delete your account:\n1️⃣ Go to Profile page\n2️⃣ Scroll to "Danger Zone"\n3️⃣ Click "Delete My Account"\n4️⃣ Type "DELETE" to confirm\n\n❌ This cannot be undone!'
+            },
+            contact: {
+                match: ['contact support', 'customer service', 'help', 'reach out', 'email support', 'call support', 'phone number'],
+                response: '📞 Contact TAMYOKIY:\n\n📧 Email: hello@tamyokiy.com\n📱 Phone: +1 (800) 555-8899\n🌐 Global HQ: Dubai, UAE\n\n⏰ We reply within 2 hours\n🕐 Available 24/7/365'
+            },
+            driver: {
+                match: ['who is my driver', 'assigned driver', 'driver info', 'delivery driver', 'driver assigned'],
+                response: '🚚 About Delivery Drivers:\n\n📋 Driver features:\n• Assigned to your shipment\n• Real-time location updates\n• Contact info available\n• Rating system (1-5 stars)\n\n⭐ You can rate drivers after delivery'
+            },
+            rateDriver: {
+                match: ['rate driver', 'driver rating', 'review driver', 'star rating', 'rate delivery'],
+                response: '⭐ Rate Your Driver:\n\n📋 How to rate:\n1️⃣ After delivery is completed\n2️⃣ Go to your Dashboard\n3️⃣ Click "Rate This Delivery"\n4️⃣ Rate driver (1-5 stars)\n5️⃣ Rate service (1-5 stars)\n6️⃣ Leave a comment (optional)\n\n💡 Your feedback helps us improve!'
+            },
+            insurance: {
+                match: ['insurance', 'cargo insurance', 'protection', 'damaged package', 'lost package', 'compensation'],
+                response: '🛡️ Cargo Insurance:\n\n✅ All shipments are fully insured\n💵 Compensation up to 100% value\n📋 What\'s covered:\n   • Loss\n   • Theft\n   • Damage\n   • Weather events\n\n💡 Insurance is included in shipping cost!'
+            },
+            eta: {
+                match: ['eta', 'estimated delivery', 'delivery time', 'arrival time', 'when will it arrive', 'delivery date'],
+                response: '📅 Estimated Delivery Time (ETA):\n\n📦 Standard: 5-18 days\n⚡ Express: 2-6 days\n🌙 Overnight: 1 day\n\n💡 Check your tracking page for exact ETA'
+            },
+            refund: {
+                match: ['refund', 'return', 'money back', 'cancel shipment', 'cancel order', 'refund policy'],
+                response: '↩️ Refund & Cancellation:\n\n📋 Cancellation policy:\n• Before pickup: Full refund\n• After pickup: 50% refund\n• After transit: No refund\n\n📧 Contact support for refunds: hello@tamyokiy.com'
+            },
+            howItWorks: {
+                match: ['how it works', 'how to use', 'guide', 'tutorial', 'help guide', 'user guide', 'how do i start'],
+                response: '📖 How TAMYOKIY Works:\n\n1️⃣ Create Account\n2️⃣ Create Shipment\n3️⃣ Track Package\n4️⃣ Warehouse Storage\n5️⃣ Request Dispatch\n6️⃣ Pay & Get Invoice\n\n💡 Visit "How It Works" page for complete guide!'
+            },
+            features: {
+                match: ['features', 'what features', 'platform features', 'system features', 'what can i do'],
+                response: '🌟 TAMYOKIY Features:\n\n✅ Real-time Tracking\n✅ Secure Payments\n✅ Warehouse Storage\n✅ Route Optimization\n✅ Driver Assignment\n✅ Invoice Generation\n✅ 24/7 Support\n✅ Mobile Friendly'
+            },
+            about: {
+                match: ['about tamyokiy', 'who are you', 'company info', 'our company', 'tamyokiy'],
+                response: '🏢 About TAMYOKIY:\n\n📍 Founded: 2026\n🌐 Global HQ: Dubai, UAE\n\n🎯 Our Mission:\nTo deliver excellence in logistics through innovation, reliability, and commitment.\n\n🌟 Core Values:\n• Integrity\n• Excellence\n• Innovation\n• Customer-first'
+            },
+            careers: {
+                match: ['careers', 'jobs', 'hiring', 'employment', 'work with us', 'apply', 'job opening'],
+                response: '💼 Careers at TAMYOKIY:\n\n📋 Current Openings:\n• Senior Logistics Manager\n• Fleet Operations Specialist\n• Supply Chain Analyst\n• Customer Success Expert\n• Warehouse Operations Manager\n\n📧 Apply: Send CV to hello@tamyokiy.com'
+            },
+            login: {
+                match: ['login', 'sign in', 'log in', 'register', 'sign up', 'create account', 'forgot password'],
+                response: '🔐 Login & Registration:\n\n📋 How to Login:\n1️⃣ Go to Login page\n2️⃣ Enter email and password\n3️⃣ Click "Login"\n\n📝 How to Register:\n1️⃣ Go to Register page\n2️⃣ Choose role (Client/Driver)\n3️⃣ Click "Register"\n\n🔒 Account locks after 5 failed attempts'
+            },
+            businessHours: {
+                match: ['business hours', 'working hours', 'open', 'close', 'operating hours', 'when are you open'],
+                response: '🕐 TAMYOKIY Hours:\n\n📋 Operating Hours:\n• Support: 24/7/365\n• Warehouse: 08:00 - 18:00\n• Customer Service: 24/7\n• Delivery: 06:00 - 22:00\n\n📧 Email replies within 2 hours'
+            },
+            destinations: {
+                match: ['shipping destinations', 'where can i ship', 'ship to', 'deliver to', 'countries served'],
+                response: '🌍 Shipping Destinations:\n\n🇦🇪 UAE\n🇨🇦 Canada\n🇪🇹 Ethiopia\n🇺🇸 USA\n🇬🇧 UK\n🇩🇪 Germany\n🇫🇷 France\n🇯🇵 Japan\n🇦🇺 Australia\n\n💡 More countries coming soon!'
+            },
+            packaging: {
+                match: ['packaging', 'how to pack', 'pack', 'box', 'package', 'packing materials'],
+                response: '📦 Packaging Guidelines:\n\n✅ Tips:\n• Use sturdy boxes\n• Seal with strong tape\n• Use bubble wrap for fragile items\n• Label clearly\n• Include sender/receiver info\n\n💡 We provide packaging services!'
+            }
+        };
+
+        // ============================================================
+        // 🤖 CHAT FUNCTIONS
+        // ============================================================
+
+        function getBotResponse(message) {
+            const lowerMsg = message.toLowerCase();
+
+            // Check each topic
+            for (const [key, topic] of Object.entries(botAnswers)) {
+                for (const word of topic.match) {
+                    if (lowerMsg.includes(word)) {
+                        return topic.response;
+                    }
+                }
+            }
+
+            // Greetings
+            if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
+                return '👋 Hello! Welcome to TAMYOKIY Logistics!\n\nI\'m here to help you with:\n📦 Shipments\n📍 Tracking\n🏢 Warehouse\n🚚 Dispatch\n💳 Payments\n📄 Invoices\n🗺️ Routes\n👤 Account\n📞 Support\n\nWhat can I help you with today?';
+            }
+
+            // Thank you
+            if (lowerMsg.includes('thank') || lowerMsg.includes('thanks')) {
+                return '🙏 You\'re welcome! \n\n💡 Anything else I can help you with?\n\nHave a great day! 🌟';
+            }
+
+            // Goodbye
+            if (lowerMsg.includes('bye') || lowerMsg.includes('goodbye') || lowerMsg.includes('see you')) {
+                return '👋 Goodbye! \n\n📦 Thank you for using TAMYOKIY Logistics!\n📍 Track your packages anytime\n🏢 Store items in our warehouse\n💳 Pay securely online\n\n📧 Need help? hello@tamyokiy.com\n📱 +1 (800) 555-8899\n\nCome back anytime!\nHave a great day! 🌟';
+            }
+
+            // Fallback
+            return '🤔 I\'m not sure about that. I can help with:\n\n📦 Creating shipments\n📍 Tracking packages\n🏢 Warehouse storage\n🚚 Requesting dispatch\n💳 Payments\n📄 Invoices\n🗺️ Routes\n📞 Support\n⭐ Ratings\n🛡️ Insurance\n\n💡 Try: "How do I create a shipment?"';
+        }
+
+        // ============================================================
+        // SEND MESSAGE
+        // ============================================================
+        
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addMessage(message, 'user');
+            input.value = '';
+            
+            showTyping();
+            
+            setTimeout(() => {
+                removeTyping();
+                const response = getBotResponse(message);
+                addMessage(response, 'bot');
+                scrollToBottom();
+            }, 500 + Math.random() * 500);
+        }
+
+        function askQuestion(question) {
+            // Set the input value
+            document.getElementById('chatInput').value = question;
+            // Send the message
+            sendMessage();
+        }
+
+        function addMessage(text, sender) {
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            const welcome = document.getElementById('welcomeMessage');
+            if (welcome) welcome.remove();
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const formattedText = text.replace(/\n/g, '<br>');
+            messageDiv.innerHTML = formattedText + `<span class="time">${getCurrentTime()}</span>`;
+            
+            messagesContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function showTyping() {
+            const messagesContainer = document.getElementById('chatMessages');
+            
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="typing">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            `;
+            
+            messagesContainer.appendChild(typingDiv);
+            scrollToBottom();
+        }
+
+        function removeTyping() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) typing.remove();
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('chatMessages');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function clearChat() {
+            const container = document.getElementById('chatMessages');
+            container.innerHTML = `
+                <div class="welcome-message" id="welcomeMessage">
+                    <i class="fas fa-comment-dots"></i>
+                    <h3>👋 Welcome to TAMYOKIY Assistant!</h3>
+                    <p>I'm here to help you with:<br>
+                    📦 Creating shipments &nbsp;|&nbsp; 📍 Tracking packages<br>
+                    🏢 Warehouse storage &nbsp;|&nbsp; 🚚 Requesting dispatch<br>
+                    💳 Making payments &nbsp;|&nbsp; 📄 Viewing invoices<br>
+                    🗺️ Routes &nbsp;|&nbsp; 👤 Account &nbsp;|&nbsp; 📞 Support</p>
+                    <p style="color: #666; font-size: 0.85rem; margin-top: 10px;">
+                        💡 Try asking: "How do I create a shipment?" or "What is a route?"
+                    </p>
+                </div>
+            `;
+        }
+
+        // Enter key support
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // ============================================================
+        // UPDATE NAVIGATION FOR LOGGED IN USERS
+        // ============================================================
+        
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (token && user.name) {
+            const authLink = document.getElementById('authNavLink');
+            if (authLink) {
+                authLink.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
+                authLink.href = '#';
+                authLink.onclick = function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'index.html';
+                };
+            }
+            
+            const userNameSpan = document.getElementById('userNameDisplay');
+            if (userNameSpan) {
+                userNameSpan.style.display = 'inline-flex';
+                userNameSpan.style.alignItems = 'center';
+                userNameSpan.style.gap = '8px';
+                userNameSpan.style.background = 'rgba(212, 175, 55, 0.15)';
+                userNameSpan.style.padding = '5px 12px 5px 8px';
+                userNameSpan.style.borderRadius = '40px';
+                userNameSpan.innerHTML = `<i class="fas fa-user-circle" style="font-size: 1.2rem;"></i> ${user.name}`;
+            }
+            
+            const warehouseServiceLink = document.getElementById('warehouseServiceLink');
+            if (warehouseServiceLink && user.role === 'client') {
+                warehouseServiceLink.style.display = 'inline-block';
+            }
+            
+            if (user.role !== 'admin') {
+                const adminLink = document.getElementById('adminNavLink');
+                if (adminLink) adminLink.style.display = 'none';
+                const forecastLink = document.getElementById('forecastNavLink');
+                if (forecastLink) forecastLink.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

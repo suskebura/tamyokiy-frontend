@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Dashboard | TAMYOKIY Logistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .dashboard-section {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+        }
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(20,20,30,0.7));
+            backdrop-filter: blur(15px);
+            border-radius: 32px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(212,175,55,0.4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .welcome-card h1 {
+            color: #D4AF37;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .welcome-card .live-badge {
+            background: #ff6b6b;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            animation: pulse 2s infinite;
+        }
+        .welcome-card .live-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .last-updated {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        .last-updated span {
+            color: #D4AF37;
+        }
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid rgba(212,175,55,0.3);
+            color: #D4AF37;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        .refresh-btn:hover {
+            background: rgba(212,175,55,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(212,175,55,0.15);
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212,175,55,0.4);
+        }
+        .stat-card .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .stat-card .stat-header i {
+            font-size: 2rem;
+            color: #D4AF37;
+            opacity: 0.5;
+        }
+        .stat-card .stat-number {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .stat-card .stat-label {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        .stat-card .stat-change {
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+        .stat-change.up {
+            background: rgba(76,175,80,0.2);
+            color: #4caf50;
+        }
+        .stat-change.down {
+            background: rgba(255,107,107,0.2);
+            color: #ff6b6b;
+        }
+        .stat-change.neutral {
+            background: rgba(255,165,0,0.2);
+            color: #ffa500;
+        }
+
+        .filter-bar {
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 20px 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(212,175,55,0.15);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        .filter-bar input, .filter-bar select {
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+            min-width: 160px;
+            flex: 1;
+        }
+        .filter-bar input:focus, .filter-bar select:focus {
+            border-color: #D4AF37;
+            background: rgba(212,175,55,0.05);
+        }
+        .filter-bar input::placeholder {
+            color: #666;
+        }
+        .filter-bar select option {
+            background: #1a1a2e;
+            color: white;
+        }
+        .filter-btn {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .filter-btn.apply {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            color: #050505;
+        }
+        .filter-btn.apply:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+        }
+        .filter-btn.clear {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #888;
+        }
+        .filter-btn.clear:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(212,175,55,0.15);
+            padding: 5px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 700px;
+        }
+        .data-table th {
+            padding: 14px 16px;
+            text-align: left;
+            color: #D4AF37;
+            border-bottom: 2px solid rgba(212,175,55,0.2);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .data-table th:hover {
+            color: #FFD700;
+        }
+        .data-table th i {
+            margin-left: 5px;
+            font-size: 0.7rem;
+            opacity: 0.5;
+        }
+        .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(212,175,55,0.06);
+            color: rgba(255,255,255,0.85);
+            vertical-align: middle;
+        }
+        .data-table tr:hover td {
+            background: rgba(212,175,55,0.04);
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-pending { background: rgba(255,165,0,0.2); color: #ffa500; }
+        .status-picked_up { background: rgba(0,255,255,0.2); color: #00ffff; }
+        .status-in_transit { background: rgba(102,102,255,0.2); color: #6666ff; }
+        .status-out_for_delivery { background: rgba(255,102,255,0.2); color: #ff66ff; }
+        .status-delivered { background: rgba(76,175,80,0.2); color: #4caf50; }
+
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .pagination .info {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        .pagination .info strong {
+            color: #D4AF37;
+        }
+        .pagination .pages {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        .pagination .pages button {
+            padding: 8px 14px;
+            border-radius: 8px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.05);
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+        .pagination .pages button:hover {
+            background: rgba(212,175,55,0.1);
+            border-color: rgba(212,175,55,0.2);
+            color: #D4AF37;
+        }
+        .pagination .pages button.active {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            color: #050505;
+            border-color: #D4AF37;
+        }
+        .pagination .pages button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.3);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+            color: #D4AF37;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .dashboard-card {
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(212,175,55,0.15);
+            padding: 25px;
+        }
+        .dashboard-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .dashboard-card .card-header h3 {
+            color: #D4AF37;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .dashboard-card .card-header .badge {
+            background: rgba(212,175,55,0.15);
+            color: #D4AF37;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+        .chart-container {
+            height: 250px;
+        }
+
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .activity-feed::-webkit-scrollbar {
+            width: 4px;
+        }
+        .activity-feed::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.02);
+        }
+        .activity-feed::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 10px;
+        }
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .activity-item .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1rem;
+        }
+        .activity-item .icon.pickup { background: rgba(33,150,243,0.15); color: #2196F3; }
+        .activity-item .icon.delivery { background: rgba(76,175,80,0.15); color: #4caf50; }
+        .activity-item .icon.warehouse { background: rgba(212,175,55,0.15); color: #D4AF37; }
+        .activity-item .icon.driver { background: rgba(255,152,0,0.15); color: #ff9800; }
+        .activity-item .content {
+            flex: 1;
+        }
+        .activity-item .content .title {
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+        .activity-item .content .title strong {
+            color: #D4AF37;
+        }
+        .activity-item .content .time {
+            color: #666;
+            font-size: 0.7rem;
+            margin-top: 3px;
+        }
+
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .records-count {
+            color: #888;
+            font-size: 0.85rem;
+            padding: 10px 0;
+        }
+        .records-count strong {
+            color: #D4AF37;
+        }
+
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .bottom-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            .filter-bar {
+                flex-direction: column;
+            }
+            .filter-bar input, .filter-bar select {
+                width: 100%;
+                min-width: unset;
+            }
+            .welcome-card h1 {
+                font-size: 1.2rem;
+            }
+            .pagination {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="realtime-dashboard.html" class="nav-link active"><i class="fas fa-chart-line"></i> Live</a>
+                <a href="gps-tracker.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> GPS Tracker</a>
+                <a href="forecast.html" class="nav-link"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="dashboard-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="dashboard.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="dashboard-container">
+                <!-- Welcome Card -->
+                <div class="welcome-card" data-aos="fade-up">
+                    <h1>
+                        <i class="fas fa-chart-line"></i>
+                        Real-Time Dashboard
+                        <span class="live-badge">LIVE</span>
+                    </h1>
+                    <div style="display:flex; align-items:center; gap:15px; flex-wrap:wrap;">
+                        <div class="last-updated">
+                            <i class="fas fa-clock"></i> Last updated: <span id="lastUpdated">Loading...</span>
+                        </div>
+                        <button class="refresh-btn" onclick="refreshData()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid" id="statsGrid" data-aos="fade-up" data-aos-delay="50">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-number" id="totalShipments">0</span>
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-label">Total Shipments</div>
+                        <span class="stat-change neutral" id="shipmentsChange">Loading...</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-number" id="activeDrivers">0</span>
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <div class="stat-label">Active Drivers</div>
+                        <span class="stat-change neutral" id="driversChange">Loading...</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-number" id="todayDeliveries">0</span>
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-label">Today's Deliveries</div>
+                        <span class="stat-change neutral" id="deliveriesChange">Loading...</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-number" id="pendingDeliveries">0</span>
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-label">Pending Deliveries</div>
+                        <span class="stat-change neutral" id="pendingChange">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Filter Bar -->
+                <div class="filter-bar" data-aos="fade-up" data-aos-delay="100">
+                    <input type="text" id="searchInput" placeholder="🔍 Search by tracking or receiver..." onkeyup="applyFilters()">
+                    <select id="statusFilter" onchange="applyFilters()">
+                        <option value="">All Status</option>
+                        <option value="pending">📋 Pending</option>
+                        <option value="picked_up">📦 Picked Up</option>
+                        <option value="in_transit">🚚 In Transit</option>
+                        <option value="out_for_delivery">🚛 Out for Delivery</option>
+                        <option value="delivered">✅ Delivered</option>
+                    </select>
+                    <input type="date" id="dateFrom" onchange="applyFilters()" placeholder="From">
+                    <input type="date" id="dateTo" onchange="applyFilters()" placeholder="To">
+                    <button class="filter-btn apply" onclick="applyFilters()">
+                        <i class="fas fa-search"></i> Apply
+                    </button>
+                    <button class="filter-btn clear" onclick="clearFilters()">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+
+                <!-- Shipments Table -->
+                <div class="table-container" data-aos="fade-up" data-aos-delay="150">
+                    <div class="records-count" id="recordsCount">
+                        Showing <strong id="showingCount">0</strong> of <strong id="totalCount">0</strong> shipments
+                    </div>
+                    <table class="data-table" id="shipmentsTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortBy('trackingNumber')">Tracking <i class="fas fa-sort"></i></th>
+                                <th onclick="sortBy('receiverName')">Receiver <i class="fas fa-sort"></i></th>
+                                <th onclick="sortBy('status')">Status <i class="fas fa-sort"></i></th>
+                                <th onclick="sortBy('weight')">Weight <i class="fas fa-sort"></i></th>
+                                <th onclick="sortBy('amount')">Amount <i class="fas fa-sort"></i></th>
+                                <th onclick="sortBy('createdAt')">Date <i class="fas fa-sort"></i></th>
+                                <th>Driver</th>
+                            </tr>
+                        </thead>
+                        <tbody id="shipmentsBody">
+                            <tr>
+                                <td colspan="7" style="text-align:center; padding:40px; color:#666;">
+                                    <i class="fas fa-spinner fa-pulse"></i> Loading shipments...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <div class="info">
+                            Page <strong id="currentPageDisplay">1</strong> of <strong id="totalPagesDisplay">1</strong>
+                        </div>
+                        <div class="pages" id="paginationButtons">
+                            <button onclick="goToPage(1)" disabled>First</button>
+                            <button onclick="goToPage(currentPage - 1)" disabled id="prevBtn">‹ Prev</button>
+                            <button onclick="goToPage(currentPage + 1)" id="nextBtn">Next ›</button>
+                            <button onclick="goToPage(totalPages)" id="lastBtn">Last</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Grid -->
+                <div class="bottom-grid" data-aos="fade-up" data-aos-delay="200">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-route"></i> Active Routes</h3>
+                            <span class="badge" id="routeCount">0 routes</span>
+                        </div>
+                        <div id="routeStatus">
+                            <div class="empty-state">
+                                <i class="fas fa-spinner fa-pulse"></i>
+                                <p>Loading routes...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-map-marker-alt"></i> Driver Locations</h3>
+                            <span class="badge" id="driverCount">0 drivers</span>
+                        </div>
+                        <div id="driverLocations">
+                            <div class="empty-state">
+                                <i class="fas fa-spinner fa-pulse"></i>
+                                <p>Loading drivers...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+
+        // ============================================================
+        // 🔐 ADMIN ONLY - Check role
+        // ============================================================
+
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (user.role !== 'admin') {
+            console.log('⛔ Access Denied: Admin only');
+            window.location.href = 'dashboard.html';
+        }
+
+        // ============================================================
+        // 🚀 REAL-TIME DASHBOARD - WITH SEARCH, FILTER, PAGINATION
+        // ============================================================
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        let allShipments = [];
+        let filteredShipments = [];
+        let currentPage = 1;
+        let rowsPerPage = 10;
+        let sortField = 'createdAt';
+        let sortDirection = 'desc';
+        let refreshInterval = null;
+        const REFRESH_INTERVAL = 10000;
+
+        // ============================================================
+        // FETCH REAL DATA
+        // ============================================================
+
+        async function fetchDashboardData() {
+            try {
+                const headers = { 'Authorization': `Bearer ${token}` };
+
+                const [shipmentsRes, driversRes, routesRes, statsRes] = await Promise.all([
+                    fetch('http://localhost:5000/api/admin/shipments', { headers }),
+                    fetch('http://localhost:5000/api/admin/drivers', { headers }),
+                    fetch('http://localhost:5000/api/routes?limit=100', { headers }),
+                    fetch('http://localhost:5000/api/admin/stats', { headers })
+                ]);
+
+                const shipments = await shipmentsRes.json();
+                const drivers = await driversRes.json();
+                const routes = await routesRes.json();
+                const stats = await statsRes.json();
+
+                allShipments = shipments || [];
+                filteredShipments = [...allShipments];
+
+                updateStats(stats, shipments, drivers);
+                renderTable();
+                updateRouteStatus(shipments);
+                updateDriverLocations(drivers);
+                updateActivityFeed(shipments);
+
+                document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+
+            } catch (err) {
+                console.error('Error fetching dashboard data:', err);
+            }
+        }
+
+        function refreshData() {
+            document.querySelector('.refresh-btn i').classList.add('fa-spin');
+            fetchDashboardData().finally(() => {
+                setTimeout(() => {
+                    document.querySelector('.refresh-btn i').classList.remove('fa-spin');
+                }, 500);
+            });
+        }
+
+        // ============================================================
+        // UPDATE STATS
+        // ============================================================
+
+        function updateStats(stats, shipments, drivers) {
+            const totalShipments = stats.shipments || shipments.length || 0;
+            const activeDrivers = drivers.drivers ? 
+                drivers.drivers.filter(d => d.driverStatus === 'available' || d.driverStatus === 'on_delivery').length : 0;
+            const today = new Date().toDateString();
+            const todayDeliveries = shipments.filter(s => {
+                const sDate = new Date(s.createdAt).toDateString();
+                return sDate === today && s.status === 'delivered';
+            }).length;
+            const pendingDeliveries = shipments.filter(s => s.status !== 'delivered').length;
+
+            document.getElementById('totalShipments').textContent = totalShipments;
+            document.getElementById('activeDrivers').textContent = activeDrivers;
+            document.getElementById('todayDeliveries').textContent = todayDeliveries;
+            document.getElementById('pendingDeliveries').textContent = pendingDeliveries;
+
+            document.getElementById('shipmentsChange').textContent = `📦 ${totalShipments} total`;
+            document.getElementById('driversChange').textContent = `👤 ${activeDrivers} online`;
+            document.getElementById('deliveriesChange').textContent = `✅ ${todayDeliveries} today`;
+            document.getElementById('pendingChange').textContent = `⏳ ${pendingDeliveries} waiting`;
+        }
+
+        // ============================================================
+        // FILTER, SORT, PAGINATION
+        // ============================================================
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase().trim();
+            const status = document.getElementById('statusFilter').value;
+            const dateFrom = document.getElementById('dateFrom').value;
+            const dateTo = document.getElementById('dateTo').value;
+
+            filteredShipments = allShipments.filter(s => {
+                // Search filter
+                if (search) {
+                    const tracking = (s.trackingNumber || '').toLowerCase();
+                    const receiver = (s.receiverName || '').toLowerCase();
+                    if (!tracking.includes(search) && !receiver.includes(search)) {
+                        return false;
+                    }
+                }
+
+                // Status filter
+                if (status && s.status !== status) {
+                    return false;
+                }
+
+                // Date from filter
+                if (dateFrom) {
+                    const sDate = new Date(s.createdAt).toISOString().split('T')[0];
+                    if (sDate < dateFrom) return false;
+                }
+
+                // Date to filter
+                if (dateTo) {
+                    const sDate = new Date(s.createdAt).toISOString().split('T')[0];
+                    if (sDate > dateTo) return false;
+                }
+
+                return true;
+            });
+
+            // Sort
+            sortShipments();
+            currentPage = 1;
+            renderTable();
+        }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('dateFrom').value = '';
+            document.getElementById('dateTo').value = '';
+            filteredShipments = [...allShipments];
+            currentPage = 1;
+            renderTable();
+        }
+
+        function sortBy(field) {
+            if (sortField === field) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortField = field;
+                sortDirection = 'asc';
+            }
+            sortShipments();
+            renderTable();
+        }
+
+        function sortShipments() {
+            filteredShipments.sort((a, b) => {
+                let valA = a[sortField] || '';
+                let valB = b[sortField] || '';
+
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+
+                if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+                if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+        }
+
+        function renderTable() {
+            const totalItems = filteredShipments.length;
+            const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = Math.min(start + rowsPerPage, totalItems);
+            const pageItems = filteredShipments.slice(start, end);
+
+            document.getElementById('totalCount').textContent = totalItems;
+            document.getElementById('showingCount').textContent = pageItems.length;
+            document.getElementById('currentPageDisplay').textContent = currentPage;
+            document.getElementById('totalPagesDisplay').textContent = totalPages;
+
+            // Render table rows
+            const tbody = document.getElementById('shipmentsBody');
+
+            if (pageItems.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align:center; padding:40px; color:#666;">
+                            <i class="fas fa-inbox" style="font-size:2rem; display:block; margin-bottom:10px; opacity:0.3;"></i>
+                            No shipments found
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            const statusClasses = {
+                'pending': 'status-pending',
+                'picked_up': 'status-picked_up',
+                'in_transit': 'status-in_transit',
+                'out_for_delivery': 'status-out_for_delivery',
+                'delivered': 'status-delivered'
+            };
+
+            const statusLabels = {
+                'pending': '📋 Pending',
+                'picked_up': '📦 Picked Up',
+                'in_transit': '🚚 In Transit',
+                'out_for_delivery': '🚛 Out for Delivery',
+                'delivered': '✅ Delivered'
+            };
+
+            tbody.innerHTML = pageItems.map(s => `
+                <tr>
+                    <td><strong style="color:#D4AF37;">${s.trackingNumber || 'N/A'}</strong></td>
+                    <td>${s.receiverName || 'Unknown'}</td>
+                    <td><span class="status-badge ${statusClasses[s.status] || 'status-pending'}">${statusLabels[s.status] || s.status}</span></td>
+                    <td>${s.weight || 0} kg</td>
+                    <td style="color:#D4AF37;">$${(s.amount || 0).toFixed(2)}</td>
+                    <td style="color:#888; font-size:0.8rem;">${s.createdAt ? new Date(s.createdAt).toLocaleDateString() : 'N/A'}</td>
+                    <td style="color:#888; font-size:0.8rem;">${s.assignedDriverName || 'Not Assigned'}</td>
+                </tr>
+            `).join('');
+
+            // Update pagination buttons
+            document.getElementById('prevBtn').disabled = currentPage <= 1;
+            document.querySelectorAll('.pagination .pages button').forEach(btn => {
+                if (btn.textContent === 'First') btn.disabled = currentPage <= 1;
+                if (btn.textContent === 'Last') btn.disabled = currentPage >= totalPages;
+            });
+
+            // Update page numbers
+            const pagesContainer = document.getElementById('paginationButtons');
+            let pageButtons = '';
+            const maxPages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
+            let endPage = Math.min(totalPages, startPage + maxPages - 1);
+
+            if (endPage - startPage < maxPages - 1) {
+                startPage = Math.max(1, endPage - maxPages + 1);
+            }
+
+            // First page button
+            if (currentPage > 1) {
+                pageButtons += `<button onclick="goToPage(1)">1</button>`;
+                if (startPage > 2) pageButtons += `<button disabled>...</button>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                pageButtons += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+
+            if (currentPage < totalPages) {
+                if (endPage < totalPages - 1) pageButtons += `<button disabled>...</button>`;
+                pageButtons += `<button onclick="goToPage(${totalPages})">${totalPages}</button>`;
+            }
+
+            pagesContainer.innerHTML = `
+                <button onclick="goToPage(1)" ${currentPage <= 1 ? 'disabled' : ''}>First</button>
+                <button onclick="goToPage(${currentPage - 1})" ${currentPage <= 1 ? 'disabled' : ''}>‹ Prev</button>
+                ${pageButtons}
+                <button onclick="goToPage(${currentPage + 1})" ${currentPage >= totalPages ? 'disabled' : ''}>Next ›</button>
+                <button onclick="goToPage(${totalPages})" ${currentPage >= totalPages ? 'disabled' : ''}>Last</button>
+            `;
+        }
+
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredShipments.length / rowsPerPage) || 1;
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+        }
+
+        // ============================================================
+        // UPDATE ACTIVITY FEED
+        // ============================================================
+
+        function updateActivityFeed(shipments) {
+            const feed = document.getElementById('activityFeed');
+
+            if (!shipments || shipments.length === 0) {
+                feed.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No shipments yet</p>
+                    </div>
+                `;
+                document.getElementById('activityCount').textContent = '0 events';
+                return;
+            }
+
+            const recent = shipments.slice(0, 15);
+            const icons = {
+                'pending': { icon: 'fa-clock', class: 'pickup' },
+                'picked_up': { icon: 'fa-truck', class: 'driver' },
+                'in_transit': { icon: 'fa-route', class: 'driver' },
+                'out_for_delivery': { icon: 'fa-truck-fast', class: 'delivery' },
+                'delivered': { icon: 'fa-check-circle', class: 'delivery' }
+            };
+
+            const statusLabels = {
+                'pending': 'created',
+                'picked_up': 'picked up',
+                'in_transit': 'in transit',
+                'out_for_delivery': 'out for delivery',
+                'delivered': 'delivered'
+            };
+
+            feed.innerHTML = recent.map(s => {
+                const info = icons[s.status] || icons['pending'];
+                const time = new Date(s.createdAt);
+                const timeAgo = getTimeAgo(time);
+                const label = statusLabels[s.status] || s.status;
+
+                return `
+                    <div class="activity-item">
+                        <div class="icon ${info.class}">
+                            <i class="fas ${info.icon}"></i>
+                        </div>
+                        <div class="content">
+                            <div class="title">
+                                <strong>${s.trackingNumber || 'N/A'}</strong>
+                                ${label}
+                                ${s.status === 'delivered' ? `<span style="color:#4caf50;"> ✓ ${s.receiverName || ''}</span>` : ''}
+                                <span style="color:#888; font-size:0.75rem; margin-left:8px;">
+                                    ${s.status ? s.status.replace('_', ' ').toUpperCase() : ''}
+                                </span>
+                            </div>
+                            <div class="time">${timeAgo}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('activityCount').textContent = `${recent.length} events`;
+        }
+
+        // ============================================================
+        // UPDATE ROUTE STATUS
+        // ============================================================
+
+        function updateRouteStatus(shipments) {
+            const container = document.getElementById('routeStatus');
+            const inTransit = shipments.filter(s => s.status === 'in_transit' || s.status === 'out_for_delivery');
+
+            document.getElementById('routeCount').textContent = `${inTransit.length} routes`;
+
+            if (inTransit.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-route"></i>
+                        <p>No active routes</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = inTransit.slice(0, 10).map(s => `
+                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.03);">
+                    <div>
+                        <span style="color:#D4AF37;">${s.trackingNumber || 'N/A'}</span>
+                        <span style="color:#888; font-size:0.8rem; margin-left:10px;">→ ${s.receiverName || 'Unknown'}</span>
+                    </div>
+                    <div>
+                        <span style="color:#ffa500; font-size:0.8rem;">
+                            <i class="fas fa-circle" style="font-size:0.5rem;"></i> 
+                            ${s.status ? s.status.replace('_', ' ') : 'Unknown'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================================
+        // UPDATE DRIVER LOCATIONS
+        // ============================================================
+
+        function updateDriverLocations(drivers) {
+            const container = document.getElementById('driverLocations');
+            const allDrivers = drivers.drivers || [];
+            const active = allDrivers.filter(d => d.driverStatus === 'available' || d.driverStatus === 'on_delivery');
+
+            document.getElementById('driverCount').textContent = `${active.length} drivers`;
+
+            if (active.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>No drivers online</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const statusColors = {
+                'available': '#4caf50',
+                'on_delivery': '#2196F3',
+                'busy': '#ff9800',
+                'offline': '#9e9e9e'
+            };
+
+            container.innerHTML = active.slice(0, 10).map(d => `
+                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.03);">
+                    <div>
+                        <span style="color:#e0e0e0;">${d.name || 'Unknown'}</span>
+                        <span style="color:#888; font-size:0.8rem; margin-left:10px;">${d.vehicleType || 'N/A'}</span>
+                    </div>
+                    <div>
+                        <span style="color:${statusColors[d.driverStatus] || '#888'}; font-size:0.8rem;">
+                            <i class="fas fa-circle" style="font-size:0.5rem;"></i> 
+                            ${d.driverStatus || 'offline'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================================
+        // TIME AGO HELPER
+        // ============================================================
+
+        function getTimeAgo(date) {
+            if (!date) return 'Unknown';
+            const diff = Date.now() - date.getTime();
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes}m ago`;
+            if (hours < 24) return `${hours}h ago`;
+            if (days < 7) return `${days}d ago`;
+            return date.toLocaleDateString();
+        }
+
+        // ============================================================
+        // START AUTO-REFRESH
+        // ============================================================
+
+        function startAutoRefresh() {
+            fetchDashboardData();
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            refreshInterval = setInterval(fetchDashboardData, REFRESH_INTERVAL);
+        }
+
+        // ============================================================
+        // UPDATE NAVIGATION
+        // ============================================================
+
+        if (user.name) {
+            const authLink = document.getElementById('authNavLink');
+            if (authLink) {
+                authLink.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
+                authLink.href = '#';
+                authLink.onclick = function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'index.html';
+                };
+            }
+            const userNameSpan = document.getElementById('userNameDisplay');
+            if (userNameSpan) {
+                userNameSpan.style.display = 'inline-flex';
+                userNameSpan.style.alignItems = 'center';
+                userNameSpan.style.gap = '8px';
+                userNameSpan.style.background = 'rgba(212, 175, 55, 0.15)';
+                userNameSpan.style.padding = '5px 12px 5px 8px';
+                userNameSpan.style.borderRadius = '40px';
+                userNameSpan.innerHTML = `<i class="fas fa-user-circle" style="font-size: 1.2rem;"></i> ${user.name}`;
+            }
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+
+        startAutoRefresh();
+
+        console.log('✅ Real-Time Dashboard loaded!');
+        console.log('👑 Role:', user.role);
+        console.log('🔄 Auto-refresh every', REFRESH_INTERVAL / 1000, 'seconds');
+
+        // Refresh when page becomes visible again
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                refreshData();
+            }
+        });
+    </script>
+</body>
+</html>

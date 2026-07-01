@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAMYOKIY Logistics | Contact Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ============================================================
+           CONTACT PAGE - LUXURY STYLES
+           ============================================================ */
+
+        .contact-section {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+        .contact-section .video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+        .contact-section .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+        }
+        .contact-section .container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 45px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .glass-card {
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(16px);
+            border-radius: 28px;
+            border: 1px solid rgba(212,175,55,0.15);
+            padding: 40px;
+            transition: all 0.5s ease;
+        }
+        .glass-card:hover {
+            border-color: rgba(212,175,55,0.35);
+            box-shadow: 0 20px 60px rgba(212,175,55,0.05);
+        }
+
+        .section-tag {
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            color: #D4AF37;
+            text-transform: uppercase;
+            display: inline-block;
+            background: rgba(212,175,55,0.08);
+            padding: 6px 18px;
+            border-radius: 30px;
+            border: 1px solid rgba(212,175,55,0.15);
+        }
+        .contact-heading {
+            font-size: 2.2rem;
+            margin: 18px 0 12px;
+            color: #fff;
+            font-weight: 800;
+        }
+        .contact-heading span {
+            color: #D4AF37;
+        }
+        .contact-subtitle {
+            color: #b0b0b0;
+            margin-bottom: 30px;
+            line-height: 1.8;
+            font-size: 0.98rem;
+        }
+
+        /* ===== CONTACT DETAILS ===== */
+        .contact-detail {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 22px;
+            align-items: flex-start;
+        }
+        .detail-icon {
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 3px;
+        }
+        .detail-icon i {
+            font-size: 1.3rem;
+            color: #050505;
+        }
+        .detail-text h4 {
+            color: #D4AF37;
+            margin-bottom: 4px;
+            font-size: 1rem;
+        }
+        .detail-text p {
+            color: #e0e0e0;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .detail-text span {
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        /* ===== GLOBAL OFFICES ===== */
+        .offices-section {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(212,175,55,0.1);
+        }
+        .offices-section h4 {
+            color: #D4AF37;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .offices-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .office-item {
+            background: rgba(255,255,255,0.03);
+            border-radius: 14px;
+            padding: 15px 12px;
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.06);
+            transition: all 0.3s ease;
+        }
+        .office-item:hover {
+            border-color: rgba(212,175,55,0.2);
+            background: rgba(212,175,55,0.04);
+            transform: translateY(-3px);
+        }
+        .office-item .office-flag {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .office-item .office-city {
+            color: #fff;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .office-item .office-country {
+            color: #888;
+            font-size: 0.7rem;
+        }
+
+        /* ===== FORM STYLES ===== */
+        .luxury-form input,
+        .luxury-form textarea,
+        .luxury-form select {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 14px;
+            color: white;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            appearance: none;
+        }
+        .luxury-form input:focus,
+        .luxury-form textarea:focus,
+        .luxury-form select:focus {
+            outline: none;
+            border-color: #D4AF37;
+            background: rgba(212,175,55,0.06);
+            box-shadow: 0 0 30px rgba(212,175,55,0.03);
+        }
+        .luxury-form input::placeholder,
+        .luxury-form textarea::placeholder {
+            color: #666;
+        }
+        .luxury-form select {
+            cursor: pointer;
+            color: #c0c0c0;
+        }
+        .luxury-form select option {
+            background: #1a1a2e;
+            color: #fff;
+            padding: 10px;
+        }
+        .luxury-form select option:hover {
+            background: #D4AF37;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 16px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-gold:hover {
+            transform: scale(1.01);
+            box-shadow: 0 8px 30px rgba(212,175,55,0.3);
+        }
+        .btn-gold:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ===== WORLD MAP OVERLAY ===== */
+        .world-map {
+            background: url('https://www.svgrepo.com/show/1329/world-map.svg') center/contain no-repeat;
+            opacity: 0.03;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .offices-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (max-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .glass-card {
+                padding: 28px 22px;
+            }
+            .contact-heading {
+                font-size: 1.8rem;
+            }
+            .offices-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+            .office-item {
+                padding: 12px 8px;
+            }
+            .office-item .office-flag {
+                font-size: 1.4rem;
+            }
+        }
+        @media (max-width: 480px) {
+            .offices-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .office-item .office-city {
+                font-size: 0.75rem;
+            }
+            .glass-card {
+                padding: 20px 16px;
+            }
+            .contact-detail {
+                gap: 12px;
+            }
+            .detail-icon {
+                width: 40px;
+                height: 40px;
+                min-width: 40px;
+            }
+            .detail-icon i {
+                font-size: 1rem;
+            }
+        }
+
+        /* ===== FORECAST LINK HIDDEN BY DEFAULT ===== */
+        #forecastNavLink {
+            display: none;
+        }
+        #forecastNavLink.visible {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="gps-tracker.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> GPS Tracker</a>
+                <!-- 🗺️ GPS MAP -->
+<a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                <a href="how-it-works.html" class="nav-link"><i class="fas fa-question-circle"></i> How It Works</a>
+                <a href="chatbot.html" class="nav-link"><i class="fas fa-robot"></i> Chat Assistant</a>
+                <!-- 🗺️ ROUTE LINKS - ROLE BASED -->
+<a href="route-dashboard.html" class="nav-link" id="routesNavLink"><i class="fas fa-route"></i> Routes</a>
+<a href="route-create.html" class="nav-link" id="createRouteNavLink"><i class="fas fa-plus-circle"></i> Create Route</a>
+<a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link" id="myRouteNavLink">
+    <i class="fas fa-info-circle"></i> My Route
+</a>
+                
+                <!-- 🏢 WAREHOUSE LINKS - ROLE BASED -->
+                <!-- ADMIN ONLY (hidden by default) -->
+                <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink" style="display:none;"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink" style="display:none;"><i class="fas fa-boxes"></i> Inventory</a>
+                
+                <!-- CLIENT ONLY -->
+                <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink"><i class="fas fa-warehouse"></i> My Storage</a>
+                
+                <!-- DRIVER ONLY -->
+                <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink" style="display:none;"><i class="fas fa-warehouse"></i> Pickups</a>
+                
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================================
+    CONTACT SECTION WITH VIDEO BACKGROUND
+    ============================================================ -->
+    <section class="contact-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="contact.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="world-map"></div>
+        <div class="container">
+            <div class="contact-grid">
+
+                <!-- ===== LEFT COLUMN - INFO ===== -->
+                <div class="glass-card" data-aos="fade-right">
+                    <div class="section-tag">✦ GET IN TOUCH</div>
+                    <h2 class="contact-heading">Let's Move <span>Something Great</span> Together</h2>
+                    <p class="contact-subtitle">Whether you're shipping a single package or scaling an international operation, our team is ready to help 24/7. No matter where you are in the world, we're here for you.</p>
+                    
+                    <div class="contact-detail">
+                        <div class="detail-icon"><i class="fas fa-envelope"></i></div>
+                        <div class="detail-text">
+                            <h4>Email Us</h4>
+                            <p>hello@tamyokiy.com</p>
+                            <span>We reply within 2 hours</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail">
+                        <div class="detail-icon"><i class="fas fa-phone-alt"></i></div>
+                        <div class="detail-text">
+                            <h4>Call Us</h4>
+                            <p>+1 (800) 555-8899</p>
+                            <span>24/7 Customer Support</span>
+                        </div>
+                    </div>
+
+                    <div class="contact-detail">
+                        <div class="detail-icon"><i class="fas fa-globe"></i></div>
+                        <div class="detail-text">
+                            <h4>Global HQ</h4>
+                            <p>Dubai, United Arab Emirates</p>
+                            <span>Our headquarters serving the world</span>
+                        </div>
+                    </div>
+
+                    <!-- ===== GLOBAL OFFICES ===== -->
+                    <div class="offices-section">
+                        <h4><i class="fas fa-map-pin"></i> Our Global Offices</h4>
+                        <div class="offices-grid">
+                            <div class="office-item">
+                                <span class="office-flag">🇦🇪</span>
+                                <div class="office-city">Dubai</div>
+                                <div class="office-country">UAE</div>
+                            </div>
+                            <div class="office-item">
+                                <span class="office-flag">🇨🇦</span>
+                                <div class="office-city">Toronto</div>
+                                <div class="office-country">Canada</div>
+                            </div>
+                            <div class="office-item">
+                                <span class="office-flag">🇪🇹</span>
+                                <div class="office-city">Addis Ababa</div>
+                                <div class="office-country">Ethiopia</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== RIGHT COLUMN - FORM ===== -->
+                <div class="glass-card" data-aos="fade-left">
+                    <h3 style="color:#D4AF37; margin-bottom: 8px; font-size: 1.4rem;">Send Us a Message</h3>
+                    <p style="color:#888; margin-bottom: 22px; font-size: 0.9rem;">Fill out the form below and we'll get back to you shortly.</p>
+
+                    <form id="contactForm" class="luxury-form">
+                        <div class="form-row">
+                            <input type="text" id="contactName" placeholder="Your Full Name" required>
+                            <input type="email" id="contactEmail" placeholder="Your Email Address" required>
+                        </div>
+
+                        <!-- ===== SUBJECT DROPDOWN ===== -->
+                        <select id="contactSubject" required>
+                            <option value="" disabled selected>Select a Subject</option>
+                            <option value="General Inquiry">📋 General Inquiry</option>
+                            <option value="Shipping Quote">📦 Request a Shipping Quote</option>
+                            <option value="Track My Shipment">📍 Track My Shipment</option>
+                            <option value="Partnership Opportunity">🤝 Partnership Opportunity</option>
+                            <option value="Career Application">💼 Career Application</option>
+                            <option value="Complaint or Feedback">📝 Complaint or Feedback</option>
+                            <option value="Press & Media">📰 Press & Media</option>
+                            <option value="Other">❓ Other</option>
+                        </select>
+
+                        <textarea id="contactMessage" rows="5" placeholder="Your Message..." required></textarea>
+
+                        <button type="submit" id="submitContactBtn" class="btn-gold">
+                            <i class="fas fa-paper-plane"></i> Send Message →
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        // ============================================================
+        // CONTACT FORM HANDLER
+        // ============================================================
+        (function() {
+            const form = document.getElementById('contactForm');
+            
+            if (!form) {
+                console.error('Contact form not found!');
+                return;
+            }
+            
+            console.log('✅ Contact form found, adding event listener...');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                console.log('📤 Form submitted');
+                
+                const name = document.getElementById('contactName')?.value.trim() || '';
+                const email = document.getElementById('contactEmail')?.value.trim() || '';
+                const subject = document.getElementById('contactSubject')?.value || '';
+                const message = document.getElementById('contactMessage')?.value.trim() || '';
+                
+                // Validate subject
+                if (!subject || subject === 'Select a Subject') {
+                    alert('⚠️ Please select a subject from the dropdown');
+                    document.getElementById('contactSubject').style.borderColor = '#ff6b6b';
+                    setTimeout(() => {
+                        document.getElementById('contactSubject').style.borderColor = '';
+                    }, 3000);
+                    return;
+                }
+                
+                if (!name || !email || !message) {
+                    alert('⚠️ Please fill in all fields');
+                    return;
+                }
+                
+                const submitBtn = document.getElementById('submitContactBtn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Sending...';
+                submitBtn.disabled = true;
+                
+                try {
+                    const response = await fetch('http://localhost:5000/api/contact', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, subject, message })
+                    });
+                    
+                    const data = await response.json();
+                    console.log('📥 Response:', data);
+                    
+                    if (data.success) {
+                        alert('✅ Message sent successfully! We\'ll get back to you within 2 hours.');
+                        form.reset();
+                    } else {
+                        alert('❌ Error: ' + (data.message || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('❌ Fetch error:', error);
+                    alert('❌ Connection error. Make sure backend is running on port 5000.');
+                } finally {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

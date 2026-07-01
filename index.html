@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAMYOKIY Logistics Inc. | Luxury Freight Solutions Since 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ============================================================
+           FINAL FIXED: BIG PHOTOS, PROPER LAYOUT
+           ============================================================ */
+
+        /* ===== SEARCH BAR ===== */
+        .search-container {
+            max-width: 700px;
+            margin: 30px auto 0;
+            position: relative;
+            z-index: 2;
+        }
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 60px;
+            padding: 6px 6px 6px 25px;
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .search-bar:focus-within {
+            border-color: #D4AF37;
+            box-shadow: 0 8px 50px rgba(212, 175, 55, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .search-bar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 14px 10px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+        .search-bar input::placeholder {
+            color: rgba(255, 255, 255, 0.35);
+            font-weight: 300;
+        }
+        .search-bar button {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        .search-bar button:hover {
+            transform: scale(1.03);
+            box-shadow: 0 4px 25px rgba(212, 175, 55, 0.5);
+        }
+        .search-results {
+            margin-top: 15px;
+            background: rgba(20, 20, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            padding: 10px 0;
+        }
+        .search-results.active {
+            display: block;
+            animation: fadeSlideDown 0.3s ease;
+        }
+        .search-result-item {
+            padding: 12px 20px;
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .search-result-item:hover {
+            background: rgba(212, 175, 55, 0.08);
+            color: #D4AF37;
+            padding-left: 28px;
+        }
+        .search-result-item i {
+            color: #D4AF37;
+            width: 20px;
+        }
+        .search-result-item .result-title {
+            font-weight: 500;
+        }
+        .search-result-item .result-desc {
+            font-size: 0.75rem;
+            color: #888;
+            margin-left: auto;
+        }
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================================
+           SECTION 1: WHY CHOOSE TAMYOKIY
+           ============================================================ */
+        .why-section {
+            padding: 100px 5%;
+            background: linear-gradient(180deg, #050505, #0a0a0a);
+            position: relative;
+        }
+        .why-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+        }
+        .why-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 40px;
+        }
+        .why-card {
+            background: rgba(20, 20, 30, 0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 28px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .why-card:nth-child(2) {
+            transform: translateY(-30px);
+        }
+        .why-card:nth-child(2):hover {
+            transform: translateY(-45px);
+        }
+        .why-card:hover {
+            transform: translateY(-15px);
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 30px 80px rgba(212, 175, 55, 0.08);
+        }
+        .why-card .card-image {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            display: block;
+            transition: all 0.6s ease;
+        }
+        .why-card:hover .card-image {
+            transform: scale(1.03);
+        }
+        .why-card .card-content {
+            padding: 30px 32px 35px;
+            text-align: left;
+        }
+        .why-card .card-icon-wrapper {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+        }
+        .why-card .card-icon-wrapper i {
+            font-size: 1.6rem;
+            color: #050505;
+        }
+        .why-card .card-number {
+            font-size: 0.65rem;
+            color: rgba(212, 175, 55, 0.3);
+            letter-spacing: 4px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .why-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #D4AF37;
+            margin-bottom: 12px;
+        }
+        .why-card p {
+            color: #c0c0c0;
+            line-height: 1.8;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+        .why-card .gold-line {
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, #D4AF37, transparent);
+            margin-top: 15px;
+        }
+
+        /* ============================================================
+           SECTION 2: HOW WE SUPPORT YOU
+           ============================================================ */
+        .support-section {
+            padding: 100px 5%;
+            background: #050505;
+            position: relative;
+        }
+        .support-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+        }
+        .support-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 35px;
+            margin-top: 40px;
+        }
+        .support-card {
+            background: rgba(20, 20, 30, 0.35);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid rgba(212, 175, 55, 0.08);
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        .support-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(212, 175, 55, 0.25);
+        }
+        .support-card .support-image {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            display: block;
+        }
+        .support-card .support-content {
+            padding: 30px 30px 35px;
+            text-align: center;
+        }
+        .support-card .support-icon {
+            font-size: 2.8rem;
+            color: #D4AF37;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .support-card h3 {
+            color: #fff;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        .support-card p {
+            color: #b0b0b0;
+            line-height: 1.7;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        /* ============================================================
+           SECTION 3: WHAT WE'RE WORKING ON
+           ============================================================ */
+        .working-section {
+            padding: 100px 5%;
+            background: linear-gradient(180deg, #0a0a0a, #050505);
+        }
+        .working-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-top: 40px;
+        }
+        .working-card {
+            background: rgba(20, 20, 30, 0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 28px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .working-card:nth-child(1) { transform: translateY(0); }
+        .working-card:nth-child(2) { transform: translateY(-40px); }
+        .working-card:nth-child(3) { transform: translateY(0); }
+        .working-card:hover {
+            transform: translateY(-15px) !important;
+            border-color: rgba(212, 175, 55, 0.4);
+            box-shadow: 0 30px 80px rgba(212, 175, 55, 0.08);
+        }
+        .working-card .working-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+            transition: all 0.6s ease;
+        }
+        .working-card:hover .working-image {
+            transform: scale(1.03);
+        }
+        .working-card .working-content {
+            padding: 30px 32px 35px;
+            text-align: center;
+        }
+        .working-card .working-icon {
+            font-size: 2.5rem;
+            color: #D4AF37;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .working-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #D4AF37;
+            margin-bottom: 12px;
+        }
+        .working-card p {
+            color: #c0c0c0;
+            line-height: 1.8;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        /* ============================================================
+           SECTION 4: OUR SERVICES
+           ============================================================ */
+        .services-section {
+            padding: 100px 5%;
+            background: #050505;
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 35px;
+            margin-top: 40px;
+        }
+        .service-card {
+            background: rgba(20, 20, 30, 0.4);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid rgba(212, 175, 55, 0.08);
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-12px);
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.06);
+        }
+        .service-card .service-image {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            display: block;
+        }
+        .service-card .service-content {
+            padding: 30px 30px 35px;
+            text-align: center;
+        }
+        .service-card .service-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #D4AF37, #B8860B);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+        }
+        .service-card .service-icon i {
+            font-size: 2rem;
+            color: #050505;
+        }
+        .service-card h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+        .service-card p {
+            color: #b0b0b0;
+            line-height: 1.7;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+
+        /* ============================================================
+           SECTION 5: WHAT CLIENTS GET - FIXED: DESCRIPTION UNDER TITLE
+           ============================================================ */
+        .benefits-section {
+            padding: 100px 5%;
+            background: linear-gradient(180deg, #0a0a0a, #050505);
+        }
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 40px;
+        }
+        .benefit-item {
+            background: rgba(20, 20, 30, 0.35);
+            backdrop-filter: blur(16px);
+            border-radius: 20px;
+            border: 1px solid rgba(212, 175, 55, 0.06);
+            overflow: hidden;
+            transition: all 0.5s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .benefit-item:hover {
+            border-color: rgba(212, 175, 55, 0.3);
+            transform: translateY(-10px);
+            background: rgba(20, 20, 30, 0.5);
+        }
+        .benefit-item .benefit-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+        .benefit-item .benefit-content {
+            padding: 22px 25px 28px;
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .benefit-item .benefit-icon {
+            font-size: 2rem;
+            color: #D4AF37;
+            margin-bottom: 8px;
+        }
+        .benefit-item .benefit-content h4 {
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .benefit-item .benefit-content p {
+            color: #b0b0b0;
+            font-size: 0.92rem;
+            line-height: 1.7;
+            margin-bottom: 0;
+        }
+
+        /* ============================================================
+           SECTION 6: STATS - FIXED: BRIGHTER, FULLY VISIBLE
+           ============================================================ */
+        .stats-section {
+            background: linear-gradient(180deg, #0a0a0a, #000000);
+            text-align: center;
+            padding: 80px 5%;
+            position: relative;
+        }
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .stat-item {
+            background: rgba(20, 20, 30, 0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            padding: 35px 25px;
+            border: 1px solid rgba(212, 175, 55, 0.08);
+            transition: all 0.5s ease;
+        }
+        .stat-item:hover {
+            transform: translateY(-8px);
+            border-color: rgba(212, 175, 55, 0.3);
+            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.05);
+        }
+        .stat-item .stat-number {
+            font-size: 4.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .stat-item .stat-label {
+            font-size: 1rem;
+            color: #b0b0b0;
+            margin-top: 0.5rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        .stat-item .stat-icon {
+            font-size: 2.8rem;
+            color: rgba(212, 175, 55, 0.15);
+            margin-bottom: 10px;
+        }
+        .stat-item .stat-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            border: 2px solid rgba(212, 175, 55, 0.25);
+            display: block;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.5s ease;
+        }
+        .stat-item:hover .stat-image {
+            transform: scale(1.05);
+            border-color: #D4AF37;
+            box-shadow: 0 8px 40px rgba(212, 175, 55, 0.15);
+        }
+        .stats-note {
+            text-align: center;
+            color: #555;
+            font-size: 0.8rem;
+            margin-top: 2rem;
+            font-style: italic;
+        }
+
+        /* ============================================================
+           SECTION 7: TEAM MESSAGE
+           ============================================================ */
+        .team-section {
+            padding: 80px 5%;
+            background: #050505;
+        }
+        .team-card {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(20, 20, 30, 0.5);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            border: 1px solid rgba(212, 175, 55, 0.12);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .team-card .team-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            min-height: 450px;
+        }
+        .team-card .team-content {
+            padding: 50px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .team-card .team-content .quote-icon {
+            font-size: 3.5rem;
+            color: #D4AF37;
+            opacity: 0.15;
+            margin-bottom: 15px;
+        }
+        .team-card .team-content .team-message {
+            font-size: 1.3rem;
+            line-height: 2;
+            color: #e0e0e0;
+            font-weight: 400;
+            margin-bottom: 25px;
+        }
+        .team-card .team-content .team-message span {
+            color: #D4AF37;
+        }
+        .team-card .team-content .team-divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, #D4AF37, transparent);
+            margin-bottom: 20px;
+        }
+        .team-card .team-content .team-signature {
+            color: #D4AF37;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+        }
+        .team-card .team-content .team-title {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 8px;
+            letter-spacing: 3px;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 992px) {
+            .why-grid { grid-template-columns: repeat(2, 1fr); }
+            .why-card:nth-child(2) { transform: translateY(0); }
+            .working-grid { grid-template-columns: repeat(2, 1fr); }
+            .working-card:nth-child(2) { transform: translateY(0); }
+            .benefits-grid { grid-template-columns: repeat(2, 1fr); }
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+            .support-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .search-bar {
+                flex-direction: column;
+                padding: 10px;
+                border-radius: 24px;
+            }
+            .search-bar input {
+                width: 100%;
+                padding: 12px 16px;
+                text-align: center;
+            }
+            .search-bar button {
+                width: 100%;
+                justify-content: center;
+                padding: 14px;
+            }
+            .team-card {
+                grid-template-columns: 1fr;
+            }
+            .team-card .team-image {
+                min-height: 250px;
+            }
+            .team-card .team-content {
+                padding: 30px 25px;
+            }
+            .why-grid { grid-template-columns: 1fr; }
+            .working-grid { grid-template-columns: 1fr; }
+            .support-grid { grid-template-columns: 1fr; }
+            .services-grid { grid-template-columns: 1fr; }
+            .benefits-grid { grid-template-columns: 1fr; }
+            .stat-grid { grid-template-columns: 1fr 1fr; }
+            .why-card .card-image { height: 220px; }
+            .working-card .working-image { height: 220px; }
+            .support-card .support-image { height: 200px; }
+            .service-card .service-image { height: 200px; }
+            .benefit-item .benefit-image { height: 170px; }
+            .stat-item .stat-image { width: 80px; height: 80px; }
+            .stat-item .stat-number { font-size: 3rem; }
+        }
+        @media (max-width: 480px) {
+            .stat-grid { grid-template-columns: 1fr 1fr; }
+            .stat-item .stat-number { font-size: 2.5rem; }
+            .stat-item .stat-image { width: 70px; height: 70px; }
+        }
+
+        /* ===== FORECAST LINK HIDDEN BY DEFAULT ===== */
+        #forecastNavLink {
+            display: none;
+        }
+        #forecastNavLink.visible {
+            display: inline-block;
+        }
+
+        .subtitle {
+            color: #b0b0b0;
+            max-width: 650px;
+            margin: 15px auto 0;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <!-- 🆕 REAL-TIME DASHBOARD - ADMIN ONLY -->
+<a href="realtime-dashboard.html" class="nav-link" id="realtimeNavLink"><i class="fas fa-chart-line"></i> Live</a>
+                <a href="gps-tracker.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> GPS Tracker</a>
+                <!-- 🗺️ GPS MAP -->
+<a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                <!-- 🎫 SUPPORT TICKETS - Client & Admin -->
+<a href="support-tickets.html" class="nav-link" id="ticketsNavLink"><i class="fas fa-ticket-alt"></i> Support</a>
+                <!-- 🚛 FLEET MANAGEMENT - ADMIN ONLY -->
+<a href="fleet-dashboard.html" class="nav-link" id="fleetNavLink"><i class="fas fa-truck"></i> Fleet</a>
+                <a href="how-it-works.html" class="nav-link"><i class="fas fa-question-circle"></i> How It Works</a>
+                <a href="chatbot.html" class="nav-link"><i class="fas fa-robot"></i> Chat Assistant</a>
+                
+               <!-- 🗺️ ROUTE LINKS - ROLE BASED -->
+<a href="route-dashboard.html" class="nav-link" id="routesNavLink"><i class="fas fa-route"></i> Routes</a>
+<a href="route-create.html" class="nav-link" id="createRouteNavLink"><i class="fas fa-plus-circle"></i> Create Route</a>
+<a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link" id="myRouteNavLink">
+    <i class="fas fa-info-circle"></i> My Route
+</a>
+                
+                <!-- 🏢 WAREHOUSE LINKS - ROLE BASED -->
+                <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink"><i class="fas fa-boxes"></i> Inventory</a>
+                <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink"><i class="fas fa-warehouse"></i> My Storage</a>
+                <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink"><i class="fas fa-warehouse"></i> Pickups</a>
+                
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+            </div>
+    </nav>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="home.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="hero-content">
+            <div class="hero-badge" data-aos="fade-up">✦ PREMIUM LOGISTICS SINCE 2026</div>
+            <h1 class="hero-title" data-aos="fade-up" data-aos-delay="100">
+                <span class="hero-title-main">TAMYOKIY</span>
+                <span class="hero-title-sub">LOGISTICS INC.</span>
+            </h1>
+            <div class="hero-tagline" data-aos="fade-up" data-aos-delay="200">
+                <div class="typewriter" id="typewriter"></div>
+            </div>
+
+            <div class="search-container" data-aos="fade-up" data-aos-delay="250">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="🔍 Search services, tracking, or explore..." onkeyup="handleSearch(event)">
+                    <button onclick="performSearch()">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+                <div id="searchResults" class="search-results"></div>
+            </div>
+
+            <div class="hero-buttons" data-aos="fade-up" data-aos-delay="300">
+                <button class="btn-primary" onclick="location.href='services.html'">Explore Services</button>
+                <button class="btn-secondary" onclick="location.href='contact.html'">Get a Quote →</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ============================================================
+    SECTION 1: WHY CHOOSE TAMYOKIY - 3 PHOTOS (320px height)
+    ============================================================ -->
+    <section class="why-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag">✦ WHY CHOOSE US</span>
+                <h2 class="section-title">Why <span>TAMYOKIY</span></h2>
+                <div class="section-line"></div>
+                <p class="subtitle">We don't just move freight. We move trust. Here's why businesses around the world choose TAMYOKIY.</p>
+            </div>
+            <div class="why-grid">
+                <div class="why-card" data-aos="fade-up">
+                    <img src="why-trust.jpg" alt="Built on Trust" class="card-image" onerror="this.style.display='none'">
+                    <div class="card-content">
+                        <div class="card-icon-wrapper"><i class="fas fa-handshake"></i></div>
+                        <div class="card-number">✦ 01</div>
+                        <h3>Built on Trust</h3>
+                        <p>Trust is the foundation of everything we do at TAMYOKIY. Every shipment is handled with integrity and transparency. We don't make promises we can't keep.</p>
+                        <div class="gold-line"></div>
+                    </div>
+                </div>
+                <div class="why-card" data-aos="fade-up" data-aos-delay="100">
+                    <img src="support.jpg" alt="Real Support" class="card-image" onerror="this.style.display='none'">
+                    <div class="card-content">
+                        <div class="card-icon-wrapper"><i class="fas fa-headset"></i></div>
+                        <div class="card-number">✦ 02</div>
+                        <h3>Real Support, Real People</h3>
+                        <p>When you need help, you speak to a real person. 24/7/365. No bots. No waiting. Just real people providing real solutions.</p>
+                        <div class="gold-line"></div>
+                    </div>
+                </div>
+                <div class="why-card" data-aos="fade-up" data-aos-delay="200">
+                    <img src="goal.jpg" alt="Our Goal" class="card-image" onerror="this.style.display='none'">
+                    <div class="card-content">
+                        <div class="card-icon-wrapper"><i class="fas fa-bullseye"></i></div>
+                        <div class="card-number">✦ 03</div>
+                        <h3>Our Goal</h3>
+                        <p>To build a logistics company that delivers on time, every single time. No fake stories. No hidden fees. Just honest, reliable service.</p>
+                        <div class="gold-line"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ============================================================
+    SECTION 2: HOW WE SUPPORT YOU - 4 PHOTOS (260px height)
+    ============================================================ -->
+    <section class="support-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag">✦ HOW WE SUPPORT YOU</span>
+                <h2 class="section-title">We've Got Your <span>Back</span></h2>
+                <div class="section-line"></div>
+                <p class="subtitle">From pickup to delivery, we're with you every step of the way.</p>
+            </div>
+            <div class="support-grid">
+                <div class="support-card" data-aos="fade-up">
+                    <img src="tracking-photo.jpg" alt="Real-Time Tracking" class="support-image" onerror="this.style.display='none'">
+                    <div class="support-content">
+                        <span class="support-icon"><i class="fas fa-truck-fast"></i></span>
+                        <h3>Real-Time Tracking</h3>
+                        <p>Know exactly where your shipment is at any moment. Full visibility from pickup to delivery.</p>
+                    </div>
+                </div>
+                <div class="support-card" data-aos="fade-up" data-aos-delay="100">
+                    <img src="insurance-photo.jpg" alt="Full Insurance" class="support-image" onerror="this.style.display='none'">
+                    <div class="support-content">
+                        <span class="support-icon"><i class="fas fa-shield-alt"></i></span>
+                        <h3>Full Insurance Coverage</h3>
+                        <p>Your cargo is fully insured. We take full responsibility for every shipment we handle.</p>
+                    </div>
+                </div>
+                <div class="support-card" data-aos="fade-up" data-aos-delay="200">
+                    <img src="tech-photo.jpg" alt="Smart Logistics" class="support-image" onerror="this.style.display='none'">
+                    <div class="support-content">
+                        <span class="support-icon"><i class="fas fa-chart-line"></i></span>
+                        <h3>Smart Logistics</h3>
+                        <p>We use data and technology to optimize routes, reduce costs, and deliver faster.</p>
+                    </div>
+                </div>
+                <div class="support-card" data-aos="fade-up" data-aos-delay="300">
+                    <img src="247-support.jpg" alt="24/7 Support" class="support-image" onerror="this.style.display='none'">
+                    <div class="support-content">
+                        <span class="support-icon"><i class="fas fa-headset"></i></span>
+                        <h3>24/7 Dedicated Support</h3>
+                        <p>Real people, real solutions. Our team is available around the clock to assist you.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ============================================================
+    SECTION 3: WHAT WE'RE WORKING ON - 3 PHOTOS (300px height)
+    ============================================================ -->
+    <section class="working-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag">✦ WHAT WE'RE WORKING ON</span>
+                <h2 class="section-title">Building The <span>Future</span></h2>
+                <div class="section-line"></div>
+                <p class="subtitle">We're constantly evolving and improving to serve you better.</p>
+            </div>
+            <div class="working-grid">
+                <div class="working-card" data-aos="fade-up">
+                    <img src="network-photo.jpg" alt="Expanding Network" class="working-image" onerror="this.style.display='none'">
+                    <div class="working-content">
+                        <span class="working-icon"><i class="fas fa-globe-americas"></i></span>
+                        <h3>Expanding Global Network</h3>
+                        <p>We're actively expanding across 50+ countries. More routes, faster delivery, better service.</p>
+                    </div>
+                </div>
+                <div class="working-card" data-aos="fade-up" data-aos-delay="100">
+                    <img src="ai-photo.jpg" alt="AI Technology" class="working-image" onerror="this.style.display='none'">
+                    <div class="working-content">
+                        <span class="working-icon"><i class="fas fa-microchip"></i></span>
+                        <h3>AI-Powered Logistics</h3>
+                        <p>Investing in AI and automation to make logistics smarter, faster, and more reliable.</p>
+                    </div>
+                </div>
+                <div class="working-card" data-aos="fade-up" data-aos-delay="200">
+                    <img src="clients-photo.jpg" alt="Client Success" class="working-image" onerror="this.style.display='none'">
+                    <div class="working-content">
+                        <span class="working-icon"><i class="fas fa-users"></i></span>
+                        <h3>Client Success First</h3>
+                        <p>Building long-term relationships by delivering value, transparency, and reliability.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ============================================================
+    SECTION 4: OUR SERVICES - 4 PHOTOS (260px height)
+    ============================================================ -->
+    <section class="services-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag">✦ OUR SERVICES</span>
+                <h2 class="section-title">What We <span>Deliver</span></h2>
+                <div class="section-line"></div>
+                <p class="subtitle">Comprehensive logistics solutions for businesses of all sizes.</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card" data-aos="flip-up">
+                    <img src="truck-photo.jpg" alt="Freight Transport" class="service-image" onerror="this.style.display='none'">
+                    <div class="service-content">
+                        <div class="service-icon"><i class="fas fa-truck"></i></div>
+                        <h3>Freight Transport</h3>
+                        <p>Reliable ground, air, and sea freight for businesses of all sizes. We move what matters.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-aos="flip-up" data-aos-delay="100">
+                    <img src="warehouse-photo.jpg" alt="Warehousing" class="service-image" onerror="this.style.display='none'">
+                    <div class="service-content">
+                        <div class="service-icon"><i class="fas fa-boxes"></i></div>
+                        <h3>Warehousing</h3>
+                        <p>Secure storage and inventory management. Your products are safe with us.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-aos="flip-up" data-aos-delay="200">
+                    <img src="fleet-photo.jpg" alt="Fleet Management" class="service-image" onerror="this.style.display='none'">
+                    <div class="service-content">
+                        <div class="service-icon"><i class="fas fa-charging-station"></i></div>
+                        <h3>Fleet Management</h3>
+                        <p>Optimize vehicle operations with real-time tracking and smart analytics.</p>
+                    </div>
+                </div>
+                <div class="service-card" data-aos="flip-up" data-aos-delay="300">
+                    <img src="support-team.jpg" alt="24/7 Support" class="service-image" onerror="this.style.display='none'">
+                    <div class="service-content">
+                        <div class="service-icon"><i class="fas fa-headset"></i></div>
+                        <h3>24/7 Support</h3>
+                        <p>Real people answering your questions anytime. No bots. No waiting.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ============================================================
+    SECTION 5: WHAT CLIENTS GET - 6 PHOTOS (200px height, descriptions UNDER titles)
+    ============================================================ -->
+    <section class="benefits-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag">✦ WHAT YOU GET</span>
+                <h2 class="section-title">What Our Clients <span>Get</span></h2>
+                <div class="section-line"></div>
+                <p class="subtitle">No fake stories. Just real value.</p>
+            </div>
+            <div class="benefits-grid">
+                <div class="benefit-item" data-aos="fade-right">
+                    <img src="delivery-photo.jpg" alt="On-Time Delivery" class="benefit-image" onerror="this.style.display='none'">
+                    <div class="benefit-content">
+                        <div class="benefit-icon"><i class="fas fa-clock"></i></div>
+                        <h4>On-Time Delivery</h4>
+                        <p>We deliver exactly when we say we will. Every shipment. Every time. No excuses.</p>
+                    </div>
+                </div>
+                <div class="benefit-item" data-aos="fade-right" data-aos-delay="100">
+                    <img src="tracking-app.jpg" alt="100% Transparency" class="benefit-image" onerror="this.style.display='none'">
+                    <div class="benefit-content">
+                        <div class="benefit-icon"><i class="fas fa-eye"></i></div>
+                        <h4>100% Transparency</h4>
+                        <p>Real-time tracking, clear pricing, and open communication. You always know what's happening.</p>
+                    </div>
+                </div>
+                <div class="benefit-item" data-aos="fade-right" data-aos-delay="200">
+                    <img src="team-photo.jpg" alt="Dedicated Team" class="benefit-image" onerror="this.style.display='none'">
+                    <div class="benefit-content">
+                        <div class="benefit-icon"><i class="fas fa-users"></i></div>
+                        <h4>Dedicated Team</h4>
+                        <p>Every client gets a dedicated logistics expert who knows your business inside out.</p>
+                    </div>
+                </div>
+                <div class="benefit-item" data-aos="fade-right" data-aos-delay="300">
+                    <img src="growth-chart.jpg" alt="Business Growth" class="benefit-image" onerror="this.style.display='none'">
+                    <div class="benefit-content">
+                        <div class="benefit-icon"><i class="fas fa-chart-line"></i></div>
+                        <h4>Business Growth</h4>
+                        <p>We help you scale. Our logistics solutions grow with your business.</p>
+                    </div>
+                </div>
+                <div class="benefit-item" data-aos="fade-right" data-aos-delay="400">
+                    <img src="partnership.jpg" alt="Long-Term Partnership" class="benefit-image" onerror="this.style.display='none'">
+                    <div class="benefit-content">
+                        <div class="benefit-icon"><i class="fas fa-handshake"></i></div>
+                        <h4>Long-Term Partnership</h4>
+                        <p>We're your logistics partner. Your success is our success.</p>
+                    </div>
+                </div>
+                <div class="benefit-item" data-aos="fade-right" data-aos-delay="500">
+                    <img src="honest-photo.jpg" alt="Honest Communication" class="benefit-image" onerror="this.style.display='none'">
+                    <div class="benefit-content">
+                        <div class="benefit-icon"><i class="fas fa-star"></i></div>
+                        <h4>No Fake Stories</h4>
+                        <p>We don't inflate numbers. We don't make false claims. Just honest, reliable service.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ============================================================
+    SECTION 6: GROWING EVERY DAY - STATS (100px circle images)
+    ============================================================ -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <span class="section-tag">✦ OUR PROGRESS</span>
+                <h2 class="section-title">Growing <span>Every Day</span></h2>
+                <div class="section-line"></div>
+                <p class="subtitle">Real numbers. Real growth. No fake stories.</p>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-item" data-aos="zoom-in">
+                    <img src="stats-delivery.jpg" alt="Deliveries" class="stat-image" onerror="this.style.display='none'">
+                    <div class="stat-number" id="stat1">0</div>
+                    <div class="stat-label">Deliveries Completed</div>
+                </div>
+                <div class="stat-item" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="stat-icon"><i class="fas fa-smile"></i></div>
+                    <div class="stat-number" id="stat2">0</div>
+                    <div class="stat-label">Happy Clients</div>
+                </div>
+                <div class="stat-item" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                    <div class="stat-number" id="stat3">0</div>
+                    <div class="stat-label">Countries Served</div>
+                </div>
+                <div class="stat-item" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-number" id="stat4">0</div>
+                    <div class="stat-label">Team Members</div>
+                </div>
+            </div>
+            <p class="stats-note">* Real numbers. Real growth. We track every metric honestly.</p>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ============================================================
+    SECTION 7: TEAM MESSAGE - 1 BIG PHOTO (450px+)
+    ============================================================ -->
+    <section class="team-section">
+        <div class="container">
+            <div class="team-card" data-aos="fade-up">
+                <img src="team-big.jpg" alt="TAMYOKIY Team" class="team-image" onerror="this.style.display='none'">
+                <div class="team-content">
+                    <div class="quote-icon"><i class="fas fa-quote-right"></i></div>
+                    <p class="team-message">
+                        "We're not the biggest logistics company. We're not claiming to be #1. 
+                        But we are <span>honest</span>, we <span>work hard</span>, and we <span>deliver</span> what we promise. 
+                        That's TAMYOKIY. <span>No fake stories</span>. Just real logistics, done right."
+                    </p>
+                    <div class="team-divider"></div>
+                    <div class="team-signature">— TAMYOKIY Team</div>
+                    <div class="team-title">Built on Trust. Powered by Precision. Driven by Excellence.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        // ===== SEARCH FUNCTIONALITY =====
+        const searchData = [
+            { title: 'Track Shipment', desc: 'Track your package in real-time', icon: 'fa-map-marker-alt', url: 'tracking.html' },
+            { title: 'Our Services', desc: 'Freight, warehousing, fleet management', icon: 'fa-box', url: 'services.html' },
+            { title: 'Contact Us', desc: 'Get in touch with our team', icon: 'fa-envelope', url: 'contact.html' },
+            { title: 'Careers', desc: 'Join the TAMYOKIY team', icon: 'fa-briefcase', url: 'careers.html' },
+            { title: 'Dashboard', desc: 'Manage your shipments', icon: 'fa-tachometer-alt', url: 'dashboard.html' },
+            { title: 'About Us', desc: 'Learn about TAMYOKIY', icon: 'fa-info-circle', url: 'about.html' },
+            { title: 'Admin Panel', desc: 'Administrative dashboard', icon: 'fa-crown', url: 'admin.html' },
+            { title: 'Profile', desc: 'Your account settings', icon: 'fa-user', url: 'profile.html' },
+            { title: 'Forecast', desc: 'Revenue & delivery predictions', icon: 'fa-chart-line', url: 'forecast.html' },
+            { title: 'Login', desc: 'Sign in to your account', icon: 'fa-sign-in-alt', url: 'login.html' },
+            { title: 'Register', desc: 'Create a new account', icon: 'fa-user-plus', url: 'register.html' }
+        ];
+
+        function handleSearch(event) {
+            const query = event.target.value.toLowerCase().trim();
+            const resultsContainer = document.getElementById('searchResults');
+            
+            if (query.length === 0) {
+                resultsContainer.classList.remove('active');
+                return;
+            }
+
+            const results = searchData.filter(item => 
+                item.title.toLowerCase().includes(query) || 
+                item.desc.toLowerCase().includes(query)
+            );
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="search-result-item" style="justify-content:center; color:#888;">
+                        <i class="fas fa-search"></i>
+                        <span>No results found for "${query}"</span>
+                    </div>
+                `;
+            } else {
+                resultsContainer.innerHTML = results.map(item => `
+                    <div class="search-result-item" onclick="window.location.href='${item.url}'">
+                        <i class="fas ${item.icon}"></i>
+                        <span class="result-title">${item.title}</span>
+                        <span class="result-desc">${item.desc}</span>
+                    </div>
+                `).join('');
+            }
+            
+            resultsContainer.classList.add('active');
+        }
+
+        function performSearch() {
+            const input = document.getElementById('searchInput');
+            const query = input.value.trim();
+            if (query.length === 0) return;
+            
+            const results = searchData.filter(item => 
+                item.title.toLowerCase().includes(query.toLowerCase()) || 
+                item.desc.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            if (results.length > 0) {
+                window.location.href = results[0].url;
+            } else {
+                const resultsContainer = document.getElementById('searchResults');
+                resultsContainer.innerHTML = `
+                    <div class="search-result-item" style="justify-content:center; color:#888;">
+                        <i class="fas fa-search"></i>
+                        <span>No results found for "${query}"</span>
+                    </div>
+                `;
+                resultsContainer.classList.add('active');
+            }
+        }
+
+        document.addEventListener('click', function(event) {
+            const searchContainer = document.querySelector('.search-container');
+            if (searchContainer && !searchContainer.contains(event.target)) {
+                document.getElementById('searchResults').classList.remove('active');
+            }
+        });
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAMYOKIY Logistics | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .dashboard-section {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+        }
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(212,175,55,0.2), rgba(20,20,30,0.7));
+            backdrop-filter: blur(15px);
+            border-radius: 32px;
+            padding: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.4);
+        }
+        .welcome-card h1 {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2.2rem;
+        }
+        .welcome-card p {
+            color: #b0b0b0;
+            margin-top: 10px;
+        }
+        .user-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .user-stat-card {
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(212,175,55,0.3);
+            transition: all 0.3s ease;
+        }
+        .user-stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #D4AF37;
+        }
+        .user-stat-card i {
+            font-size: 2rem;
+            color: #D4AF37;
+            margin-bottom: 10px;
+        }
+        .user-stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .user-stat-label {
+            color: #b0b0b0;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+            margin-bottom: 50px;
+        }
+        .dashboard-card {
+            background: rgba(20,20,30,0.7);
+            backdrop-filter: blur(15px);
+            border-radius: 28px;
+            border: 1px solid rgba(212,175,55,0.35);
+            padding: 35px;
+            transition: all 0.4s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-10px);
+            border-color: #D4AF37;
+            box-shadow: 0 25px 50px rgba(212,175,55,0.2);
+        }
+        .dashboard-card h2 {
+            color: #D4AF37;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .shipment-form input, .shipment-form select {
+            width: 100%;
+            padding: 14px 18px;
+            margin-bottom: 18px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 14px;
+            color: white;
+            font-size: 1rem;
+            appearance: none;
+        }
+        .shipment-form input:focus, .shipment-form select:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+        .shipment-form select option {
+            background: #1a1a2e;
+            color: white;
+        }
+        
+        /* ETA Preview Styles */
+        .eta-preview-box {
+            background: rgba(212,175,55,0.08);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+        .eta-preview-box .eta-label {
+            color: #888;
+            font-size: 0.85rem;
+            margin: 0;
+        }
+        .eta-preview-box .eta-date {
+            color: #D4AF37;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 5px 0 0 0;
+        }
+        
+        .price-calc {
+            background: rgba(212,175,55,0.08);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .calculated-price {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #D4AF37;
+        }
+        .export-btn {
+            background: transparent;
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            width: 100%;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        .export-btn:hover {
+            background: #D4AF37;
+            color: #050505;
+        }
+        .shipments-list, .payments-list, .invoices-list {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .shipments-list::-webkit-scrollbar, .payments-list::-webkit-scrollbar, .invoices-list::-webkit-scrollbar {
+            width: 5px;
+        }
+        .shipments-list::-webkit-scrollbar-track, .payments-list::-webkit-scrollbar-track, .invoices-list::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        .shipments-list::-webkit-scrollbar-thumb, .payments-list::-webkit-scrollbar-thumb, .invoices-list::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 10px;
+        }
+        .shipment-item {
+            background: rgba(20,20,30,0.5);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 16px;
+            border-left: 4px solid #D4AF37;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .shipment-item:hover {
+            background: rgba(212,175,55,0.08);
+            transform: translateX(5px);
+        }
+        .shipment-item p {
+            margin: 8px 0;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .shipment-item strong {
+            color: #D4AF37;
+        }
+        .pay-btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .pay-btn {
+            flex: 1;
+            min-width: 70px;
+            border: none;
+            padding: 8px 10px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        .pay-btn:hover {
+            transform: scale(1.05);
+        }
+        .pay-btn-credit {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            color: #050505;
+        }
+        .pay-btn-apple {
+            background: #000;
+            color: white;
+        }
+        .pay-btn-google {
+            background: #4285f4;
+            color: white;
+        }
+        .pay-btn-paypal {
+            background: #003087;
+            color: white;
+        }
+        .paid-badge {
+            color: #4caf50;
+            text-align: center;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(76,175,80,0.1);
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .photo-btn {
+            margin-top: 12px;
+            width: 100%;
+            background: transparent;
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        .photo-btn:hover {
+            background: #D4AF37;
+            color: #050505;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-pending { background: rgba(255,165,0,0.2); color: #ffa500; }
+        .status-picked_up { background: rgba(0,255,255,0.2); color: #00ffff; }
+        .status-in_transit { background: rgba(102,102,255,0.2); color: #6666ff; }
+        .status-out_for_delivery { background: rgba(255,102,255,0.2); color: #ff66ff; }
+        .status-delivered { background: rgba(0,255,0,0.2); color: #00ff00; }
+        
+        /* ===== RATING STYLES ===== */
+        .rating-btn {
+            margin-top: 12px;
+            width: 100%;
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 10px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        .rating-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(212,175,55,0.4);
+        }
+        .rating-btn.rated {
+            background: rgba(76,175,80,0.15);
+            color: #4caf50;
+            border: 1px solid rgba(76,175,80,0.3);
+            cursor: default;
+        }
+        .rating-btn.rated:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Rating Modal Styles */
+        .rating-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(20px);
+            z-index: 10002;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInModal 0.3s ease;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .rating-modal-content {
+            background: linear-gradient(145deg, #1a1a2e, #16162a);
+            border-radius: 28px;
+            padding: 40px;
+            max-width: 550px;
+            width: 90%;
+            border: 1px solid rgba(212,175,55,0.2);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+            animation: slideUpModal 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .rating-modal-content h3 {
+            color: #D4AF37;
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 1.4rem;
+        }
+        .rating-modal-content .rating-subtitle {
+            color: #888;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        .rating-modal-content .rating-tracking {
+            color: #888;
+            text-align: center;
+            font-size: 0.8rem;
+            margin-bottom: 15px;
+        }
+        .rating-modal-content .rating-tracking strong {
+            color: #D4AF37;
+        }
+        .rating-group {
+            margin-bottom: 20px;
+        }
+        .rating-group label {
+            color: #e0e0e0;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .rating-group label .required {
+            color: #ff6b6b;
+        }
+        .stars-container {
+            display: flex;
+            gap: 8px;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+        .stars-container input {
+            display: none;
+        }
+        .stars-container label {
+            font-size: 2.2rem;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 0;
+        }
+        .stars-container label:hover,
+        .stars-container label:hover ~ label,
+        .stars-container input:checked ~ label {
+            color: #ffa500;
+            text-shadow: 0 0 20px rgba(255,165,0,0.3);
+        }
+        .rating-modal-content textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 80px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+        .rating-modal-content textarea:focus {
+            outline: none;
+            border-color: #D4AF37;
+            background: rgba(212,175,55,0.05);
+        }
+        .rating-modal-content textarea::placeholder {
+            color: #555;
+        }
+        .rating-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .rating-options select {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23D4AF37' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+        }
+        .rating-options select:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+        .rating-options select option {
+            background: #1a1a2e;
+            color: white;
+        }
+        .rating-modal-content .rating-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .rating-modal-content .rating-actions button {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        .rating-modal-content .rating-submit {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+        }
+        .rating-modal-content .rating-submit:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(212,175,55,0.4);
+        }
+        .rating-modal-content .rating-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .rating-modal-content .rating-cancel {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #888;
+        }
+        .rating-modal-content .rating-cancel:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        .rating-success {
+            text-align: center;
+            padding: 20px;
+        }
+        .rating-success i {
+            font-size: 4rem;
+            color: #4caf50;
+            margin-bottom: 15px;
+        }
+        .rating-success h4 {
+            color: #4caf50;
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        .rating-success p {
+            color: #888;
+        }
+        
+        /* Notification Styles */
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            margin-left: 15px;
+            font-size: 1.2rem;
+            color: #D4AF37;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        .notification-bell:hover {
+            transform: scale(1.05);
+            color: #FFD700;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff6b6b;
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 50%;
+            min-width: 18px;
+            text-align: center;
+        }
+        .notification-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            width: 350px;
+            max-height: 450px;
+            background: #1a1a2e;
+            border-radius: 16px;
+            border: 1px solid rgba(212,175,55,0.3);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+            z-index: 1000;
+        }
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(212,175,55,0.1);
+            border-bottom: 1px solid rgba(212,175,55,0.2);
+        }
+        .notification-header h4 {
+            color: #D4AF37;
+            margin: 0;
+            font-size: 1rem;
+        }
+        .mark-read-btn {
+            background: transparent;
+            border: 1px solid rgba(212,175,55,0.5);
+            color: #D4AF37;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .mark-read-btn:hover {
+            background: rgba(212,175,55,0.2);
+        }
+        .notification-list {
+            max-height: 380px;
+            overflow-y: auto;
+        }
+        .notification-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .notification-list::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+        }
+        .notification-list::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 10px;
+        }
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .notification-item:hover {
+            background: rgba(212,175,55,0.08);
+        }
+        .notification-item.unread {
+            background: rgba(212,175,55,0.05);
+            border-left: 3px solid #D4AF37;
+        }
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+        .notification-message {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+            line-height: 1.4;
+        }
+        .notification-time {
+            font-size: 0.65rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* Login History Styles */
+        .login-history-item {
+            background: rgba(20,20,30,0.5);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .login-history-item:hover {
+            background: rgba(212,175,55,0.08);
+            transform: translateX(5px);
+        }
+        .login-history-success {
+            border-left: 3px solid #4caf50;
+        }
+        .login-history-failed {
+            border-left: 3px solid #ff6b6b;
+        }
+        
+        /* Driver Assignment Badge */
+        .driver-badge {
+            background: rgba(33, 150, 243, 0.15);
+            border: 1px solid #2196F3;
+            color: #2196F3;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Photo Gallery Modal */
+        .photo-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .photo-modal-content {
+            background: #1a1a2e;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #D4AF37;
+            max-width: 90%;
+            max-height: 90%;
+            text-align: center;
+        }
+        .photo-gallery {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 20px;
+            max-width: 80vw;
+        }
+        .photo-gallery img {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .photo-gallery img:hover {
+            transform: scale(1.05);
+            border-color: #D4AF37;
+        }
+        .fullscreen-photo {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.98);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .fullscreen-photo img {
+            max-width: 95%;
+            max-height: 95%;
+            border-radius: 10px;
+        }
+        .photo-counter {
+            color: #D4AF37;
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
+        .gallery-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .gallery-nav button {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        /* Shipment Details Modal */
+        .detail-row {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(212,175,55,0.1);
+        }
+        .detail-label {
+            width: 140px;
+            color: #D4AF37;
+            font-weight: 600;
+        }
+        .detail-value {
+            color: #e0e0e0;
+            flex: 1;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            border: 1px solid #D4AF37;
+            overflow: hidden;
+        }
+        .modal-header {
+            padding: 15px 20px;
+            background: rgba(212,175,55,0.1);
+            border-bottom: 1px solid rgba(212,175,55,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            color: #D4AF37;
+            margin: 0;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .modal-close:hover {
+            color: #ff6b6b;
+        }
+        .modal-body {
+            padding: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .view-invoice-btn {
+            background: transparent;
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+        }
+        .view-invoice-btn:hover {
+            background: #D4AF37;
+            color: #050505;
+        }
+        
+        @media (max-width: 768px) {
+            .user-stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .notification-dropdown { width: 300px; right: 10px; }
+            .photo-gallery img { max-width: 200px; max-height: 200px; }
+            .pay-btn { min-width: 60px; font-size: 0.65rem; padding: 6px 8px; }
+            .rating-options { grid-template-columns: 1fr; }
+            .rating-modal-content { padding: 25px; }
+        }
+        @media (max-width: 480px) {
+            .stars-container label { font-size: 1.8rem; }
+            .rating-modal-content .rating-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <div class="nav-links">
+                        <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                        <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                        <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                        <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                        <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                        <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                        <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                        <!-- 🎫 SUPPORT TICKETS - Client & Admin -->
+<a href="support-tickets.html" class="nav-link" id="ticketsNavLink"><i class="fas fa-ticket-alt"></i> Support</a>
+                        <!-- 🆕 REAL-TIME DASHBOARD - ADMIN ONLY -->
+<a href="realtime-dashboard.html" class="nav-link" id="realtimeNavLink" style="display:none;"><i class="fas fa-chart-line"></i> Live</a>
+<a href="fleet-dashboard.html" class="nav-link" id="fleetNavLink" style="display:none;"><i class="fas fa-truck"></i> Fleet</a>
+                        <a href="gps-tracker.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> GPS Tracker</a>
+                        <!-- 🗺️ GPS MAP -->
+<a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                        <a href="how-it-works.html" class="nav-link"><i class="fas fa-question-circle"></i> How It Works</a>
+                        <a href="chatbot.html" class="nav-link"><i class="fas fa-robot"></i> Chat Assistant</a>
+
+                        <!-- 🗺️ ROUTE LINKS - Client should NOT see these -->
+<a href="route-dashboard.html" class="nav-link" id="routesNavLink" style="display:none;"><i class="fas fa-route"></i> Routes</a>
+<a href="route-create.html" class="nav-link" id="createRouteNavLink" style="display:none;"><i class="fas fa-plus-circle"></i> Create Route</a>
+<a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link" id="myRouteNavLink" style="display:none;">
+    <i class="fas fa-info-circle"></i> My Route
+</a>
+                        
+                        <!-- 🏢 WAREHOUSE LINKS - ROLE BASED -->
+                        <!-- ADMIN ONLY (hidden by default) -->
+                        <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink" style="display:none;"><i class="fas fa-warehouse"></i> Warehouse</a>
+                        <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink" style="display:none;"><i class="fas fa-boxes"></i> Inventory</a>
+                        
+                        <!-- CLIENT ONLY -->
+                        <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink"><i class="fas fa-warehouse"></i> My Storage</a>
+                        
+                        <!-- DRIVER ONLY -->
+                        <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink" style="display:none;"><i class="fas fa-warehouse"></i> Pickups</a>
+                        
+                        <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                        <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                        <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                        <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                        <!-- Notification Bell -->
+                <div class="notification-bell" onclick="toggleNotifications()">
+                    <i class="fas fa-bell"></i>
+                    <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+                </div>
+                
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Notification Dropdown -->
+    <div id="notificationDropdown" class="notification-dropdown" style="display: none;">
+        <div class="notification-header">
+            <h4>Notifications</h4>
+            <button onclick="markAllRead()" class="mark-read-btn">Mark all read</button>
+        </div>
+        <div id="notificationList" class="notification-list">
+            <p style="text-align:center; padding:20px;">Loading...</p>
+        </div>
+    </div>
+
+    <section class="dashboard-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="dashboard.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="welcome-card" data-aos="fade-up">
+                <h1><i class="fas fa-tachometer-alt"></i> My Dashboard</h1>
+                <p>Manage your shipments, track deliveries, and create new shipments</p>
+            </div>
+
+            <!-- Client Stats Cards - 6 Cards -->
+            <div class="user-stats-grid" data-aos="fade-up">
+                <div class="user-stat-card">
+                    <i class="fas fa-box"></i>
+                    <div class="user-stat-number" id="totalShipments">0</div>
+                    <div class="user-stat-label">Total Shipments</div>
+                </div>
+                <div class="user-stat-card">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="user-stat-number" id="deliveredCount">0</div>
+                    <div class="user-stat-label">Delivered</div>
+                </div>
+                <div class="user-stat-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="user-stat-number" id="pendingCount">0</div>
+                    <div class="user-stat-label">Pending</div>
+                </div>
+                <div class="user-stat-card">
+                    <i class="fas fa-dollar-sign"></i>
+                    <div class="user-stat-number" id="totalSpent">$0</div>
+                    <div class="user-stat-label">Total Spent</div>
+                </div>
+                <div class="user-stat-card">
+                    <i class="fas fa-file-invoice"></i>
+                    <div class="user-stat-number" id="invoiceCount">0</div>
+                    <div class="user-stat-label">Invoices</div>
+                </div>
+                <div class="user-stat-card">
+                    <i class="fas fa-credit-card"></i>
+                    <div class="user-stat-number" id="paidInvoices">0</div>
+                    <div class="user-stat-label">Paid Invoices</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card" data-aos="fade-right">
+                    <h2><i class="fas fa-plus-circle"></i> Create New Shipment</h2>
+                    <form id="shipmentForm" class="shipment-form">
+                        <input type="text" id="senderName" placeholder="Sender Name" required>
+                        <input type="text" id="senderAddress" placeholder="Sender Address" required>
+                        <input type="text" id="receiverName" placeholder="Receiver Name" required>
+                        <input type="text" id="receiverAddress" placeholder="Receiver Address" required>
+                        <input type="number" id="weight" placeholder="Weight (kg)" required>
+                        
+                        <!-- Service Type Selector -->
+                        <select id="serviceType">
+                            <option value="standard">📦 Standard Shipping (5-18 days)</option>
+                            <option value="express">⚡ Express Shipping (2-6 days)</option>
+                            <option value="overnight">🌙 Overnight Shipping (1 day)</option>
+                        </select>
+                        
+                        <!-- ETA Preview -->
+                        <div class="eta-preview-box">
+                            <p class="eta-label">📅 Estimated Delivery</p>
+                            <p class="eta-date" id="etaPreview">Enter weight to calculate</p>
+                        </div>
+                        
+                        <div class="price-calc">
+                            <p>💰 <span>Calculated Price:</span> <span class="calculated-price" id="calculatedPrice">$0.00</span></p>
+                            <p><small>$10 base + $5 per kg</small></p>
+                        </div>
+                        <button type="submit" class="btn-gold" style="width:100%;">Create Shipment →</button>
+                    </form>
+                </div>
+
+                <div class="dashboard-card" data-aos="fade-left">
+                    <h2><i class="fas fa-history"></i> My Shipments</h2>
+                    <button onclick="exportToCSV()" class="export-btn">
+                        <i class="fas fa-download"></i> Export to CSV
+                    </button>
+                    <div id="shipmentsList" class="shipments-list">
+                        <p style="text-align:center; color:#888;"><i class="fas fa-spinner fa-pulse"></i> Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoices Section -->
+            <div class="dashboard-card" data-aos="fade-up" style="margin-top: 20px;">
+                <h2><i class="fas fa-file-invoice"></i> My Invoices</h2>
+                <div id="invoicesList" class="invoices-list">
+                    <p style="text-align:center; color:#888;"><i class="fas fa-spinner fa-pulse"></i> Loading invoices...</p>
+                </div>
+            </div>
+
+            <!-- Payments Section -->
+            <div class="dashboard-card" data-aos="fade-up" style="margin-top: 20px;">
+                <h2><i class="fas fa-credit-card"></i> Payment History</h2>
+                <div id="paymentsList" class="payments-list">
+                    <p style="text-align:center; color:#888;"><i class="fas fa-spinner fa-pulse"></i> Loading payments...</p>
+                </div>
+            </div>
+
+            <!-- Login History Section -->
+            <div class="dashboard-card" data-aos="fade-up" style="margin-top: 20px;">
+                <h2><i class="fas fa-history"></i> Recent Login Activity</h2>
+                <div id="loginHistoryList" class="shipments-list">
+                    <p style="text-align:center; color:#888;"><i class="fas fa-spinner fa-pulse"></i> Loading login history...</p>
+                </div>
+                <button onclick="loadFullLoginHistory()" class="export-btn" style="margin-top: 15px;">
+                    <i class="fas fa-eye"></i> View Full History
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login History Modal -->
+    <div id="loginHistoryModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: #1a1a2e; max-width: 900px; width: 90%; max-height: 80vh; border-radius: 20px; border: 1px solid #D4AF37; overflow: hidden;">
+            <div style="padding: 20px; background: rgba(212,175,55,0.1); border-bottom: 1px solid rgba(212,175,55,0.3); display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="color: #D4AF37;"><i class="fas fa-history"></i> Login History</h3>
+                <button onclick="closeLoginHistoryModal()" style="background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            </div>
+            <div id="fullLoginHistoryList" style="padding: 20px; overflow-y: auto; max-height: 60vh;"></div>
+            <div style="padding: 15px; border-top: 1px solid rgba(212,175,55,0.2); display: flex; justify-content: space-between;">
+                <button onclick="loadFullLoginHistory()" class="filter-btn" style="background: transparent; border: 1px solid #D4AF37; color: #D4AF37; padding: 8px 20px; border-radius: 30px; cursor: pointer;">Refresh</button>
+                <button onclick="closeLoginHistoryModal()" class="btn-gold" style="margin: 0; padding: 8px 20px;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shipment Details Modal -->
+    <div id="shipmentDetailsModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-box"></i> Shipment Details</h3>
+                <button class="modal-close" onclick="closeShipmentDetails()">&times;</button>
+            </div>
+            <div class="modal-body" id="shipmentDetailsBody">
+                <div style="text-align:center; padding:20px;">
+                    <i class="fas fa-spinner fa-pulse" style="font-size:2rem; color:#D4AF37;"></i>
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== RATING MODAL ===== -->
+    <div id="ratingModal" class="rating-modal" style="display: none;">
+        <div class="rating-modal-content">
+            <h3><i class="fas fa-star" style="color:#D4AF37;"></i> Rate Your Delivery</h3>
+            <p class="rating-subtitle">Help us improve by rating your delivery experience</p>
+            <p class="rating-tracking">📦 Tracking: <strong id="ratingTrackingNumber">N/A</strong></p>
+            <p class="rating-tracking" style="color:#888; font-size:0.85rem;">🚚 Driver: <strong id="ratingDriverName" style="color:#2196F3;">N/A</strong></p>
+            
+            <div id="ratingForm">
+                <!-- Driver Rating -->
+                <div class="rating-group">
+                    <label>⭐ Rate the Driver <span class="required">*</span></label>
+                    <div class="stars-container" id="driverStars">
+                        <input type="radio" name="driverRating" id="driver5" value="5">
+                        <label for="driver5">★</label>
+                        <input type="radio" name="driverRating" id="driver4" value="4">
+                        <label for="driver4">★</label>
+                        <input type="radio" name="driverRating" id="driver3" value="3">
+                        <label for="driver3">★</label>
+                        <input type="radio" name="driverRating" id="driver2" value="2">
+                        <label for="driver2">★</label>
+                        <input type="radio" name="driverRating" id="driver1" value="1">
+                        <label for="driver1">★</label>
+                    </div>
+                    <div id="driverRatingText" style="color:#888; font-size:0.8rem; margin-top:5px;">Select a rating</div>
+                </div>
+
+                <!-- Service Rating -->
+                <div class="rating-group">
+                    <label>⭐ Rate the Service <span class="required">*</span></label>
+                    <div class="stars-container" id="serviceStars">
+                        <input type="radio" name="serviceRating" id="service5" value="5">
+                        <label for="service5">★</label>
+                        <input type="radio" name="serviceRating" id="service4" value="4">
+                        <label for="service4">★</label>
+                        <input type="radio" name="serviceRating" id="service3" value="3">
+                        <label for="service3">★</label>
+                        <input type="radio" name="serviceRating" id="service2" value="2">
+                        <label for="service2">★</label>
+                        <input type="radio" name="serviceRating" id="service1" value="1">
+                        <label for="service1">★</label>
+                    </div>
+                    <div id="serviceRatingText" style="color:#888; font-size:0.8rem; margin-top:5px;">Select a rating</div>
+                </div>
+
+                <!-- Comment -->
+                <div class="rating-group">
+                    <label>💬 Leave a Comment <span style="color:#888; font-weight:400; font-size:0.8rem;">(optional)</span></label>
+                    <textarea id="ratingComment" placeholder="Share your experience with this delivery..." rows="3"></textarea>
+                </div>
+
+                <!-- Additional Options -->
+                <div class="rating-options">
+                    <select id="ratingDeliveryOnTime">
+                        <option value="">⏱️ Was it on time?</option>
+                        <option value="yes">✅ Yes, on time</option>
+                        <option value="no">❌ No, it was late</option>
+                    </select>
+                    <select id="ratingPackageCondition">
+                        <option value="">📦 Package condition?</option>
+                        <option value="excellent">✅ Excellent</option>
+                        <option value="good">👍 Good</option>
+                        <option value="fair">👌 Fair</option>
+                        <option value="poor">❌ Poor</option>
+                    </select>
+                </div>
+
+                <div class="rating-actions">
+                    <button class="rating-cancel" onclick="closeRatingModal()">Cancel</button>
+                    <button class="rating-submit" onclick="submitRating()" id="submitRatingBtn">
+                        <i class="fas fa-paper-plane"></i> Submit Rating
+                    </button>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div id="ratingSuccess" class="rating-success" style="display:none;">
+                <i class="fas fa-check-circle"></i>
+                <h4>Thank You for Your Feedback!</h4>
+                <p>Your rating has been submitted successfully.</p>
+                <button class="rating-cancel" onclick="closeRatingModal()" style="margin-top:15px; padding:10px 30px; border-radius:30px; background:transparent; border:1px solid #4caf50; color:#4caf50; cursor:pointer;">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        // ===== INITIALIZE =====
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!token) window.location.href = 'login.html';
+
+        if (user.role === 'driver') {
+            window.location.href = 'driver-dashboard.html';
+        }
+
+        // ===== RATING VARIABLES =====
+        let currentRatingTracking = null;
+        let currentRatingDriver = null;
+        let ratedShipments = new Set();
+
+        // ===== ETA PREVIEW CALCULATION =====
+        function calculateETAPreview(weight, serviceType) {
+            let daysToAdd = 0;
+            
+            switch(serviceType) {
+                case 'overnight':
+                    daysToAdd = 1;
+                    break;
+                case 'express':
+                    if (weight <= 10) {
+                        daysToAdd = 2;
+                    } else if (weight <= 30) {
+                        daysToAdd = 4;
+                    } else {
+                        daysToAdd = 6;
+                    }
+                    break;
+                case 'standard':
+                default:
+                    if (weight <= 5) {
+                        daysToAdd = 6;
+                    } else if (weight <= 20) {
+                        daysToAdd = 9;
+                    } else if (weight <= 50) {
+                        daysToAdd = 12;
+                    } else {
+                        daysToAdd = 18;
+                    }
+                    break;
+            }
+            
+            const today = new Date();
+            const eta = new Date(today);
+            eta.setDate(eta.getDate() + daysToAdd);
+            
+            return {
+                daysToAdd: daysToAdd,
+                etaDate: eta,
+                etaString: eta.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+            };
+        }
+
+        // ===== UPDATE ETA PREVIEW =====
+        function updateETAPreview() {
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
+            const serviceType = document.getElementById('serviceType').value;
+            const etaDisplay = document.getElementById('etaPreview');
+            
+            if (weight <= 0) {
+                etaDisplay.textContent = 'Enter weight to calculate';
+                etaDisplay.style.color = '#888';
+                return;
+            }
+            
+            const result = calculateETAPreview(weight, serviceType);
+            etaDisplay.textContent = `${result.etaString} (${result.daysToAdd} day${result.daysToAdd > 1 ? 's' : ''})`;
+            etaDisplay.style.color = '#D4AF37';
+        }
+
+        // Price calculation
+        const weightInput = document.getElementById('weight');
+        const calculatedPriceSpan = document.getElementById('calculatedPrice');
+        
+        function calculateAmount() {
+            const weight = parseFloat(weightInput.value) || 0;
+            const amount = 10 + (weight * 5);
+            calculatedPriceSpan.innerHTML = `$${amount.toFixed(2)}`;
+            return amount;
+        }
+        
+        // Add event listeners for ETA preview
+        document.getElementById('serviceType').addEventListener('change', updateETAPreview);
+        weightInput.addEventListener('input', function() {
+            calculateAmount();
+            updateETAPreview();
+        });
+        
+        // Initial calculation
+        calculateAmount();
+        updateETAPreview();
+
+        // ===== LOAD CLIENT STATS =====
+        async function loadClientStats() {
+            try {
+                const res = await fetch('http://localhost:5000/api/client/reports', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    document.getElementById('totalShipments').innerText = data.stats.totalShipments || 0;
+                    document.getElementById('deliveredCount').innerText = data.stats.delivered || 0;
+                    document.getElementById('pendingCount').innerText = data.stats.pending || 0;
+                    document.getElementById('totalSpent').innerText = `$${data.stats.totalSpent || '0.00'}`;
+                    document.getElementById('invoiceCount').innerText = data.stats.invoicesCount || 0;
+                    document.getElementById('paidInvoices').innerText = data.stats.paidInvoicesCount || 0;
+                }
+            } catch (err) {
+                console.error('Error loading stats:', err);
+            }
+        }
+
+        // ===== LOAD CLIENT INVOICES =====
+        async function loadClientInvoices() {
+            try {
+                const res = await fetch('http://localhost:5000/api/client/invoices', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const container = document.getElementById('invoicesList');
+                
+                if (!data.success || data.invoices.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#888;">No invoices yet</p>';
+                    return;
+                }
+                
+                container.innerHTML = data.invoices.map(inv => {
+                    const statusColor = inv.status === 'paid' ? '#4caf50' : '#ff9800';
+                    const statusText = inv.status === 'paid' ? '✅ Paid' : '⏳ Unpaid';
+                    
+                    return `
+                        <div class="shipment-item" style="cursor:default;">
+                            <p><strong>Invoice:</strong> <span style="color:#D4AF37;">${escapeHtml(inv.invoiceNumber)}</span></p>
+                            <p><strong>Tracking:</strong> ${escapeHtml(inv.trackingNumber)}</p>
+                            <p><strong>Amount:</strong> $${inv.total.toFixed(2)}</p>
+                            <p><strong>Status:</strong> <span style="color:${statusColor};">${statusText}</span></p>
+                            <p><strong>Date:</strong> ${new Date(inv.createdAt).toLocaleDateString()}</p>
+                            <div style="display:flex; gap:10px; margin-top:10px;">
+                                <button onclick="viewInvoice('${inv.trackingNumber}')" class="view-invoice-btn">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <button onclick="downloadInvoice('${inv.trackingNumber}')" class="view-invoice-btn">
+                                    <i class="fas fa-download"></i> PDF
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading invoices:', err);
+                document.getElementById('invoicesList').innerHTML = '<p style="text-align:center; color:#ff6b6b;">Error loading invoices</p>';
+            }
+        }
+
+        // ===== LOAD CLIENT PAYMENTS =====
+        async function loadClientPayments() {
+            try {
+                const res = await fetch('http://localhost:5000/api/client/payments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const container = document.getElementById('paymentsList');
+                
+                if (!container) return;
+                
+                if (!data.success || data.payments.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#888;">No payment history</p>';
+                    return;
+                }
+                
+                container.innerHTML = data.payments.map(p => {
+                    const statusColor = p.status === 'succeeded' ? '#4caf50' : 
+                                       p.status === 'pending' ? '#ff9800' : '#ff6b6b';
+                    const statusText = p.status === 'succeeded' ? '✅ Paid' : 
+                                      p.status === 'pending' ? '⏳ Pending' : '❌ Failed';
+                    
+                    return `
+                        <div class="shipment-item" style="cursor:default;">
+                            <p><strong>Payment ID:</strong> <span style="color:#D4AF37;">${escapeHtml(p.paymentId)}</span></p>
+                            <p><strong>Tracking:</strong> ${escapeHtml(p.trackingNumber)}</p>
+                            <p><strong>Amount:</strong> $${p.amount.toFixed(2)}</p>
+                            <p><strong>Status:</strong> <span style="color:${statusColor};">${statusText}</span></p>
+                            <p><strong>Date:</strong> ${new Date(p.createdAt).toLocaleDateString()}</p>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading payments:', err);
+                const container = document.getElementById('paymentsList');
+                if (container) {
+                    container.innerHTML = '<p style="text-align:center; color:#ff6b6b;">Error loading payments</p>';
+                }
+            }
+        }
+
+        // ===== VIEW INVOICE - WITH TOKEN =====
+        function viewInvoice(trackingNumber) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('Please login first', 'error');
+                return;
+            }
+            window.open(`http://localhost:5000/api/client/invoices/${trackingNumber}?token=${token}`, '_blank');
+        }
+
+        // ===== DOWNLOAD INVOICE - WITH TOKEN =====
+        function downloadInvoice(trackingNumber) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('Please login first', 'error');
+                return;
+            }
+            window.open(`http://localhost:5000/api/client/invoices/${trackingNumber}?token=${token}`, '_blank');
+        }
+
+        // ===== VIEW SHIPMENT DETAILS =====
+        async function viewShipmentDetails(trackingNumber) {
+            const modal = document.getElementById('shipmentDetailsModal');
+            const body = document.getElementById('shipmentDetailsBody');
+            modal.style.display = 'flex';
+            body.innerHTML = '<div style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-pulse" style="font-size:2rem; color:#D4AF37;"></i><p>Loading...</p></div>';
+            
+            try {
+                const res = await fetch(`http://localhost:5000/api/client/shipments/${trackingNumber}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                if (!data.success) {
+                    body.innerHTML = `<p style="color:#ff6b6b;">Error loading shipment details</p>`;
+                    return;
+                }
+                
+                const s = data.shipment;
+                const statusColors = {
+                    'pending': '#ffa500',
+                    'picked_up': '#2196F3',
+                    'in_transit': '#9c27b0',
+                    'out_for_delivery': '#ff9800',
+                    'delivered': '#4caf50'
+                };
+                
+                // Build progress bar
+                const statusOrder = ['pending', 'picked_up', 'in_transit', 'out_for_delivery', 'delivered'];
+                const currentIndex = statusOrder.indexOf(s.status);
+                const progress = ((currentIndex + 1) / statusOrder.length) * 100;
+                
+                let historyHtml = '';
+                if (s.trackingHistory && s.trackingHistory.length > 0) {
+                    historyHtml = '<div style="margin-top:15px; padding-top:15px; border-top:1px solid rgba(212,175,55,0.2);"><h4 style="color:#D4AF37;">📋 Tracking History</h4>';
+                    [...s.trackingHistory].reverse().forEach(entry => {
+                        historyHtml += `
+                            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05); flex-wrap:wrap; gap:5px;">
+                                <span style="color:#D4AF37;">${entry.status.replace('_', ' ').toUpperCase()}</span>
+                                <span style="color:#888; font-size:0.8rem;">${new Date(entry.updatedAt).toLocaleString()}</span>
+                            </div>
+                        `;
+                    });
+                    historyHtml += '</div>';
+                }
+                
+                body.innerHTML = `
+                    <!-- Progress Bar -->
+                    <div style="margin-bottom:20px;">
+                        <div style="background:rgba(255,255,255,0.05); border-radius:10px; height:8px; overflow:hidden;">
+                            <div style="width:${progress}%; height:100%; background:linear-gradient(90deg, #D4AF37, #FFD700); border-radius:10px; transition:width 1s ease;"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:5px; font-size:0.7rem; color:#888;">
+                            <span>📦 Received</span>
+                            <span>✅ Picked</span>
+                            <span>🚚 Transit</span>
+                            <span>🏠 Delivery</span>
+                            <span>✔ Done</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-row"><div class="detail-label">🔢 Tracking</div><div class="detail-value"><strong style="color:#D4AF37;">${escapeHtml(s.trackingNumber)}</strong></div></div>
+                    <div class="detail-row"><div class="detail-label">📤 Sender</div><div class="detail-value">${escapeHtml(s.senderName)}</div></div>
+                    <div class="detail-row"><div class="detail-label">📍 Sender Address</div><div class="detail-value">${escapeHtml(s.senderAddress)}</div></div>
+                    <div class="detail-row"><div class="detail-label">📥 Receiver</div><div class="detail-value">${escapeHtml(s.receiverName)}</div></div>
+                    <div class="detail-row"><div class="detail-label">📍 Receiver Address</div><div class="detail-value">${escapeHtml(s.receiverAddress)}</div></div>
+                    <div class="detail-row"><div class="detail-label">⚖️ Weight</div><div class="detail-value">${s.weight} kg</div></div>
+                    <div class="detail-row"><div class="detail-label">💰 Amount</div><div class="detail-value" style="color:#D4AF37; font-weight:700;">$${(s.amount || 0).toFixed(2)}</div></div>
+                    <div class="detail-row"><div class="detail-label">📊 Status</div><div class="detail-value"><span style="color:${statusColors[s.status] || '#fff'}; font-weight:600;">${s.status.replace('_', ' ').toUpperCase()}</span></div></div>
+                    ${s.assignedDriverName ? `<div class="detail-row"><div class="detail-label">🚚 Driver</div><div class="detail-value">${escapeHtml(s.assignedDriverName)} ${s.assignedDriverVehicle ? `(${escapeHtml(s.assignedDriverVehicle)})` : ''}</div></div>` : ''}
+                    ${s.estimatedDelivery ? `<div class="detail-row"><div class="detail-label">📅 Estimated Delivery</div><div class="detail-value">${new Date(s.estimatedDelivery).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}</div></div>` : ''}
+                    ${s.serviceType ? `<div class="detail-row"><div class="detail-label">⚡ Service Type</div><div class="detail-value" style="text-transform:capitalize;">${s.serviceType}</div></div>` : ''}
+                    ${s.createdAt ? `<div class="detail-row"><div class="detail-label">📅 Created</div><div class="detail-value">${new Date(s.createdAt).toLocaleString()}</div></div>` : ''}
+                    ${historyHtml}
+                    <div style="margin-top:20px; text-align:right;">
+                        <button onclick="closeShipmentDetails()" class="btn-gold" style="padding:8px 20px; margin:0;">Close</button>
+                    </div>
+                `;
+            } catch (err) {
+                body.innerHTML = `<p style="color:#ff6b6b;">Error loading shipment details</p>`;
+            }
+        }
+
+        function closeShipmentDetails() {
+            document.getElementById('shipmentDetailsModal').style.display = 'none';
+        }
+
+        // ============================================================
+        // ⭐ RATING FUNCTIONS
+        // ============================================================
+
+        // Open Rating Modal
+        function openRatingModal(trackingNumber, driverName) {
+            currentRatingTracking = trackingNumber;
+            currentRatingDriver = driverName || 'Driver';
+            
+            document.getElementById('ratingTrackingNumber').textContent = trackingNumber;
+            document.getElementById('ratingDriverName').textContent = driverName || 'Driver';
+            
+            // Reset form
+            document.getElementById('ratingForm').style.display = 'block';
+            document.getElementById('ratingSuccess').style.display = 'none';
+            
+            // Reset stars
+            document.querySelectorAll('#driverStars input').forEach(input => input.checked = false);
+            document.querySelectorAll('#serviceStars input').forEach(input => input.checked = false);
+            document.getElementById('driverRatingText').textContent = 'Select a rating';
+            document.getElementById('serviceRatingText').textContent = 'Select a rating';
+            document.getElementById('ratingComment').value = '';
+            document.getElementById('ratingDeliveryOnTime').value = '';
+            document.getElementById('ratingPackageCondition').value = '';
+            
+            // Enable submit button
+            document.getElementById('submitRatingBtn').disabled = false;
+            document.getElementById('submitRatingBtn').innerHTML = '<i class="fas fa-paper-plane"></i> Submit Rating';
+            
+            document.getElementById('ratingModal').style.display = 'flex';
+        }
+
+        // Close Rating Modal
+        function closeRatingModal() {
+            document.getElementById('ratingModal').style.display = 'none';
+            currentRatingTracking = null;
+            currentRatingDriver = null;
+        }
+
+        // Star rating hover effects
+        document.querySelectorAll('#driverStars label, #serviceStars label').forEach(label => {
+            label.addEventListener('mouseenter', function() {
+                const container = this.closest('.stars-container');
+                const labels = container.querySelectorAll('label');
+                let found = false;
+                labels.forEach(l => {
+                    if (l === this) found = true;
+                    if (found) {
+                        l.style.color = '#ffa500';
+                    } else {
+                        l.style.color = '#555';
+                    }
+                });
+            });
+            
+            label.addEventListener('mouseleave', function() {
+                const container = this.closest('.stars-container');
+                const checked = container.querySelector('input:checked');
+                const labels = container.querySelectorAll('label');
+                if (checked) {
+                    let found = false;
+                    labels.forEach(l => {
+                        const input = document.getElementById(l.htmlFor);
+                        if (input === checked) found = true;
+                        if (found) {
+                            l.style.color = '#ffa500';
+                        } else {
+                            l.style.color = '#555';
+                        }
+                    });
+                } else {
+                    labels.forEach(l => l.style.color = '#555');
+                }
+            });
+        });
+
+        // Update rating text on click
+        document.querySelectorAll('#driverStars input').forEach(input => {
+            input.addEventListener('change', function() {
+                const text = document.getElementById('driverRatingText');
+                const ratings = {
+                    '1': '😠 Poor',
+                    '2': '😕 Fair',
+                    '3': '😐 Good',
+                    '4': '😊 Very Good',
+                    '5': '🌟 Excellent'
+                };
+                text.textContent = ratings[this.value] || 'Select a rating';
+            });
+        });
+
+        document.querySelectorAll('#serviceStars input').forEach(input => {
+            input.addEventListener('change', function() {
+                const text = document.getElementById('serviceRatingText');
+                const ratings = {
+                    '1': '😠 Poor',
+                    '2': '😕 Fair',
+                    '3': '😐 Good',
+                    '4': '😊 Very Good',
+                    '5': '🌟 Excellent'
+                };
+                text.textContent = ratings[this.value] || 'Select a rating';
+            });
+        });
+
+        // Submit Rating
+        async function submitRating() {
+            const driverRating = document.querySelector('input[name="driverRating"]:checked');
+            const serviceRating = document.querySelector('input[name="serviceRating"]:checked');
+            
+            if (!driverRating || !serviceRating) {
+                showToast('Please rate both the driver and the service', 'error');
+                return;
+            }
+            
+            const comment = document.getElementById('ratingComment').value.trim();
+            const deliveryOnTime = document.getElementById('ratingDeliveryOnTime').value;
+            const packageCondition = document.getElementById('ratingPackageCondition').value;
+            
+            const btn = document.getElementById('submitRatingBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Submitting...';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/rating/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        trackingNumber: currentRatingTracking,
+                        driverRating: parseInt(driverRating.value),
+                        serviceRating: parseInt(serviceRating.value),
+                        comment: comment,
+                        deliveryOnTime: deliveryOnTime === 'yes' ? true : (deliveryOnTime === 'no' ? false : null),
+                        packageCondition: packageCondition || null,
+                        wouldRecommend: driverRating.value >= 4 ? true : (driverRating.value <= 2 ? false : null)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success
+                    document.getElementById('ratingForm').style.display = 'none';
+                    document.getElementById('ratingSuccess').style.display = 'block';
+                    
+                    // Mark as rated
+                    ratedShipments.add(currentRatingTracking);
+                    
+                    showToast('⭐ Rating submitted successfully!', 'success');
+                    
+                    // Refresh shipments to update button
+                    setTimeout(loadShipments, 1000);
+                } else {
+                    showToast('❌ Error: ' + data.message, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Rating';
+                }
+            } catch (err) {
+                console.error('Rating error:', err);
+                showToast('❌ Connection error', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Rating';
+            }
+        }
+
+        // Close rating modal on outside click
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('ratingModal');
+            if (event.target === modal) {
+                closeRatingModal();
+            }
+        });
+
+        // Close rating modal on ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeRatingModal();
+            }
+        });
+
+        // ============================================================
+        // END RATING FUNCTIONS
+        // ============================================================
+
+        // Create shipment
+        document.getElementById('shipmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = calculateAmount();
+            const data = {
+                senderName: document.getElementById('senderName').value,
+                senderAddress: document.getElementById('senderAddress').value,
+                receiverName: document.getElementById('receiverName').value,
+                receiverAddress: document.getElementById('receiverAddress').value,
+                weight: parseFloat(weightInput.value),
+                serviceType: document.getElementById('serviceType').value,
+                amount: amount
+            };
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating...';
+            submitBtn.disabled = true;
+            
+            try {
+                const res = await fetch('http://localhost:5000/api/tracking', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    let etaMessage = '';
+                    if (result.estimatedDelivery) {
+                        const etaDate = new Date(result.estimatedDelivery);
+                        etaMessage = ` | ETA: ${etaDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`;
+                    }
+                    showToast(`✅ Shipment created! Tracking: ${result.trackingNumber}${etaMessage}`, 'success');
+                    document.getElementById('shipmentForm').reset();
+                    weightInput.value = '';
+                    calculateAmount();
+                    updateETAPreview();
+                    loadShipments();
+                    loadNotifications();
+                    loadClientStats();
+                    loadClientInvoices();
+                    loadClientPayments();
+                } else {
+                    showToast('❌ Error: ' + result.message, 'error');
+                }
+            } catch (err) { 
+                showToast('❌ Connection error', 'error'); 
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Update user stats
+        function updateUserStats(shipments) {
+            const total = shipments.length;
+            const delivered = shipments.filter(s => s.status === 'delivered').length;
+            const pending = shipments.filter(s => s.status !== 'delivered').length;
+            
+            document.getElementById('totalShipments').innerText = total;
+            document.getElementById('deliveredCount').innerText = delivered;
+            document.getElementById('pendingCount').innerText = pending;
+        }
+
+        // Export to CSV
+        function exportToCSV() {
+            const shipmentItems = document.querySelectorAll('.shipment-item');
+            if (shipmentItems.length === 0) {
+                showToast('No shipments to export', 'error');
+                return;
+            }
+            const shipments = Array.from(shipmentItems).map(item => {
+                const text = item.innerText;
+                return {
+                    tracking: text.match(/Tracking:\s(.+?)(?:\n|$)/)?.[1]?.trim() || '',
+                    from: text.match(/From:\s(.+?)(?:\n|$)/)?.[1]?.trim() || '',
+                    to: text.match(/To:\s(.+?)(?:\n|$)/)?.[1]?.trim() || '',
+                    status: text.match(/Status:\s(.+?)(?:\n|$)/)?.[1]?.trim() || '',
+                    weight: text.match(/Weight:\s(.+?)(?:\n|$)/)?.[1]?.trim() || '',
+                    amount: text.match(/Amount:\s\$(.+?)(?:\n|$)/)?.[1]?.trim() || ''
+                };
+            });
+            const headers = ['Tracking Number', 'From', 'To', 'Status', 'Weight (kg)', 'Amount (USD)'];
+            const rows = shipments.map(s => [s.tracking, s.from, s.to, s.status, s.weight, s.amount]);
+            const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tamyokiy_shipments_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('CSV exported successfully!', 'success');
+        }
+
+        // ===== VIEW DELIVERY PROOF PHOTOS =====
+        async function viewDeliveryPhotos(trackingNumber) {
+            try {
+                const res = await fetch(`http://localhost:5000/api/tracking/${trackingNumber}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const shipment = await res.json();
+                
+                const photos = [];
+                if (shipment.deliveryPhoto) photos.push(shipment.deliveryPhoto);
+                if (shipment.deliveryPhoto2) photos.push(shipment.deliveryPhoto2);
+                if (shipment.deliveryPhoto3) photos.push(shipment.deliveryPhoto3);
+                
+                if (photos.length === 0) {
+                    showToast('No delivery proof photos available for this shipment', 'info');
+                    return;
+                }
+                
+                const modal = document.createElement('div');
+                modal.className = 'photo-modal';
+                modal.onclick = (e) => {
+                    if (e.target === modal) modal.remove();
+                };
+                
+                const content = document.createElement('div');
+                content.className = 'photo-modal-content';
+                content.onclick = (e) => e.stopPropagation();
+                
+                const gallery = document.createElement('div');
+                gallery.className = 'photo-gallery';
+                
+                photos.forEach((photo, index) => {
+                    const img = document.createElement('img');
+                    img.src = `http://localhost:5000${photo}`;
+                    img.alt = `Delivery proof ${index + 1}`;
+                    img.onclick = () => showFullscreen(photo, index, photos);
+                    gallery.appendChild(img);
+                });
+                
+                const counter = document.createElement('div');
+                counter.className = 'photo-counter';
+                counter.innerHTML = `${photos.length} photo(s) available`;
+                
+                const closeBtn = document.createElement('button');
+                closeBtn.textContent = 'Close';
+                closeBtn.style.cssText = `
+                    background: linear-gradient(135deg, #D4AF37, #FFD700);
+                    border: none;
+                    color: #050505;
+                    padding: 8px 20px;
+                    border-radius: 30px;
+                    margin-top: 15px;
+                    cursor: pointer;
+                    font-weight: 600;
+                `;
+                closeBtn.onclick = () => modal.remove();
+                
+                content.appendChild(gallery);
+                content.appendChild(counter);
+                content.appendChild(closeBtn);
+                modal.appendChild(content);
+                document.body.appendChild(modal);
+                
+                function showFullscreen(photoUrl, index, allPhotos) {
+                    const fsModal = document.createElement('div');
+                    fsModal.className = 'fullscreen-photo';
+                    fsModal.onclick = () => fsModal.remove();
+                    
+                    const img = document.createElement('img');
+                    img.src = `http://localhost:5000${photoUrl}`;
+                    
+                    const navDiv = document.createElement('div');
+                    navDiv.className = 'gallery-nav';
+                    
+                    const prevBtn = document.createElement('button');
+                    prevBtn.innerHTML = '← Previous';
+                    prevBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        let newIndex = index - 1;
+                        if (newIndex < 0) newIndex = allPhotos.length - 1;
+                        fsModal.remove();
+                        showFullscreen(allPhotos[newIndex], newIndex, allPhotos);
+                    };
+                    
+                    const nextBtn = document.createElement('button');
+                    nextBtn.innerHTML = 'Next →';
+                    nextBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        let newIndex = index + 1;
+                        if (newIndex >= allPhotos.length) newIndex = 0;
+                        fsModal.remove();
+                        showFullscreen(allPhotos[newIndex], newIndex, allPhotos);
+                    };
+                    
+                    const closeFsBtn = document.createElement('button');
+                    closeFsBtn.innerHTML = '✕ Close';
+                    closeFsBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        fsModal.remove();
+                    };
+                    
+                    const counterText = document.createElement('div');
+                    counterText.style.cssText = 'color: #D4AF37; margin-bottom: 10px; font-size: 0.9rem;';
+                    counterText.innerHTML = `${index + 1} of ${allPhotos.length}`;
+                    
+                    navDiv.appendChild(prevBtn);
+                    navDiv.appendChild(nextBtn);
+                    navDiv.appendChild(closeFsBtn);
+                    
+                    fsModal.appendChild(counterText);
+                    fsModal.appendChild(img);
+                    fsModal.appendChild(navDiv);
+                    document.body.appendChild(fsModal);
+                }
+                
+            } catch (err) {
+                console.error('Error loading delivery photos:', err);
+                showToast('Error loading photos', 'error');
+            }
+        }
+
+        // ===== LOAD SHIPMENTS - WITH RATING BUTTONS =====
+        async function loadShipments() {
+            try {
+                const res = await fetch('http://localhost:5000/api/tracking/my/shipments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const shipments = await res.json();
+                const shipmentsList = document.getElementById('shipmentsList');
+                
+                updateUserStats(shipments);
+                
+                if (shipments.length === 0) {
+                    shipmentsList.innerHTML = '<p style="text-align:center; color:#888;">No shipments yet. Create your first shipment!</p>';
+                    return;
+                }
+                
+                const statusMap = {
+                    'pending': '📋 Pending', 'picked_up': '📦 Picked Up', 'in_transit': '🚚 In Transit',
+                    'out_for_delivery': '🚛 Out for Delivery', 'delivered': '✅ Delivered'
+                };
+                
+                const statusClass = (status) => ({
+                    'pending': 'status-pending', 'picked_up': 'status-picked_up',
+                    'in_transit': 'status-in_transit', 'out_for_delivery': 'status-out_for_delivery',
+                    'delivered': 'status-delivered'
+                }[status] || 'status-pending');
+                
+                // Check which shipments are already rated
+                const ratedShipmentsSet = new Set();
+                for (const s of shipments) {
+                    if (s.status === 'delivered') {
+                        try {
+                            const ratingRes = await fetch(`http://localhost:5000/api/rating/shipment/${s.trackingNumber}`, {
+                                headers: { 'Authorization': `Bearer ${token}` }
+                            });
+                            const ratingData = await ratingRes.json();
+                            if (ratingData.hasRated) {
+                                ratedShipmentsSet.add(s.trackingNumber);
+                            }
+                        } catch (e) {
+                            // Silently fail
+                        }
+                    }
+                }
+                
+                shipmentsList.innerHTML = shipments.map(s => {
+                    const hasPhoto = s.deliveryPhoto && s.deliveryPhoto !== null;
+                    const photoCount = (s.deliveryPhoto ? 1 : 0) + (s.deliveryPhoto2 ? 1 : 0) + (s.deliveryPhoto3 ? 1 : 0);
+                    const buttonText = photoCount > 1 ? `📸 View ${photoCount} Photos` : '📸 View Delivery Photo';
+                    
+                    let etaHtml = '';
+                    if (s.estimatedDelivery) {
+                        const estDate = new Date(s.estimatedDelivery);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        estDate.setHours(0, 0, 0, 0);
+                        const daysLeft = Math.ceil((estDate - today) / (1000 * 60 * 60 * 24));
+                        let daysText = '';
+                        let color = '#D4AF37';
+                        if (s.status === 'delivered') {
+                            daysText = '✅ Delivered';
+                            color = '#4caf50';
+                        } else if (daysLeft > 0) {
+                            daysText = `${daysLeft} day${daysLeft > 1 ? 's' : ''}`;
+                        } else if (daysLeft === 0) {
+                            daysText = '📦 Today!';
+                            color = '#ff9800';
+                        } else {
+                            daysText = `⚠️ ${Math.abs(daysLeft)}d late`;
+                            color = '#ff6b6b';
+                        }
+                        etaHtml = `<p><strong>📅 ETA:</strong> <span style="color:${color};">${estDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} (${daysText})</span></p>`;
+                    }
+                    
+                    let serviceHtml = '';
+                    if (s.serviceType) {
+                        const serviceLabels = {
+                            'standard': '📦 Standard',
+                            'express': '⚡ Express',
+                            'overnight': '🌙 Overnight'
+                        };
+                        serviceHtml = `<p><strong>Service:</strong> ${serviceLabels[s.serviceType] || s.serviceType}</p>`;
+                    }
+                    
+                    const photoButton = (s.status === 'delivered' && hasPhoto) 
+                        ? `<button onclick="event.stopPropagation(); viewDeliveryPhotos('${s.trackingNumber}')" class="photo-btn">
+                            <i class="fas fa-images"></i> ${buttonText}
+                        </button>` 
+                        : '';
+                    
+                    const driverInfo = s.assignedDriverName 
+                        ? `<p><strong>Driver:</strong> <span class="driver-badge"><i class="fas fa-truck"></i> ${escapeHtml(s.assignedDriverName)}</span></p>`
+                        : '';
+                    
+                    const isPaid = s.isPaid === true;
+                    const amount = s.amount || 50;
+                    
+                    // ===== RATING BUTTON =====
+                    let ratingButton = '';
+                    if (s.status === 'delivered') {
+                        const isRated = ratedShipmentsSet.has(s.trackingNumber);
+                        if (isRated) {
+                            ratingButton = `
+                                <button class="rating-btn rated" onclick="event.stopPropagation();">
+                                    <i class="fas fa-check-circle"></i> Already Rated
+                                </button>
+                            `;
+                        } else {
+                            ratingButton = `
+                                <button onclick="event.stopPropagation(); openRatingModal('${s.trackingNumber}', '${escapeHtml(s.assignedDriverName || 'Driver')}')" class="rating-btn">
+                                    <i class="fas fa-star"></i> Rate This Delivery
+                                </button>
+                            `;
+                        }
+                    }
+                    
+                    return `
+                        <div class="shipment-item" onclick="viewShipmentDetails('${s.trackingNumber}')">
+                            <p><strong>Tracking:</strong> <span style="color:#D4AF37;">${s.trackingNumber}</span></p>
+                            <p><strong>From:</strong> ${escapeHtml(s.senderName)}</p>
+                            <p><strong>To:</strong> ${escapeHtml(s.receiverName)}</p>
+                            <p><strong>Status:</strong> <span class="status-badge ${statusClass(s.status)}">${statusMap[s.status] || s.status}</span></p>
+                            ${serviceHtml}
+                            ${etaHtml}
+                            ${driverInfo}
+                            <p><strong>Weight:</strong> ${s.weight} kg</p>
+                            <p><strong>Amount:</strong> <span style="color:#D4AF37;">$${amount.toFixed(2)}</span></p>
+                            ${!isPaid && s.status !== 'delivered' ? `
+                                <div class="pay-btn-group">
+                                    <button onclick="event.stopPropagation(); payForShipment('${s.trackingNumber}', ${amount}, 'credit_card')" class="pay-btn pay-btn-credit">
+                                        <i class="fas fa-credit-card"></i> Card
+                                    </button>
+                                    <button onclick="event.stopPropagation(); payForShipment('${s.trackingNumber}', ${amount}, 'apple_pay')" class="pay-btn pay-btn-apple">
+                                        <i class="fab fa-apple"></i> Apple
+                                    </button>
+                                    <button onclick="event.stopPropagation(); payForShipment('${s.trackingNumber}', ${amount}, 'google_pay')" class="pay-btn pay-btn-google">
+                                        <i class="fab fa-google"></i> Google
+                                    </button>
+                                    <button onclick="event.stopPropagation(); payForShipment('${s.trackingNumber}', ${amount}, 'paypal')" class="pay-btn pay-btn-paypal">
+                                        <i class="fab fa-paypal"></i> PayPal
+                                    </button>
+                                </div>
+                            ` : `
+                                <div class="paid-badge">
+                                    <i class="fas fa-check-circle"></i> ✅ Paid
+                                </div>
+                            `}
+                            ${photoButton}
+                            ${ratingButton}
+                        </div>
+                    `;
+                }).join('');
+                
+                loadClientStats();
+                
+            } catch (err) {
+                console.error('Error:', err);
+                shipmentsList.innerHTML = '<p style="text-align:center; color:#ff6b6b;">Error loading shipments</p>';
+            }
+        }
+
+        // ===== PAYMENT FUNCTION =====
+        async function payForShipment(trackingNumber, amount, paymentMethod = 'credit_card') {
+            try {
+                console.log('💰 Paying for:', { trackingNumber, amount, paymentMethod });
+
+                if (!trackingNumber) {
+                    showToast('❌ Error: No tracking number found', 'error');
+                    return;
+                }
+
+                if (!amount || amount <= 0) {
+                    showToast('❌ Error: Invalid amount', 'error');
+                    return;
+                }
+
+                const response = await fetch('http://localhost:5000/api/payment/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        trackingNumber: trackingNumber,
+                        amount: amount,
+                        paymentMethod: paymentMethod
+                    })
+                });
+
+                const data = await response.json();
+                console.log('📥 Response:', data);
+
+                if (data.success && data.url) {
+                    console.log('✅ Redirecting to payment form:', data.url);
+                    window.location.href = data.url;
+                } else {
+                    showToast('❌ Error: ' + (data.message || 'Payment failed'), 'error');
+                }
+            } catch (error) {
+                console.error('❌ Payment error:', error);
+                showToast('❌ Connection error. Make sure backend is running.', 'error');
+            }
+        }
+
+        // ===== NOTIFICATION FUNCTIONS =====
+        async function loadNotifications() {
+            try {
+                const res = await fetch('http://localhost:5000/api/notifications', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                const badge = document.getElementById('notificationBadge');
+                if (badge && data.unreadCount > 0) {
+                    badge.style.display = 'inline-block';
+                    badge.innerText = data.unreadCount > 99 ? '99+' : data.unreadCount;
+                } else if (badge) {
+                    badge.style.display = 'none';
+                }
+                
+                const list = document.getElementById('notificationList');
+                if (list) {
+                    if (data.notifications.length === 0) {
+                        list.innerHTML = '<p style="text-align:center; padding:20px;">No notifications</p>';
+                        return;
+                    }
+                    
+                    list.innerHTML = data.notifications.map(n => `
+                        <div class="notification-item ${!n.isRead ? 'unread' : ''}" onclick="markAsRead('${n._id}')">
+                            <div class="notification-title">${escapeHtml(n.title)}</div>
+                            <div class="notification-message">${escapeHtml(n.message)}</div>
+                            <div class="notification-time">${formatTime(n.createdAt)}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error('Error loading notifications:', err);
+            }
+        }
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            if (!dropdown) return;
+            
+            if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                dropdown.style.display = 'block';
+                loadNotifications();
+            } else {
+                dropdown.style.display = 'none';
+            }
+        }
+
+        async function markAsRead(id) {
+            try {
+                await fetch(`http://localhost:5000/api/notifications/${id}/read`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                loadNotifications();
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        }
+
+        async function markAllRead() {
+            try {
+                await fetch('http://localhost:5000/api/notifications/read-all', {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                loadNotifications();
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        }
+
+        function formatTime(date) {
+            const diff = new Date() - new Date(date);
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes} min ago`;
+            if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            return `${days} day${days > 1 ? 's' : ''} ago`;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // ===== LOGIN HISTORY FUNCTIONS =====
+        async function loadLoginHistory() {
+            try {
+                const res = await fetch('http://localhost:5000/api/login-history/recent', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                const container = document.getElementById('loginHistoryList');
+                if (!container) return;
+                
+                if (!data.success || data.histories.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#888;">No login history yet</p>';
+                    return;
+                }
+                
+                container.innerHTML = data.histories.map(login => {
+                    const date = new Date(login.createdAt);
+                    const statusIcon = login.status === 'success' ? '✅' : '❌';
+                    const statusClass = login.status === 'success' ? 'login-history-success' : 'login-history-failed';
+                    
+                    return `
+                        <div class="login-history-item ${statusClass}">
+                            <p><strong>${statusIcon} ${login.status === 'success' ? 'Successful Login' : 'Failed Attempt'}</strong></p>
+                            <p><i class="fas fa-calendar"></i> ${date.toLocaleString()}</p>
+                            <p><i class="fas fa-laptop"></i> ${login.deviceInfo || 'Unknown'} - ${login.browser || 'Unknown'} on ${login.os || 'Unknown'}</p>
+                            <p><i class="fas fa-map-marker-alt"></i> IP: ${login.ipAddress || 'Unknown'}</p>
+                            ${login.failedReason ? `<p style="color: #ff6b6b;"><i class="fas fa-exclamation-triangle"></i> Reason: ${login.failedReason}</p>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading login history:', err);
+                document.getElementById('loginHistoryList').innerHTML = '<p style="text-align:center; color:#ff6b6b;">Error loading login history</p>';
+            }
+        }
+
+        async function loadFullLoginHistory() {
+            try {
+                const res = await fetch('http://localhost:5000/api/login-history/my-history?limit=50', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                const modal = document.getElementById('loginHistoryModal');
+                const container = document.getElementById('fullLoginHistoryList');
+                
+                if (!modal || !container) return;
+                
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+                
+                if (!data.success || data.histories.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#888;">No login history found</p>';
+                    return;
+                }
+                
+                container.innerHTML = data.histories.map(login => {
+                    const date = new Date(login.createdAt);
+                    const statusIcon = login.status === 'success' ? '✅' : '❌';
+                    const statusClass = login.status === 'success' ? 'login-history-success' : 'login-history-failed';
+                    
+                    return `
+                        <div class="login-history-item ${statusClass}" style="margin-bottom: 10px;">
+                            <p><strong>${statusIcon} ${login.status === 'success' ? 'Successful Login' : 'Failed Attempt'}</strong> - ${date.toLocaleString()}</p>
+                            <p><i class="fas fa-laptop"></i> ${login.deviceInfo || 'Unknown'} | ${login.browser || 'Unknown'} | ${login.os || 'Unknown'}</p>
+                            <p><i class="fas fa-map-marker-alt"></i> IP: ${login.ipAddress || 'Unknown'}</p>
+                            ${login.failedReason ? `<p style="color: #ff6b6b;"><i class="fas fa-exclamation-triangle"></i> ${login.failedReason}</p>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading full history:', err);
+                document.getElementById('fullLoginHistoryList').innerHTML = '<p style="text-align:center; color:#ff6b6b;">Error loading history</p>';
+            }
+        }
+
+        function closeLoginHistoryModal() {
+            document.getElementById('loginHistoryModal').style.display = 'none';
+        }
+
+        // Close notification dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const bell = document.querySelector('.notification-bell');
+            if (dropdown && bell && !bell.contains(event.target) && !dropdown.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('loginHistoryModal');
+            if (event.target === modal) {
+                closeLoginHistoryModal();
+            }
+        }
+
+        // Auto-refresh notifications every 30 seconds
+        setInterval(() => {
+            if (token) {
+                loadNotifications();
+            }
+        }, 30000);
+
+        // ===== INITIALIZE EVERYTHING =====
+        loadShipments();
+        loadNotifications();
+        loadLoginHistory();
+        loadClientStats();
+        loadClientInvoices();
+        loadClientPayments();
+    </script>
+</body>
+</html>

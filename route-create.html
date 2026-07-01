@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Route | TAMYOKIY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #050505; color: #fff; }
+        .route-create-page { min-height: 100vh; padding-top: 120px; background: #050505; }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .page-header h1 {
+            color: #D4AF37;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            color: #050505;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(20,20,30,0.5);
+            backdrop-filter: blur(16px);
+            border-radius: 24px;
+            border: 1px solid rgba(212,175,55,0.15);
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            color: #D4AF37;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #D4AF37;
+            background: rgba(212,175,55,0.05);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .form-group select option {
+            background: #1a1a2e;
+        }
+
+        .stops-section {
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(212,175,55,0.08);
+        }
+        .stops-section h3 {
+            color: #D4AF37;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stop-item {
+            background: rgba(20,20,30,0.4);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(212,175,55,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .stop-item:hover {
+            border-color: rgba(212,175,55,0.3);
+        }
+        .stop-item .stop-number {
+            color: #D4AF37;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+        .stop-item .stop-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .stop-item .stop-row > div {
+            flex: 1;
+            min-width: 150px;
+        }
+        .stop-item .stop-row select, .stop-item .stop-row input {
+            width: 100%;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(212,175,55,0.15);
+            border-radius: 10px;
+            color: white;
+            font-size: 0.85rem;
+        }
+        .stop-item .stop-row select:focus, .stop-item .stop-row input:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+        .stop-item .remove-stop {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: transparent;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 4px 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .stop-item .remove-stop:hover {
+            background: rgba(255,107,107,0.1);
+        }
+
+        .btn-add-stop {
+            background: transparent;
+            border: 2px dashed rgba(212,175,55,0.3);
+            color: #D4AF37;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        .btn-add-stop:hover {
+            border-color: #D4AF37;
+            background: rgba(212,175,55,0.05);
+        }
+
+        .btn-gold-premium {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-gold-premium:hover { transform: scale(1.02); box-shadow: 0 8px 25px rgba(212,175,55,0.4); }
+        .btn-outline-gold {
+            background: transparent;
+            border: 1px solid rgba(212,175,55,0.4);
+            color: #D4AF37;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-outline-gold:hover { background: rgba(212,175,55,0.1); border-color: #D4AF37; }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.4);
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+            color: #D4AF37;
+        }
+
+        @media (max-width: 768px) {
+            .form-container { padding: 20px; }
+            .stop-item .stop-row { flex-direction: column; }
+            .form-actions { flex-direction: column; }
+            .form-actions button { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== 🔐 ADMIN ONLY ACCESS CHECK ===== -->
+    <script>
+    (function() {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        console.log('🔐 Route Create - Access Check:');
+        console.log('   Token:', token ? '✅ Present' : '❌ Missing');
+        console.log('   User:', user.name || 'Not logged in');
+        console.log('   Role:', user.role || 'None');
+        
+        if (!token) {
+            alert('⚠️ Please login first!');
+            window.location.href = 'login.html';
+            return;
+        }
+        
+        if (user.role !== 'admin') {
+            alert('⛔ Access Denied! This page is for Administrators only.');
+            window.location.href = 'dashboard.html';
+            return;
+        }
+        
+        console.log('✅ Admin access granted to Route Create');
+    })();
+    </script>
+
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="warehouse-dashboard.html" class="nav-link"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link"><i class="fas fa-boxes"></i> Inventory</a>
+                <a href="route-dashboard.html" class="nav-link"><i class="fas fa-route"></i> Routes</a>
+                <a href="route-create.html" class="nav-link active"><i class="fas fa-plus-circle"></i> Create Route</a>
+                <a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link">
+                    <i class="fas fa-info-circle"></i> My Route
+                </a>
+                <a href="admin.html" class="nav-link"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="route-create-page">
+        <div class="container">
+            <div class="page-header">
+                <h1 id="pageTitle">
+                    <i class="fas fa-plus-circle"></i> Create New Route
+                    <span class="admin-badge"><i class="fas fa-crown"></i> ADMIN</span>
+                </h1>
+                <button onclick="location.href='route-dashboard.html'" class="btn-outline-gold">
+                    <i class="fas fa-arrow-left"></i> Back to Routes
+                </button>
+            </div>
+
+            <div class="form-container">
+                <form id="routeForm">
+                    <!-- Route Name -->
+                    <div class="form-group">
+                        <label>Route Name <span style="color:#ff6b6b;">*</span></label>
+                        <input type="text" id="routeName" placeholder="e.g., Morning Downtown Delivery" required>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="routeDescription" placeholder="Describe this route..."></textarea>
+                    </div>
+
+                    <!-- Stops Section -->
+                    <div class="stops-section">
+                        <h3><i class="fas fa-map-pin"></i> Stops</h3>
+                        <div id="stopsContainer">
+                            <div class="empty-state" id="emptyStops">
+                                <i class="fas fa-plus-circle"></i>
+                                <p>No stops added yet. Click "Add Stop" below.</p>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-stop" onclick="addStop()">
+                            <i class="fas fa-plus"></i> Add Stop
+                        </button>
+                    </div>
+
+                    <!-- Driver Assignment -->
+                    <div class="form-group">
+                        <label>🚚 Assign Driver (Optional)</label>
+                        <select id="driverSelect">
+                            <option value="">-- Select Driver --</option>
+                        </select>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn-gold-premium" id="submitBtn">
+                            <i class="fas fa-save"></i> Create Route
+                        </button>
+                        <button type="button" onclick="location.href='route-dashboard.html'" class="btn-outline-gold">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        AOS.init();
+        
+        // Admin check already done at top
+        const token = localStorage.getItem('token');
+
+        let stopCount = 0;
+        let isEditing = false;
+        let editRouteId = null;
+        let availableShipments = [];
+
+        async function loadShipments() {
+            try {
+                const res = await fetch('http://localhost:5000/api/tracking/my/shipments', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const shipments = await res.json();
+                availableShipments = shipments || [];
+            } catch (err) {
+                console.error('Error loading shipments:', err);
+            }
+        }
+
+        async function loadDrivers() {
+            try {
+                const res = await fetch('http://localhost:5000/api/admin/drivers', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const select = document.getElementById('driverSelect');
+                if (data.success && data.drivers) {
+                    select.innerHTML = '<option value="">-- Select Driver --</option>' +
+                        data.drivers.map(d => 
+                            `<option value="${d._id}">${d.name} (${d.vehicleType || 'No vehicle'})</option>`
+                        ).join('');
+                }
+            } catch (err) {
+                console.error('Error loading drivers:', err);
+            }
+        }
+
+        function addStop(stopData = null) {
+            stopCount++;
+            const container = document.getElementById('stopsContainer');
+            const emptyStops = document.getElementById('emptyStops');
+            if (emptyStops) emptyStops.remove();
+
+            const shipmentOptions = availableShipments.map(s => 
+                `<option value="${s._id}" ${stopData?.shipmentId === s._id ? 'selected' : ''}>
+                    ${s.trackingNumber} - ${s.senderName} → ${s.receiverName}
+                </option>`
+            ).join('');
+
+            const stopDiv = document.createElement('div');
+            stopDiv.className = 'stop-item';
+            stopDiv.id = `stop-${stopCount}`;
+            stopDiv.innerHTML = `
+                <div class="stop-number">📍 Stop #${stopCount}</div>
+                <button type="button" class="remove-stop" onclick="removeStop(${stopCount})">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="stop-row">
+                    <div>
+                        <select id="stopShipment_${stopCount}" onchange="updateStopAddress(${stopCount})">
+                            <option value="">Select Shipment</option>
+                            ${shipmentOptions}
+                        </select>
+                    </div>
+                    <div>
+                        <select id="stopType_${stopCount}">
+                            <option value="delivery" ${stopData?.type === 'delivery' ? 'selected' : ''}>🚚 Delivery</option>
+                            <option value="pickup" ${stopData?.type === 'pickup' ? 'selected' : ''}>📦 Pickup</option>
+                        </select>
+                    </div>
+                    <div>
+                        <input type="text" id="stopAddress_${stopCount}" placeholder="Address" value="${stopData?.address || ''}">
+                    </div>
+                    <div>
+                        <input type="text" id="stopReceiver_${stopCount}" placeholder="Receiver Name" value="${stopData?.receiverName || ''}">
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(stopDiv);
+
+            if (stopData) {
+                document.getElementById(`stopAddress_${stopCount}`).value = stopData.address || '';
+                document.getElementById(`stopReceiver_${stopCount}`).value = stopData.receiverName || '';
+            }
+        }
+
+        function updateStopAddress(stopId) {
+            const shipmentSelect = document.getElementById(`stopShipment_${stopId}`);
+            const shipmentId = shipmentSelect.value;
+            const addressInput = document.getElementById(`stopAddress_${stopId}`);
+            const receiverInput = document.getElementById(`stopReceiver_${stopId}`);
+
+            if (shipmentId) {
+                const shipment = availableShipments.find(s => s._id === shipmentId);
+                if (shipment) {
+                    const type = document.getElementById(`stopType_${stopId}`).value;
+                    if (type === 'delivery') {
+                        addressInput.value = shipment.receiverAddress || '';
+                        receiverInput.value = shipment.receiverName || '';
+                    } else {
+                        addressInput.value = shipment.senderAddress || '';
+                        receiverInput.value = shipment.senderName || '';
+                    }
+                }
+            }
+        }
+
+        function removeStop(stopId) {
+            const element = document.getElementById(`stop-${stopId}`);
+            if (element) {
+                element.remove();
+                const stops = document.querySelectorAll('.stop-item');
+                stops.forEach((el, index) => {
+                    const num = el.querySelector('.stop-number');
+                    if (num) {
+                        num.textContent = `📍 Stop #${index + 1}`;
+                    }
+                });
+            }
+        }
+
+        function getFormData() {
+            const stops = [];
+            const stopElements = document.querySelectorAll('.stop-item');
+            
+            stopElements.forEach((el, index) => {
+                const shipmentId = document.getElementById(`stopShipment_${index + 1}`)?.value;
+                const type = document.getElementById(`stopType_${index + 1}`)?.value;
+                const address = document.getElementById(`stopAddress_${index + 1}`)?.value;
+                const receiverName = document.getElementById(`stopReceiver_${index + 1}`)?.value;
+
+                if (shipmentId || address) {
+                    stops.push({
+                        shipmentId: shipmentId || null,
+                        type: type || 'delivery',
+                        address: address || '',
+                        receiverName: receiverName || '',
+                        stopOrder: index + 1
+                    });
+                }
+            });
+
+            return {
+                name: document.getElementById('routeName').value.trim(),
+                description: document.getElementById('routeDescription').value.trim(),
+                driverId: document.getElementById('driverSelect').value || null,
+                stops: stops
+            };
+        }
+
+        document.getElementById('routeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const data = getFormData();
+
+            if (!data.name) {
+                showToast('Please enter a route name', 'error');
+                return;
+            }
+
+            if (data.stops.length === 0) {
+                showToast('Please add at least one stop', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Saving...';
+            submitBtn.disabled = true;
+
+            try {
+                const url = isEditing ? 
+                    `http://localhost:5000/api/routes/${editRouteId}` : 
+                    'http://localhost:5000/api/routes';
+                const method = isEditing ? 'PUT' : 'POST';
+
+                const res = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+
+                if (result.success) {
+                    showToast(`✅ Route ${isEditing ? 'updated' : 'created'} successfully!`, 'success');
+                    setTimeout(() => {
+                        window.location.href = 'route-dashboard.html';
+                    }, 1500);
+                } else {
+                    showToast('❌ ' + result.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ Connection error', 'error');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        async function checkEditMode() {
+            const params = new URLSearchParams(window.location.search);
+            const routeId = params.get('id');
+
+            if (routeId) {
+                isEditing = true;
+                editRouteId = routeId;
+                document.getElementById('pageTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Route <span class="admin-badge"><i class="fas fa-crown"></i> ADMIN</span>';
+                document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Update Route';
+
+                try {
+                    const res = await fetch(`http://localhost:5000/api/routes/${routeId}`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        const route = data.route;
+                        document.getElementById('routeName').value = route.name || '';
+                        document.getElementById('routeDescription').value = route.description || '';
+
+                        if (route.driverId) {
+                            document.getElementById('driverSelect').value = route.driverId._id || route.driverId;
+                        }
+
+                        if (route.stops && route.stops.length > 0) {
+                            route.stops.forEach(stop => {
+                                addStop({
+                                    shipmentId: stop.shipmentId?._id || stop.shipmentId,
+                                    type: stop.type,
+                                    address: stop.address,
+                                    receiverName: stop.receiverName
+                                });
+                            });
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error loading route for edit:', err);
+                    showToast('Error loading route data', 'error');
+                }
+            }
+        }
+
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const colors = {
+                success: '#4caf50',
+                error: '#ff6b6b',
+                info: '#D4AF37'
+            };
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: #1a1a2e;
+                color: #fff;
+                padding: 14px 24px;
+                border-radius: 12px;
+                border-left: 4px solid ${colors[type] || '#D4AF37'};
+                z-index: 99999;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                font-size: 0.95rem;
+                animation: slideIn 0.3s ease;
+                max-width: 400px;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        async function init() {
+            await loadShipments();
+            await loadDrivers();
+            await checkEditMode();
+
+            if (!isEditing && document.querySelectorAll('.stop-item').length === 0) {
+                addStop();
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>

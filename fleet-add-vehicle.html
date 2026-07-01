@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Vehicle | Fleet Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .form-section {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+        }
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            border: 1px solid rgba(33,150,243,0.3);
+            padding: 40px;
+        }
+        .form-container h2 {
+            color: #2196F3;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .form-container .subtitle {
+            color: #888;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            color: #D4AF37;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        .form-group label .required {
+            color: #ff6b6b;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(33,150,243,0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #2196F3;
+            background: rgba(33,150,243,0.05);
+        }
+        .form-group select option {
+            background: #1a1a2e;
+            color: white;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        .form-actions button {
+            padding: 14px 32px;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-submit {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            border: none;
+            color: white;
+            flex: 1;
+        }
+        .btn-submit:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(33,150,243,0.4);
+        }
+        .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-cancel {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #888;
+        }
+        .btn-cancel:hover {
+            border-color: #ff6b6b;
+            color: #ff6b6b;
+        }
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 25px 20px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+            .form-actions button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="realtime-dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> Live</a>
+                
+                <!-- 🚛 FLEET MENU -->
+                <a href="fleet-dashboard.html" class="nav-link"><i class="fas fa-truck"></i> Fleet</a>
+                <a href="fleet-add-vehicle.html" class="nav-link"><i class="fas fa-plus-circle"></i> Add Vehicle</a>
+                <a href="fleet-maintenance.html" class="nav-link"><i class="fas fa-tools"></i> Maintenance</a>
+                <a href="fleet-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                <a href="fleet-analytics.html" class="nav-link"><i class="fas fa-chart-pie"></i> Analytics</a>
+                
+                <a href="gps-tracker.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> GPS Tracker</a>
+                <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="form-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="fleet.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="form-container" data-aos="fade-up">
+                <h2><i class="fas fa-plus-circle"></i> Add New Vehicle</h2>
+                <p class="subtitle">Enter vehicle details to add to your fleet</p>
+
+                <form id="addVehicleForm">
+                    <!-- Plate Number -->
+                    <div class="form-group">
+                        <label>Plate Number <span class="required">*</span></label>
+                        <input type="text" id="plateNumber" placeholder="e.g., AA-1234" required>
+                    </div>
+
+                    <!-- Vehicle Type & Brand -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Vehicle Type <span class="required">*</span></label>
+                            <select id="vehicleType" required>
+                                <option value="">Select Type</option>
+                                <option value="bike">🏍️ Bike</option>
+                                <option value="car">🚗 Car</option>
+                                <option value="van">🚐 Van</option>
+                                <option value="truck">🚚 Truck</option>
+                                <option value="heavy_truck">🚛 Heavy Truck</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Brand <span class="required">*</span></label>
+                            <input type="text" id="brand" placeholder="e.g., Toyota" required>
+                        </div>
+                    </div>
+
+                    <!-- Model & Year -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Model <span class="required">*</span></label>
+                            <input type="text" id="model" placeholder="e.g., Hilux" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Year <span class="required">*</span></label>
+                            <input type="number" id="year" placeholder="e.g., 2020" min="1990" max="2030" required>
+                        </div>
+                    </div>
+
+                    <!-- Color -->
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="text" id="color" placeholder="e.g., White, Black, Red">
+                    </div>
+
+                    <!-- Capacity -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Weight Capacity (kg)</label>
+                            <input type="number" id="weightCapacity" placeholder="e.g., 1000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Volume Capacity (m³)</label>
+                            <input type="number" id="volumeCapacity" placeholder="e.g., 10" min="0" step="0.1">
+                        </div>
+                    </div>
+
+                    <!-- Fuel -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Fuel Type</label>
+                            <select id="fuelType">
+                                <option value="petrol">⛽ Petrol</option>
+                                <option value="diesel" selected>⛽ Diesel</option>
+                                <option value="electric">🔋 Electric</option>
+                                <option value="hybrid">⚡ Hybrid</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fuel Efficiency (km/L)</label>
+                            <input type="number" id="fuelEfficiency" placeholder="e.g., 15" min="0" step="0.1">
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select id="status">
+                            <option value="active">🟢 Active</option>
+                            <option value="inactive">⚫ Inactive</option>
+                            <option value="maintenance">🟠 Maintenance</option>
+                            <option value="retired">🔴 Retired</option>
+                        </select>
+                    </div>
+
+                    <!-- Maintenance Interval -->
+                    <div class="form-group">
+                        <label>Maintenance Interval (km)</label>
+                        <input type="number" id="maintenanceInterval" placeholder="e.g., 5000" value="5000" min="1000">
+                        <p style="color:#666; font-size:0.8rem; margin-top:5px;">How many kilometers before next maintenance</p>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="notes" placeholder="Any additional notes about this vehicle..."></textarea>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <i class="fas fa-save"></i> Add Vehicle
+                        </button>
+                        <button type="button" class="btn-cancel" onclick="window.location.href='fleet-dashboard.html'">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+
+        // ============================================================
+        // 🔐 ADMIN ONLY
+        // ============================================================
+
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.role !== 'admin') {
+            window.location.href = 'dashboard.html';
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // ============================================================
+        // 📝 ADD VEHICLE FORM
+        // ============================================================
+
+        document.getElementById('addVehicleForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const data = {
+                plateNumber: document.getElementById('plateNumber').value.trim(),
+                vehicleType: document.getElementById('vehicleType').value,
+                brand: document.getElementById('brand').value.trim(),
+                model: document.getElementById('model').value.trim(),
+                year: parseInt(document.getElementById('year').value),
+                color: document.getElementById('color').value.trim() || 'White',
+                capacity: {
+                    weight: parseFloat(document.getElementById('weightCapacity').value) || 0,
+                    volume: parseFloat(document.getElementById('volumeCapacity').value) || 0
+                },
+                fuelType: document.getElementById('fuelType').value,
+                fuelEfficiency: parseFloat(document.getElementById('fuelEfficiency').value) || 0,
+                status: document.getElementById('status').value,
+                maintenanceInterval: parseInt(document.getElementById('maintenanceInterval').value) || 5000,
+                notes: document.getElementById('notes').value.trim() || null
+            };
+
+            // Validate required fields
+            if (!data.plateNumber || !data.vehicleType || !data.brand || !data.model || !data.year) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Adding...';
+
+            try {
+                const res = await fetch('http://localhost:5000/api/fleet/vehicles', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+
+                if (result.success) {
+                    showToast('✅ Vehicle added successfully!', 'success');
+                    setTimeout(() => {
+                        window.location.href = 'fleet-dashboard.html';
+                    }, 1500);
+                } else {
+                    showToast('❌ ' + result.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ Connection error', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Add Vehicle';
+            }
+        });
+
+        function showToast(message, type = 'info') {
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    z-index: 99999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    max-width: 400px;
+                `;
+                document.body.appendChild(toastContainer);
+            }
+
+            const toast = document.createElement('div');
+            const colors = {
+                success: '#4caf50',
+                error: '#ff6b6b',
+                info: '#2196F3'
+            };
+
+            toast.style.cssText = `
+                background: #1a1a2e;
+                color: #fff;
+                padding: 14px 20px;
+                border-radius: 12px;
+                border-left: 4px solid ${colors[type] || '#2196F3'};
+                box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                animation: slideInToast 0.4s ease;
+                font-size: 0.9rem;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            `;
+
+            const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+            toast.innerHTML = `<span style="font-size: 1.1rem;">${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOutToast 0.4s ease forwards';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 400);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

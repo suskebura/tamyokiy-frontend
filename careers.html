@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAMYOKIY Logistics | Careers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .file-upload-btn {
+            background: rgba(212,175,55,0.15);
+            border: 1px dashed #D4AF37;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        .file-upload-btn:hover {
+            background: rgba(212,175,55,0.25);
+        }
+        #fileName {
+            font-size: 0.8rem;
+            color: #888;
+            text-align: center;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="gps-tracker.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> GPS Tracker</a>
+                <!-- 🗺️ GPS MAP -->
+<a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                <a href="how-it-works.html" class="nav-link"><i class="fas fa-question-circle"></i> How It Works</a>
+                <a href="chatbot.html" class="nav-link"><i class="fas fa-robot"></i> Chat Assistant</a>
+                <!-- 🗺️ ROUTE LINKS - ROLE BASED -->
+<a href="route-dashboard.html" class="nav-link" id="routesNavLink"><i class="fas fa-route"></i> Routes</a>
+<a href="route-create.html" class="nav-link" id="createRouteNavLink"><i class="fas fa-plus-circle"></i> Create Route</a>
+<a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link" id="myRouteNavLink">
+    <i class="fas fa-info-circle"></i> My Route
+</a>
+                
+                <!-- 🏢 WAREHOUSE LINKS - ROLE BASED -->
+                <!-- ADMIN ONLY (hidden by default) -->
+                <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink" style="display:none;"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink" style="display:none;"><i class="fas fa-boxes"></i> Inventory</a>
+                
+                <!-- CLIENT ONLY -->
+                <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink"><i class="fas fa-warehouse"></i> My Storage</a>
+                
+                <!-- DRIVER ONLY -->
+                <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink" style="display:none;"><i class="fas fa-warehouse"></i> Pickups</a>
+                
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="careers-luxury" style="padding-top: 120px;">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="careers.mp4" type="video/mp4">
+        </video>
+        <div class="overlay" style="background: rgba(0,0,0,0.85);"></div>
+        <div class="container">
+            <div class="careers-grid">
+                <div class="careers-header glass-card" data-aos="fade-up">
+                    <div class="section-tag">JOIN THE TEAM</div>
+                    <h1 class="careers-heading">Build The <span>Future</span> With Us</h1>
+                    <p class="careers-desc">Upload your CV and apply for your dream position</p>
+                </div>
+
+                <div class="benefits-grid" data-aos="fade-up" data-aos-delay="100">
+                    <div class="benefit-card glass-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Career Growth</h3>
+                        <p>Fast-track promotions and continuous learning opportunities</p>
+                    </div>
+                    <div class="benefit-card glass-card">
+                        <i class="fas fa-globe"></i>
+                        <h3>Global Exposure</h3>
+                        <p>Work with international teams and clients worldwide</p>
+                    </div>
+                    <div class="benefit-card glass-card">
+                        <i class="fas fa-medal"></i>
+                        <h3>Recognition</h3>
+                        <p>Performance bonuses and employee recognition programs</p>
+                    </div>
+                    <div class="benefit-card glass-card">
+                        <i class="fas fa-heartbeat"></i>
+                        <h3>Health Benefits</h3>
+                        <p>Comprehensive health insurance for you and your family</p>
+                    </div>
+                    <div class="benefit-card glass-card">
+                        <i class="fas fa-laptop-code"></i>
+                        <h3>Flexible Work</h3>
+                        <p>Remote and hybrid work options available</p>
+                    </div>
+                    <div class="benefit-card glass-card">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3>Tuition Reimbursement</h3>
+                        <p>We invest in your education and certifications</p>
+                    </div>
+                </div>
+
+                <div class="open-positions glass-card" data-aos="fade-up" data-aos-delay="200">
+                    <h3>Apply Now</h3>
+                    <div class="positions-list">
+                        <div class="position">
+                            <div><h4>Senior Logistics Manager</h4><p>New York, USA • Full-time</p></div>
+                            <button onclick="openApplicationForm('Senior Logistics Manager')" class="apply-btn">Apply Now →</button>
+                        </div>
+                        <div class="position">
+                            <div><h4>Fleet Operations Specialist</h4><p>London, UK • Full-time</p></div>
+                            <button onclick="openApplicationForm('Fleet Operations Specialist')" class="apply-btn">Apply Now →</button>
+                        </div>
+                        <div class="position">
+                            <div><h4>Supply Chain Analyst</h4><p>Dubai, UAE • Full-time</p></div>
+                            <button onclick="openApplicationForm('Supply Chain Analyst')" class="apply-btn">Apply Now →</button>
+                        </div>
+                        <div class="position">
+                            <div><h4>Customer Success Expert</h4><p>Remote • Full-time</p></div>
+                            <button onclick="openApplicationForm('Customer Success Expert')" class="apply-btn">Apply Now →</button>
+                        </div>
+                        <div class="position">
+                            <div><h4>Warehouse Operations Manager</h4><p>Chicago, USA • Full-time</p></div>
+                            <button onclick="openApplicationForm('Warehouse Operations Manager')" class="apply-btn">Apply Now →</button>
+                        </div>
+                        <div class="position">
+                            <div><h4>International Trade Specialist</h4><p>Singapore • Full-time</p></div>
+                            <button onclick="openApplicationForm('International Trade Specialist')" class="apply-btn">Apply Now →</button>
+                        </div>
+                    </div>
+                    <div class="careers-cta">
+                        <p>Don't see your dream role?</p>
+                        <button onclick="openApplicationForm('Open Application')" class="btn-gold">Send Open Application →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Application Modal -->
+    <div id="applicationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1001; align-items: center; justify-content: center;">
+        <div style="background: #1a1a2e; max-width: 500px; margin: auto; padding: 30px; border-radius: 20px; border: 1px solid #D4AF37;">
+            <h2 style="color: #D4AF37; margin-bottom: 20px;">Apply for <span id="modalPosition"></span></h2>
+            <form id="applicationForm" enctype="multipart/form-data">
+                <input type="hidden" id="applyPosition" name="position">
+                <input type="text" id="applicantName" name="name" placeholder="Full Name" required style="width:100%; padding:12px; margin-bottom:15px; background:#2a2a3a; border:1px solid #D4AF37; border-radius:8px; color:white;">
+                <input type="email" id="applicantEmail" name="email" placeholder="Email Address" required style="width:100%; padding:12px; margin-bottom:15px; background:#2a2a3a; border:1px solid #D4AF37; border-radius:8px; color:white;">
+                <div class="file-upload-btn" onclick="document.getElementById('cvFile').click()">
+                    <i class="fas fa-upload"></i> Click to upload CV (PDF, DOC, DOCX)
+                </div>
+                <input type="file" id="cvFile" name="cv" accept=".pdf,.doc,.docx" style="display:none;" onchange="updateFileName()">
+                <div id="fileName" style="color:#888; margin-bottom:15px;">No file chosen</div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn-gold" style="flex:1;">Submit Application →</button>
+                    <button type="button" onclick="closeModal()" style="background:transparent; border:1px solid #ff6b6b; color:#ff6b6b; padding:12px; border-radius:40px; flex:0.3; cursor:pointer;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        let selectedFile = null;
+        
+        function openApplicationForm(position) {
+            document.getElementById('modalPosition').innerText = position;
+            document.getElementById('applyPosition').value = position;
+            document.getElementById('applicationModal').style.display = 'flex';
+            document.getElementById('applicationModal').style.alignItems = 'center';
+            document.getElementById('applicationModal').style.justifyContent = 'center';
+            selectedFile = null;
+            document.getElementById('fileName').innerText = 'No file chosen';
+            document.getElementById('cvFile').value = '';
+        }
+        
+        function closeModal() {
+            document.getElementById('applicationModal').style.display = 'none';
+        }
+        
+        function updateFileName() {
+            const file = document.getElementById('cvFile').files[0];
+            if (file) {
+                selectedFile = file;
+                document.getElementById('fileName').innerText = file.name;
+            } else {
+                selectedFile = null;
+                document.getElementById('fileName').innerText = 'No file chosen';
+            }
+        }
+        
+        document.getElementById('applicationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('name', document.getElementById('applicantName').value);
+            formData.append('email', document.getElementById('applicantEmail').value);
+            formData.append('position', document.getElementById('applyPosition').value);
+            if (selectedFile) {
+                formData.append('cv', selectedFile);
+            }
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/careers', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('✅ Application submitted successfully!', 'success');
+                    closeModal();
+                    document.getElementById('applicationForm').reset();
+                } else {
+                    showToast('❌ Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                showToast('❌ Connection error. Make sure backend is running.', 'error');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('applicationModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

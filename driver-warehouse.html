@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warehouse Pickups | TAMYOKIY</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .driver-warehouse {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+        }
+        .pickup-card {
+            background: rgba(20,20,30,0.5);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(33,150,243,0.15);
+            transition: all 0.3s ease;
+        }
+        .pickup-card:hover {
+            border-color: rgba(33,150,243,0.4);
+            transform: translateY(-3px);
+        }
+        .pickup-card .wh-name {
+            color: #2196F3;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .pickup-card .wh-address {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            margin: 5px 0;
+        }
+        .pickup-card .wh-contact {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        .pickup-card .shipment-info {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+        .pickup-card .shipment-info p {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .btn-pickup {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        .btn-pickup:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(33,150,243,0.3);
+        }
+        .btn-pickup:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pickup-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .pickup-stat {
+            background: rgba(20,20,30,0.4);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(33,150,243,0.1);
+        }
+        .pickup-stat .number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #2196F3;
+        }
+        .pickup-stat .label {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(33,150,243,0.2), rgba(20,20,30,0.7));
+            backdrop-filter: blur(15px);
+            border-radius: 32px;
+            padding: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+            border: 1px solid rgba(33,150,243,0.4);
+        }
+        .welcome-card h1 {
+            background: linear-gradient(135deg, #2196F3, #64B5F6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2.2rem;
+        }
+        @media (max-width: 768px) {
+            .pickup-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 480px) {
+            .pickup-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="how-it-works.html" class="nav-link"><i class="fas fa-question-circle"></i> How It Works</a>
+                <a href="chatbot.html" class="nav-link"><i class="fas fa-robot"></i> Chat Assistant</a>
+                
+                <!-- 🏢 WAREHOUSE PICKUPS - Driver only -->
+                <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink"><i class="fas fa-warehouse"></i> Pickups</a>
+                
+                <!-- 🏢 WAREHOUSE MANAGEMENT - Hidden for drivers -->
+                <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink" style="display:none;"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink" style="display:none;"><i class="fas fa-boxes"></i> Inventory</a>
+                <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink" style="display:none;"><i class="fas fa-warehouse"></i> My Storage</a>
+
+                <!-- 🗺️ ROUTE LINKS - Driver should see "My Route" only -->
+<a href="route-dashboard.html" class="nav-link" id="routesNavLink" style="display:none;"><i class="fas fa-route"></i> Routes</a>
+<a href="route-create.html" class="nav-link" id="createRouteNavLink" style="display:none;"><i class="fas fa-plus-circle"></i> Create Route</a>
+<a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link" id="myRouteNavLink">
+    <i class="fas fa-info-circle"></i> My Route
+</a>
+                
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="driver-warehouse">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="warehouse.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="welcome-card" data-aos="fade-up">
+                <h1><i class="fas fa-warehouse"></i> Warehouse Pickups</h1>
+                <p>View shipments ready for pickup at warehouses</p>
+            </div>
+
+            <div class="pickup-stats" data-aos="fade-up">
+                <div class="pickup-stat">
+                    <div class="number" id="readyCount">0</div>
+                    <div class="label">📦 Ready for Pickup</div>
+                </div>
+                <div class="pickup-stat">
+                    <div class="number" id="warehouseCount">0</div>
+                    <div class="label">🏢 Warehouses</div>
+                </div>
+                <div class="pickup-stat">
+                    <div class="number" id="todayPickups">0</div>
+                    <div class="label">📅 Today's Pickups</div>
+                </div>
+            </div>
+
+            <div id="pickupList" data-aos="fade-up">
+                <div class="loading"><i class="fas fa-spinner fa-pulse"></i> Loading pickups...</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        AOS.init();
+        
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (!token) window.location.href = 'login.html';
+        if (user.role !== 'driver') {
+            alert('⚠️ Driver access only');
+            window.location.href = 'login.html';
+        }
+        
+        async function loadPickups() {
+            try {
+                const res = await fetch('http://localhost:5000/api/warehouse-driver/pickups', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                
+                const container = document.getElementById('pickupList');
+                
+                if (!data.success || data.pickups.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No shipments ready for pickup</p>
+                            <p style="font-size: 0.85rem; color: #666; margin-top: 10px;">
+                                Check back later for new assignments
+                            </p>
+                        </div>
+                    `;
+                    document.getElementById('readyCount').textContent = '0';
+                    return;
+                }
+                
+                document.getElementById('readyCount').textContent = data.pickups.length;
+                document.getElementById('warehouseCount').textContent = data.warehouseCount || 0;
+                document.getElementById('todayPickups').textContent = data.todayPickups || 0;
+                
+                container.innerHTML = data.pickups.map(p => `
+                    <div class="pickup-card">
+                        <div class="wh-name">🏢 ${escapeHtml(p.warehouseName)}</div>
+                        <div class="wh-address"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(p.warehouseAddress || 'Address not available')}</div>
+                        <div class="wh-contact">
+                            <i class="fas fa-phone"></i> ${escapeHtml(p.warehousePhone || 'N/A')} 
+                            <span style="margin-left: 15px;"><i class="fas fa-clock"></i> ${escapeHtml(p.operatingHours || '08:00 - 18:00')}</span>
+                        </div>
+                        <div class="shipment-info">
+                            <p><strong>📦 Shipment:</strong> <span style="color:#2196F3;">${escapeHtml(p.trackingNumber)}</span></p>
+                            <p><strong>📤 To:</strong> ${escapeHtml(p.receiverName)}</p>
+                            <p><strong>📍 Address:</strong> ${escapeHtml(p.receiverAddress)}</p>
+                            <p><strong>⚖️ Weight:</strong> ${p.weight} kg</p>
+                            ${p.status === 'loaded' ? `
+                                <button onclick="markPickedUp('${p.trackingNumber}')" class="btn-pickup">
+                                    <i class="fas fa-check"></i> Mark as Picked Up
+                                </button>
+                            ` : `
+                                <span style="color: #ffa500;">⏳ Waiting for warehouse to load</span>
+                            `}
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (err) {
+                console.error('Error loading pickups:', err);
+                document.getElementById('pickupList').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle" style="color: #ff6b6b;"></i>
+                        <p style="color: #ff6b6b;">Error loading pickups</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function markPickedUp(trackingNumber) {
+            if (!confirm(`Mark shipment ${trackingNumber} as picked up?`)) return;
+            
+            try {
+                const res = await fetch(`http://localhost:5000/api/warehouse-driver/pickup/${trackingNumber}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ Shipment picked up!', 'success');
+                    loadPickups();
+                } else {
+                    showToast('❌ ' + data.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ Connection error', 'error');
+            }
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
+        }
+        
+        function showToast(message, type = 'info') {
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    z-index: 99999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    max-width: 400px;
+                `;
+                document.body.appendChild(toastContainer);
+            }
+            
+            const toast = document.createElement('div');
+            const colors = {
+                success: '#4caf50',
+                error: '#ff6b6b',
+                info: '#2196F3'
+            };
+            
+            toast.style.cssText = `
+                background: #1a1a2e;
+                color: #fff;
+                padding: 14px 20px;
+                border-radius: 12px;
+                border-left: 4px solid ${colors[type] || '#2196F3'};
+                box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                animation: slideInToast 0.4s ease;
+                font-size: 0.9rem;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            `;
+            
+            const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+            toast.innerHTML = `<span style="font-size: 1.1rem;">${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutToast 0.4s ease forwards';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 400);
+            }, 3000);
+        }
+        
+        loadPickups();
+    </script>
+</body>
+</html>

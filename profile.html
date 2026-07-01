@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAMYOKIY | My Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .profile-section {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+        }
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .profile-header h1 {
+            color: #D4AF37;
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .profile-header p {
+            color: #b0b0b0;
+            margin-top: 10px;
+        }
+        .profile-card {
+            background: rgba(20, 20, 30, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 40px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        .profile-card:hover {
+            border-color: #D4AF37;
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.1);
+        }
+        .card-title {
+            color: #D4AF37;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 12px;
+        }
+        
+        /* Profile Picture Styles */
+        .profile-picture-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .profile-picture-container {
+            position: relative;
+            display: inline-block;
+        }
+        .profile-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #D4AF37;
+            background: #1a1a2e;
+        }
+        .profile-preview-default {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2a2a3a, #1a1a2e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #D4AF37;
+        }
+        .profile-preview-default i {
+            font-size: 3rem;
+            color: #D4AF37;
+        }
+        .upload-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: #D4AF37;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .upload-btn:hover {
+            transform: scale(1.1);
+            background: #FFD700;
+        }
+        .upload-btn i {
+            color: #050505;
+            font-size: 0.9rem;
+        }
+        .remove-pic-btn {
+            margin-top: 10px;
+            background: transparent;
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        .remove-pic-btn:hover {
+            background: #ff6b6b;
+            color: #050505;
+        }
+        .file-input-hidden {
+            display: none;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 20px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .info-label {
+            width: 120px;
+            color: #D4AF37;
+            font-weight: 500;
+        }
+        .info-value {
+            flex: 1;
+            color: #e0e0e0;
+        }
+        .profile-input {
+            width: 100%;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 14px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .profile-input:focus {
+            outline: none;
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.05);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-size: 1rem;
+        }
+        .btn-gold:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+        .btn-danger {
+            background: transparent;
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .btn-danger:hover {
+            background: #ff6b6b;
+            color: #050505;
+        }
+        .info-text {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: -10px;
+            margin-bottom: 15px;
+        }
+        .badge {
+            background: rgba(212, 175, 55, 0.15);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            color: #D4AF37;
+            margin-left: 10px;
+        }
+        @media (max-width: 768px) {
+            .profile-card { padding: 25px; }
+            .info-row { flex-direction: column; }
+            .info-label { width: 100%; margin-bottom: 5px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <!-- 🎫 SUPPORT TICKETS - Client & Admin -->
+<a href="support-tickets.html" class="nav-link" id="ticketsNavLink"><i class="fas fa-ticket-alt"></i> Support</a>
+                <!-- 🆕 REAL-TIME DASHBOARD - ADMIN ONLY -->
+<a href="realtime-dashboard.html" class="nav-link" id="realtimeNavLink" style="display:none;"><i class="fas fa-chart-line"></i> Live</a>
+                <a href="gps-tracker.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> GPS Tracker</a>
+                <!-- 🗺️ GPS MAP -->
+<a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                <a href="how-it-works.html" class="nav-link"><i class="fas fa-question-circle"></i> How It Works</a>
+                <a href="chatbot.html" class="nav-link"><i class="fas fa-robot"></i> Chat Assistant</a>
+               <!-- 🗺️ ROUTE LINKS - ROLE BASED -->
+<a href="route-dashboard.html" class="nav-link" id="routesNavLink"><i class="fas fa-route"></i> Routes</a>
+<a href="route-create.html" class="nav-link" id="createRouteNavLink"><i class="fas fa-plus-circle"></i> Create Route</a>
+<a href="route-details.html?id=6a3a89bd90876001b574c3a2" class="nav-link" id="myRouteNavLink">
+    <i class="fas fa-info-circle"></i> My Route
+</a>
+                
+                <!-- 🏢 WAREHOUSE LINKS - ROLE BASED -->
+                <!-- ADMIN ONLY (hidden by default) -->
+                <a href="warehouse-dashboard.html" class="nav-link" id="warehouseMgmtLink" style="display:none;"><i class="fas fa-warehouse"></i> Warehouse</a>
+                <a href="warehouse-inventory.html" class="nav-link" id="warehouseInventoryLink" style="display:none;"><i class="fas fa-boxes"></i> Inventory</a>
+                
+                <!-- CLIENT ONLY -->
+                <a href="warehouse-service.html" class="nav-link" id="warehouseServiceLink"><i class="fas fa-warehouse"></i> My Storage</a>
+                
+                <!-- DRIVER ONLY -->
+                <a href="driver-warehouse.html" class="nav-link" id="driverWarehouseLink" style="display:none;"><i class="fas fa-warehouse"></i> Pickups</a>
+                
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="profile-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="zazo.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="profile-container">
+                <div class="profile-header" data-aos="fade-up">
+                    <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+                    <p>Manage your account information, profile picture, and security settings</p>
+                </div>
+
+                <div id="profileContent">
+                    <div style="text-align:center; padding:60px;">
+                        <i class="fas fa-spinner fa-pulse" style="font-size:2rem; color:#D4AF37;"></i>
+                        <p style="margin-top:15px; color:#888;">Loading your profile...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        let currentUser = {};
+
+        async function loadProfile() {
+            try {
+                const res = await fetch('http://localhost:5000/api/user/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const user = await res.json();
+                currentUser = user;
+
+                // Profile picture HTML
+                let profilePicHtml = '';
+                if (user.profilePicture) {
+                    profilePicHtml = `
+                        <div class="profile-picture-section">
+                            <div class="profile-picture-container">
+                                <img src="http://localhost:5000${user.profilePicture}" class="profile-preview" id="profilePreview" alt="Profile Picture">
+                                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                            </div>
+                            <div>
+                                <button class="remove-pic-btn" onclick="removeProfilePicture()">Remove Picture</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    profilePicHtml = `
+                        <div class="profile-picture-section">
+                            <div class="profile-picture-container">
+                                <div class="profile-preview-default" id="profilePreviewDefault">
+                                    <i class="fas fa-user-circle"></i>
+                                </div>
+                                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                                    <i class="fas fa-camera"></i>
+                                </button>
+                            </div>
+                            <div>
+                                <button class="remove-pic-btn" onclick="removeProfilePicture()" style="display:none;" id="removePicBtn">Remove Picture</button>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('profileContent').innerHTML = `
+                    <!-- Profile Picture Card -->
+                    <div class="profile-card" data-aos="fade-up">
+                        <div class="card-title">
+                            <i class="fas fa-image"></i>
+                            Profile Picture
+                        </div>
+                        ${profilePicHtml}
+                        <input type="file" id="fileInput" class="file-input-hidden" accept="image/jpeg,image/png,image/jpg,image/gif,image/webp" onchange="uploadProfilePicture(this)">
+                        <div class="info-text"><i class="fas fa-info-circle"></i> Supported formats: JPG, PNG, GIF, WEBP. Max size: 2MB.</div>
+                    </div>
+
+                    <!-- Account Information Card -->
+                    <div class="profile-card" data-aos="fade-up">
+                        <div class="card-title">
+                            <i class="fas fa-info-circle"></i>
+                            Account Information
+                            ${user.role === 'admin' ? '<span class="badge"><i class="fas fa-crown"></i> Administrator</span>' : '<span class="badge"><i class="fas fa-user"></i> Client</span>'}
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label"><i class="fas fa-envelope"></i> Email</div>
+                            <div class="info-value">
+                                <input type="email" id="profileEmail" class="profile-input" value="${user.email}" placeholder="Email Address">
+                            </div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label"><i class="fas fa-user"></i> Name</div>
+                            <div class="info-value">
+                                <input type="text" id="profileName" class="profile-input" value="${user.name}" placeholder="Full Name">
+                            </div>
+                        </div>
+                        <div class="info-text"><i class="fas fa-info-circle"></i> Changing your email will update your login credentials.</div>
+                        <button onclick="updateProfile()" class="btn-gold"><i class="fas fa-save"></i> Update Profile</button>
+                    </div>
+
+                    <!-- Security Card -->
+                    <div class="profile-card" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card-title">
+                            <i class="fas fa-lock"></i>
+                            Security Settings
+                        </div>
+                        <input type="password" id="currentPassword" class="profile-input" placeholder="Current Password">
+                        <input type="password" id="newPassword" class="profile-input" placeholder="New Password (min 6 characters)">
+                        <input type="password" id="confirmPassword" class="profile-input" placeholder="Confirm New Password">
+                        <button onclick="changePassword()" class="btn-gold"><i class="fas fa-key"></i> Change Password</button>
+                    </div>
+
+                    <!-- Danger Zone Card -->
+                    <div class="profile-card" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Danger Zone
+                        </div>
+                        <p style="color: #ff6b6b; margin-bottom: 20px; font-size: 0.9rem;">
+                            <i class="fas fa-warning"></i> Once you delete your account, there is no going back. All your shipments and data will be permanently removed.
+                        </p>
+                        <button onclick="deleteAccount()" class="btn-danger"><i class="fas fa-trash-alt"></i> Delete My Account</button>
+                    </div>
+                `;
+            } catch (err) {
+                document.getElementById('profileContent').innerHTML = `
+                    <div class="profile-card" style="text-align:center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ff6b6b;"></i>
+                        <p style="margin-top: 20px; color: #ff6b6b;">Error loading profile. Please try again later.</p>
+                        <button onclick="location.reload()" class="btn-gold" style="margin-top: 20px;">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        // ===== PROFILE PICTURE FUNCTIONS =====
+        async function uploadProfilePicture(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            // Check file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('File too large. Max 2MB.', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('profilePicture', file);
+
+            showToast('Uploading...', 'info');
+
+            try {
+                const res = await fetch('http://localhost:5000/api/user/upload-profile-pic', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('✅ Profile picture updated!', 'success');
+                    loadProfile(); // Reload profile to show new picture
+                    updateAuthNavigation(); // Update navigation with new picture
+                } else {
+                    showToast('❌ Error: ' + data.message, 'error');
+                }
+            } catch (err) {
+                console.error('Upload error:', err);
+                showToast('❌ Connection error', 'error');
+            }
+
+            // Clear the input
+            input.value = '';
+        }
+
+        async function removeProfilePicture() {
+            if (!confirm('Remove your profile picture?')) return;
+
+            try {
+                const res = await fetch('http://localhost:5000/api/user/remove-profile-pic', {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('Profile picture removed', 'success');
+                    loadProfile(); // Reload profile
+                    updateAuthNavigation(); // Update navigation
+                } else {
+                    showToast('Error: ' + data.message, 'error');
+                }
+            } catch (err) {
+                showToast('Connection error', 'error');
+            }
+        }
+
+        async function updateProfile() {
+            const name = document.getElementById('profileName').value;
+            const email = document.getElementById('profileEmail').value;
+            
+            if (!name) {
+                showToast('Please enter your name', 'error');
+                return;
+            }
+            if (!email) {
+                showToast('Please enter your email', 'error');
+                return;
+            }
+            
+            try {
+                const res = await fetch('http://localhost:5000/api/user/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ name, email })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ Profile updated successfully', 'success');
+                    // Update stored user
+                    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+                    storedUser.name = name;
+                    storedUser.email = email;
+                    localStorage.setItem('user', JSON.stringify(storedUser));
+                    updateAuthNavigation();
+                } else {
+                    showToast('❌ ' + data.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ Connection error', 'error');
+            }
+        }
+
+        async function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!currentPassword || !newPassword) {
+                showToast('Please fill all password fields', 'error');
+                return;
+            }
+            if (newPassword !== confirmPassword) {
+                showToast('New passwords do not match', 'error');
+                return;
+            }
+            if (newPassword.length < 6) {
+                showToast('Password must be at least 6 characters', 'error');
+                return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:5000/api/user/change-password', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast('✅ Password changed successfully', 'success');
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                } else {
+                    showToast('❌ ' + data.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ Connection error', 'error');
+            }
+        }
+
+        async function deleteAccount() {
+            if (confirm('⚠️ WARNING: This will permanently delete your account and all your shipments. This cannot be undone. Are you sure?')) {
+                const confirmation = prompt('Type "DELETE" to confirm account deletion');
+                if (confirmation === 'DELETE') {
+                    try {
+                        const res = await fetch('http://localhost:5000/api/user/account', {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            showToast('Account deleted. Goodbye!', 'success');
+                            localStorage.clear();
+                            setTimeout(() => {
+                                window.location.href = 'index.html';
+                            }, 2000);
+                        } else {
+                            showToast('Error deleting account', 'error');
+                        }
+                    } catch (err) {
+                        showToast('Connection error', 'error');
+                    }
+                }
+            }
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>

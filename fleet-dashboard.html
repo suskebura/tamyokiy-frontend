@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fleet GPS Map | TAMYOKIY Logistics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .fleet-map-section {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+        }
+        .fleet-map-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .welcome-card {
+            background: linear-gradient(135deg, rgba(33,150,243,0.2), rgba(20,20,30,0.7));
+            backdrop-filter: blur(15px);
+            border-radius: 32px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(33,150,243,0.4);
+        }
+        .welcome-card h1 {
+            color: #2196F3;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .map-card {
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(33,150,243,0.3);
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+        #map {
+            width: 100%;
+            height: 550px;
+            border-radius: 16px;
+            border: 1px solid rgba(33,150,243,0.15);
+        }
+        .map-controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            align-items: center;
+        }
+        .map-controls input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(33,150,243,0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+        }
+        .map-controls input:focus {
+            border-color: #2196F3;
+        }
+        .map-controls input::placeholder {
+            color: #666;
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37, #FFD700);
+            border: none;
+            color: #050505;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-gold:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(212,175,55,0.4);
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid rgba(33,150,243,0.3);
+            color: #2196F3;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-outline:hover {
+            background: rgba(33,150,243,0.1);
+            border-color: #2196F3;
+        }
+        .btn-danger-outline {
+            background: transparent;
+            border: 1px solid rgba(255,107,107,0.3);
+            color: #ff6b6b;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-danger-outline:hover {
+            background: rgba(255,107,107,0.1);
+            border-color: #ff6b6b;
+        }
+        .vehicle-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .vehicle-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .vehicle-list::-webkit-scrollbar-thumb {
+            background: #2196F3;
+            border-radius: 10px;
+        }
+        .vehicle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+        .vehicle-item:hover {
+            background: rgba(33,150,243,0.08);
+        }
+        .vehicle-item .plate {
+            color: #D4AF37;
+            font-weight: 700;
+        }
+        .vehicle-item .driver {
+            color: #888;
+            font-size: 0.8rem;
+        }
+        .vehicle-item .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .status-dot.online { background: #4caf50; }
+        .status-dot.offline { background: #888; }
+        .status-dot.delivering { background: #ff9800; }
+        .status-dot.busy { background: #ff6b6b; }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-small {
+            background: rgba(255,255,255,0.02);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(33,150,243,0.08);
+        }
+        .stat-small .number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2196F3;
+        }
+        .stat-small .label {
+            color: #888;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.4);
+        }
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+            color: #2196F3;
+        }
+
+        @media (max-width: 768px) {
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+            .map-controls {
+                flex-direction: column;
+            }
+            .map-controls input {
+                width: 100%;
+            }
+            #map {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="realtime-dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i> Live</a>
+                
+                <!-- Fleet Menu -->
+                <a href="fleet-dashboard.html" class="nav-link"><i class="fas fa-truck"></i> Fleet</a>
+                <a href="fleet-add-vehicle.html" class="nav-link"><i class="fas fa-plus-circle"></i> Add Vehicle</a>
+                <a href="fleet-maintenance.html" class="nav-link"><i class="fas fa-tools"></i> Maintenance</a>
+                <a href="fleet-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                <a href="fleet-analytics.html" class="nav-link"><i class="fas fa-chart-pie"></i> Analytics</a>
+                
+                <a href="gps-tracker.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> GPS Tracker</a>
+                <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="fleet-map-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="fleet.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="fleet-map-container">
+                <div class="welcome-card" data-aos="fade-up">
+                    <h1><i class="fas fa-map"></i> Fleet GPS Tracking</h1>
+                    <p>Real-time vehicle locations on live map</p>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-row" id="mapStats" data-aos="fade-up">
+                    <div class="stat-small">
+                        <div class="number" id="totalVehicles">0</div>
+                        <div class="label">Total Vehicles</div>
+                    </div>
+                    <div class="stat-small">
+                        <div class="number" id="onlineVehicles">0</div>
+                        <div class="label">Online</div>
+                    </div>
+                    <div class="stat-small">
+                        <div class="number" id="offlineVehicles">0</div>
+                        <div class="label">Offline</div>
+                    </div>
+                </div>
+
+                <!-- Map -->
+                <div class="map-card" data-aos="fade-up">
+                    <div id="map"></div>
+
+                    <!-- Controls -->
+                    <div class="map-controls">
+                        <input type="text" id="plateSearch" placeholder="Enter plate number (e.g., AA-1234)">
+                        <button onclick="trackVehicle()" class="btn-gold">
+                            <i class="fas fa-search"></i> Track Vehicle
+                        </button>
+                        <button onclick="loadAllVehicles()" class="btn-outline">
+                            <i class="fas fa-sync-alt"></i> Show All
+                        </button>
+                        <button onclick="centerMap()" class="btn-outline">
+                            <i class="fas fa-crosshairs"></i> Center Map
+                        </button>
+                        <button onclick="clearMarkers()" class="btn-danger-outline">
+                            <i class="fas fa-trash"></i> Clear Markers
+                        </button>
+                    </div>
+
+                    <!-- Vehicle List -->
+                    <div class="vehicle-list" id="vehicleList">
+                        <div class="empty-state">
+                            <i class="fas fa-truck"></i>
+                            <p>Loading vehicles...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+        AOS.init();
+
+        // ============================================================
+        // ADMIN ONLY
+        // ============================================================
+
+        var user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.role !== 'admin') {
+            window.location.href = 'dashboard.html';
+        }
+
+        var token = localStorage.getItem('token');
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // ============================================================
+        // MAP INITIALIZATION
+        // ============================================================
+
+        var map = null;
+        var vehicleMarkers = [];
+
+        var defaultLat = 9.0245;
+        var defaultLng = 38.7485;
+
+        function initMap() {
+            map = L.map('map', {
+                center: [defaultLat, defaultLng],
+                zoom: 13
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            console.log('Map initialized');
+        }
+
+        // ============================================================
+        // VEHICLE MARKER FUNCTIONS
+        // ============================================================
+
+        function getVehicleIcon(status) {
+            var colors = {
+                'online': '#4caf50',
+                'offline': '#888',
+                'delivering': '#ff9800',
+                'busy': '#ff6b6b'
+            };
+            var color = colors[status] || '#888';
+
+            return L.divIcon({
+                html: '<div style="position:relative;">' +
+                    '<i class="fas fa-truck" style="color:' + color + '; font-size:2.2rem; filter:drop-shadow(0 4px 8px rgba(0,0,0,0.3));"></i>' +
+                    '<span style="position:absolute; bottom:-5px; right:-5px; width:12px; height:12px; background:' + color + '; border-radius:50%; border:2px solid #050505;"></span>' +
+                '</div>',
+                iconSize: [30, 42],
+                iconAnchor: [15, 42],
+                className: 'vehicle-marker'
+            });
+        }
+
+        function addVehicleMarker(vehicleData) {
+            var vehicle = vehicleData.vehicle;
+            var location = vehicleData.location;
+            var isOnline = vehicleData.isOnline;
+
+            if (!location) return null;
+
+            var status = location.status || (isOnline ? 'online' : 'offline');
+            var icon = getVehicleIcon(status);
+
+            var marker = L.marker([location.lat, location.lng], { icon: icon }).addTo(map);
+
+            var statusLabels = {
+                'online': 'Online',
+                'offline': 'Offline',
+                'delivering': 'Delivering',
+                'busy': 'Busy'
+            };
+
+            var popupContent = '<div style="font-family: Inter, sans-serif; padding: 5px; min-width: 200px;">' +
+                '<strong style="color: #D4AF37; font-size: 1.1rem;">' + vehicle.plateNumber + '</strong><br>' +
+                '<span style="color: #888;">' + vehicle.brand + ' ' + vehicle.model + '</span><br>' +
+                '<span style="color: #888;">Vehicle: ' + (vehicle.vehicleType || 'N/A') + '</span><br>' +
+                '<span style="color: #888;">Driver: ' + (vehicle.driverName || 'N/A') + '</span><br>' +
+                '<span style="color: #888;">Status: ' + (statusLabels[status] || status) + '</span><br>' +
+                '<span style="color: #888; font-size: 0.8rem;">Location: ' + location.lat.toFixed(6) + ', ' + location.lng.toFixed(6) + '</span><br>' +
+                '<span style="color: #666; font-size: 0.7rem;">Updated: ' + (location.updatedAt ? new Date(location.updatedAt).toLocaleString() : 'N/A') + '</span>' +
+                (location.speed ? '<br><span style="color: #888;">Speed: ' + location.speed + ' km/h</span>' : '') +
+                (location.address ? '<br><span style="color: #666; font-size: 0.8rem;">Address: ' + location.address + '</span>' : '') +
+            '</div>';
+
+            marker.bindPopup(popupContent);
+
+            marker.on('click', function() {
+                map.panTo([location.lat, location.lng]);
+            });
+
+            return marker;
+        }
+
+        // ============================================================
+        // LOAD ALL VEHICLES
+        // ============================================================
+
+        async function loadAllVehicles() {
+            try {
+                var res = await fetch('http://localhost:5000/api/fleet/vehicles/locations/all', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                var data = await res.json();
+
+                if (!data.success) {
+                    showToast('Error loading vehicles', 'error');
+                    return;
+                }
+
+                // Clear existing markers
+                vehicleMarkers.forEach(function(m) { map.removeLayer(m); });
+                vehicleMarkers = [];
+
+                // Update stats
+                document.getElementById('totalVehicles').textContent = data.count || 0;
+                document.getElementById('onlineVehicles').textContent = data.onlineCount || 0;
+                document.getElementById('offlineVehicles').textContent = (data.count || 0) - (data.onlineCount || 0);
+
+                // Add markers
+                if (data.locations && data.locations.length > 0) {
+                    var bounds = [];
+
+                    data.locations.forEach(function(item) {
+                        if (item.location) {
+                            var marker = addVehicleMarker(item);
+                            if (marker) {
+                                vehicleMarkers.push(marker);
+                                bounds.push([item.location.lat, item.location.lng]);
+                            }
+                        }
+                    });
+
+                    // Fit map to all markers
+                    if (bounds.length > 0) {
+                        map.fitBounds(bounds, { padding: [50, 50] });
+                    }
+
+                    // Update vehicle list
+                    renderVehicleList(data.locations);
+                } else {
+                    document.getElementById('vehicleList').innerHTML = 
+                        '<div class="empty-state">' +
+                            '<i class="fas fa-truck"></i>' +
+                            '<p>No active vehicles with GPS data</p>' +
+                        '</div>';
+                }
+
+                showToast('Vehicles loaded: ' + (data.onlineCount || 0) + ' online', 'success');
+
+            } catch (err) {
+                console.error('Load vehicles error:', err);
+                showToast('Error loading vehicles', 'error');
+            }
+        }
+
+        // ============================================================
+        // TRACK SINGLE VEHICLE
+        // ============================================================
+
+        async function trackVehicle() {
+            var plate = document.getElementById('plateSearch').value.trim().toUpperCase();
+
+            if (!plate) {
+                showToast('Please enter a plate number', 'error');
+                return;
+            }
+
+            try {
+                var res = await fetch('http://localhost:5000/api/fleet/vehicles/location/' + plate, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                var data = await res.json();
+
+                if (!data.success) {
+                    showToast('Vehicle not found', 'error');
+                    return;
+                }
+
+                // Clear existing markers
+                vehicleMarkers.forEach(function(m) { map.removeLayer(m); });
+                vehicleMarkers = [];
+
+                if (data.location) {
+                    var vehicleData = {
+                        vehicle: data.vehicle,
+                        location: data.location,
+                        isOnline: true
+                    };
+
+                    var marker = addVehicleMarker(vehicleData);
+                    if (marker) {
+                        vehicleMarkers.push(marker);
+                        map.setView([data.location.lat, data.location.lng], 16);
+                        marker.openPopup();
+                    }
+
+                    // Update vehicle list
+                    document.getElementById('vehicleList').innerHTML = 
+                        '<div style="padding: 10px 14px; background: rgba(33,150,243,0.05); border-radius: 8px; border: 1px solid rgba(33,150,243,0.2);">' +
+                            '<div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">' +
+                                '<div>' +
+                                    '<span class="plate">' + data.vehicle.plateNumber + '</span>' +
+                                    '<span style="color: #888; margin-left: 10px;">' + data.vehicle.brand + ' ' + data.vehicle.model + '</span>' +
+                                '</div>' +
+                                '<div>' +
+                                    '<span class="status-dot online"></span>' +
+                                    '<span style="color: #4caf50;">Online</span>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div style="color: #888; font-size: 0.85rem; margin-top: 5px;">' +
+                                'Driver: ' + (data.vehicle.assignedDriver || 'N/A') +
+                            '</div>' +
+                            '<div style="color: #888; font-size: 0.85rem;">' +
+                                'Location: ' + data.location.lat.toFixed(6) + ', ' + data.location.lng.toFixed(6) + '<br>' +
+                                'Updated: ' + new Date(data.location.updatedAt).toLocaleString() +
+                            '</div>' +
+                        '</div>';
+
+                    showToast('Vehicle ' + plate + ' found!', 'success');
+
+                } else {
+                    document.getElementById('vehicleList').innerHTML = 
+                        '<div style="padding: 20px; text-align: center; color: #888;">' +
+                            '<i class="fas fa-exclamation-triangle" style="color: #ff9800; font-size: 2rem; display: block; margin-bottom: 10px;"></i>' +
+                            (data.message || 'Vehicle location not available') +
+                            '<br>' +
+                            '<span style="font-size: 0.8rem;">Driver may be offline or no GPS data</span>' +
+                        '</div>';
+                    showToast('No location data for ' + plate, 'warning');
+                }
+
+            } catch (err) {
+                console.error('Track vehicle error:', err);
+                showToast('Error tracking vehicle', 'error');
+            }
+        }
+
+        // ============================================================
+        // RENDER VEHICLE LIST
+        // ============================================================
+
+        function renderVehicleList(locations) {
+            var container = document.getElementById('vehicleList');
+
+            if (!locations || locations.length === 0) {
+                container.innerHTML = 
+                    '<div class="empty-state">' +
+                        '<i class="fas fa-truck"></i>' +
+                        '<p>No vehicles with GPS data</p>' +
+                    '</div>';
+                return;
+            }
+
+            var statusLabels = {
+                'online': 'Online',
+                'offline': 'Offline',
+                'delivering': 'Delivering',
+                'busy': 'Busy'
+            };
+
+            var html = '';
+            locations.forEach(function(item) {
+                var status = item.location?.status || (item.isOnline ? 'online' : 'offline');
+                var statusClass = item.isOnline ? 'online' : 'offline';
+
+                html += 
+                    '<div class="vehicle-item" onclick="focusVehicle(' + (item.location?.lat || 0) + ', ' + (item.location?.lng || 0) + ')">' +
+                        '<div>' +
+                            '<span class="plate">' + item.vehicle.plateNumber + '</span>' +
+                            '<span style="color: #888; font-size: 0.8rem; margin-left: 10px;">' + item.vehicle.brand + ' ' + item.vehicle.model + '</span>' +
+                            '<div style="color: #888; font-size: 0.75rem; margin-top: 2px;">' +
+                                'Driver: ' + (item.vehicle.driverName || 'N/A') +
+                            '</div>' +
+                        '</div>' +
+                        '<div style="text-align: right;">' +
+                            '<span class="status-dot ' + statusClass + '"></span>' +
+                            '<span style="color: ' + (item.isOnline ? '#4caf50' : '#888') + '; font-size: 0.8rem;">' +
+                                (statusLabels[status] || status) +
+                            '</span>' +
+                            (item.location ? '<br><span style="color: #666; font-size: 0.65rem;">' + (item.location.lat?.toFixed(4) || '') + ', ' + (item.location.lng?.toFixed(4) || '') + '</span>' : '') +
+                        '</div>' +
+                    '</div>';
+            });
+
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        // FOCUS VEHICLE
+        // ============================================================
+
+        function focusVehicle(lat, lng) {
+            if (lat && lng) {
+                map.setView([lat, lng], 16);
+            }
+        }
+
+        // ============================================================
+        // CENTER MAP
+        // ============================================================
+
+        function centerMap() {
+            if (vehicleMarkers.length > 0) {
+                var bounds = [];
+                vehicleMarkers.forEach(function(m) {
+                    var latlng = m.getLatLng();
+                    bounds.push([latlng.lat, latlng.lng]);
+                });
+                map.fitBounds(bounds, { padding: [50, 50] });
+            } else {
+                map.setView([defaultLat, defaultLng], 13);
+            }
+            showToast('Map centered', 'info');
+        }
+
+        // ============================================================
+        // CLEAR MARKERS
+        // ============================================================
+
+        function clearMarkers() {
+            if (vehicleMarkers.length === 0) {
+                showToast('No markers to clear', 'info');
+                return;
+            }
+            vehicleMarkers.forEach(function(m) { map.removeLayer(m); });
+            vehicleMarkers = [];
+            document.getElementById('vehicleList').innerHTML = 
+                '<div class="empty-state">' +
+                    '<i class="fas fa-truck"></i>' +
+                    '<p>Markers cleared</p>' +
+                    '<button onclick="loadAllVehicles()" class="btn-outline" style="margin-top: 10px; padding: 8px 20px; font-size: 0.8rem;">' +
+                        '<i class="fas fa-sync-alt"></i> Load Vehicles' +
+                    '</button>' +
+                '</div>';
+            showToast('Markers cleared', 'info');
+        }
+
+        // ============================================================
+        // TOAST FUNCTION
+        // ============================================================
+
+        function showToast(message, type) {
+            type = type || 'info';
+            var colors = {
+                success: '#4caf50',
+                error: '#ff6b6b',
+                info: '#2196F3',
+                warning: '#ff9800'
+            };
+            var icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️',
+                warning: '⚠️'
+            };
+
+            var container = document.getElementById('toastContainer');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toastContainer';
+                container.style.cssText = 'position:fixed;bottom:30px;right:30px;z-index:99999;display:flex;flex-direction:column;gap:10px;max-width:400px;';
+                document.body.appendChild(container);
+            }
+
+            var toast = document.createElement('div');
+            toast.style.cssText = 'background:#1a1a2e;color:#fff;padding:14px 20px;border-radius:12px;border-left:4px solid ' + colors[type] + ';box-shadow:0 8px 32px rgba(0,0,0,0.4);animation:slideInToast 0.4s ease;font-size:0.9rem;display:flex;align-items:center;gap:12px;';
+            toast.innerHTML = '<span style="font-size:1.1rem;">' + icons[type] + '</span><span>' + message + '</span>';
+            container.appendChild(toast);
+
+            setTimeout(function() {
+                toast.style.animation = 'slideOutToast 0.4s ease forwards';
+                setTimeout(function() {
+                    if (toast.parentNode) toast.remove();
+                }, 400);
+            }, 3000);
+        }
+
+        // ============================================================
+        // ENTER KEY SUPPORT
+        // ============================================================
+
+        document.getElementById('plateSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                trackVehicle();
+            }
+        });
+
+        // ============================================================
+        // UPDATE NAVIGATION
+        // ============================================================
+
+        if (user.name) {
+            var authLink = document.getElementById('authNavLink');
+            if (authLink) {
+                authLink.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
+                authLink.href = '#';
+                authLink.onclick = function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'index.html';
+                };
+            }
+            var userNameSpan = document.getElementById('userNameDisplay');
+            if (userNameSpan) {
+                userNameSpan.style.display = 'inline-flex';
+                userNameSpan.style.alignItems = 'center';
+                userNameSpan.style.gap = '8px';
+                userNameSpan.style.background = 'rgba(33,150,243,0.15)';
+                userNameSpan.style.padding = '5px 12px 5px 8px';
+                userNameSpan.style.borderRadius = '40px';
+                userNameSpan.innerHTML = '<i class="fas fa-user-circle" style="font-size: 1.2rem;"></i> ' + user.name;
+            }
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+
+        initMap();
+        setTimeout(loadAllVehicles, 500);
+
+        console.log('Fleet GPS Map loaded!');
+    </script>
+</body>
+</html>

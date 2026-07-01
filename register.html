@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAMYOKIY Logistics | Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .auth-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            position: relative;
+        }
+        .auth-card {
+            max-width: 550px;
+            margin: 0 auto;
+            padding: 50px;
+            background: rgba(20, 20, 30, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            position: relative;
+            z-index: 2;
+        }
+        .auth-card h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #D4AF37;
+            font-size: 2rem;
+        }
+        .auth-input, .auth-select {
+            width: 100%;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .auth-input:focus, .auth-select:focus {
+            outline: none;
+            border-color: #D4AF37;
+            background: rgba(212, 175, 55, 0.12);
+        }
+        .auth-input::placeholder {
+            color: #888;
+        }
+        .auth-select option {
+            background: #1a1a2e;
+            color: white;
+        }
+        .auth-link {
+            text-align: center;
+            margin-top: 25px;
+        }
+        .auth-link a {
+            color: #D4AF37;
+            text-decoration: none;
+        }
+        .driver-fields {
+            display: none;
+            animation: slideDown 0.4s ease;
+            padding: 15px;
+            background: rgba(212, 175, 55, 0.05);
+            border-radius: 16px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .driver-fields.show {
+            display: block;
+        }
+        .driver-fields h4 {
+            color: #D4AF37;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .role-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-left: 10px;
+        }
+        .role-client {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+        }
+        .role-driver {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="services.html" class="nav-link"><i class="fas fa-box"></i> Services</a>
+                <a href="careers.html" class="nav-link"><i class="fas fa-briefcase"></i> Careers</a>
+                <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
+                <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <!-- 🗺️ GPS MAP -->
+<a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
+                <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
+                <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="auth-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="home.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="auth-card" data-aos="fade-up">
+                <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+                <form id="registerForm">
+                    <select id="regRole" class="auth-select" required>
+                        <option value="client">📦 Register as Client - Ship packages</option>
+                        <option value="driver">🚚 Register as Driver - Deliver packages</option>
+                    </select>
+                    
+                    <input type="text" id="regName" class="auth-input" placeholder="Full Name" required>
+                    <input type="email" id="regEmail" class="auth-input" placeholder="Email Address" required>
+                    <input type="password" id="regPassword" class="auth-input" placeholder="Password (min 6 characters)" required>
+                    <input type="password" id="regConfirm" class="auth-input" placeholder="Confirm Password" required>
+                    
+                    <!-- Driver-specific fields (visible only when driver selected) -->
+                    <div id="driverFields" class="driver-fields">
+                        <h4><i class="fas fa-truck"></i> Driver Information</h4>
+                        <input type="tel" id="regPhone" class="auth-input" placeholder="📞 Phone Number">
+                        <input type="text" id="regLicense" class="auth-input" placeholder="📋 License Number">
+                        <select id="regVehicle" class="auth-select">
+                            <option value="">🚗 Select Vehicle Type</option>
+                            <option value="bike">🏍️ Motorcycle/Bike</option>
+                            <option value="car">🚗 Car</option>
+                            <option value="van">🚐 Van</option>
+                            <option value="truck">🚚 Truck</option>
+                            <option value="heavy_truck">🚛 Heavy Truck</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn-gold" style="width:100%;">Register →</button>
+                </form>
+                <div class="auth-link">
+                    <p>Already have an account? <a href="login.html">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        AOS.init();
+        
+        const roleSelect = document.getElementById('regRole');
+        const driverFields = document.getElementById('driverFields');
+        
+        roleSelect.addEventListener('change', function() {
+            if (this.value === 'driver') {
+                driverFields.classList.add('show');
+            } else {
+                driverFields.classList.remove('show');
+            }
+        });
+        
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const role = document.getElementById('regRole').value;
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirm').value;
+            
+            if (password !== confirm) {
+                alert('❌ Passwords do not match');
+                return;
+            }
+            if (password.length < 6) {
+                alert('❌ Password must be at least 6 characters');
+                return;
+            }
+            if (!name || !email) {
+                alert('❌ Please fill all required fields');
+                return;
+            }
+            
+            let endpoint = 'http://localhost:5000/api/auth/register';
+            let bodyData = { name, email, password };
+            
+            if (role === 'driver') {
+                const phone = document.getElementById('regPhone').value;
+                const licenseNumber = document.getElementById('regLicense').value;
+                const vehicleType = document.getElementById('regVehicle').value;
+                
+                if (!phone || !licenseNumber || !vehicleType) {
+                    alert('❌ Please fill all Driver Information fields (Phone, License, Vehicle)');
+                    return;
+                }
+                
+                endpoint = 'http://localhost:5000/api/auth/register-driver';
+                bodyData = { name, email, password, phone, licenseNumber, vehicleType };
+            }
+            
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Registering...';
+            submitBtn.disabled = true;
+            
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bodyData)
+                });
+                
+                const result = await res.json();
+                
+                if (result.token) {
+                    localStorage.setItem('token', result.token);
+                    localStorage.setItem('user', JSON.stringify(result.user));
+                    showToast(`✅ Welcome ${name}! Registration successful.`, 'success');
+                    setTimeout(() => {
+                        window.location.href = result.user.role === 'driver' ? 'driver-dashboard.html' : 'dashboard.html';
+                    }, 1000);
+                } else if (result.success) {
+                    showToast(`✅ Driver registered successfully! Please login.`, 'success');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1500);
+                } else {
+                    alert('❌ ' + (result.message || 'Registration failed'));
+                }
+            } catch (err) {
+                console.error('Registration error:', err);
+                alert('❌ Connection error. Make sure backend is running on port 5000.');
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

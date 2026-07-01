@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Details | TAMYOKIY Support</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .details-section {
+            min-height: 100vh;
+            padding-top: 120px;
+            position: relative;
+        }
+        .details-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .detail-card {
+            background: rgba(20,20,30,0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            border: 1px solid rgba(156,39,176,0.3);
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+        .detail-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .detail-card .card-header h2 {
+            color: #9c27b0;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        .detail-card .ticket-number {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .status-new { background: rgba(33,150,243,0.2); color: #2196F3; }
+        .status-in_progress { background: rgba(255,152,0,0.2); color: #ff9800; }
+        .status-on_hold { background: rgba(158,158,158,0.2); color: #9e9e9e; }
+        .status-resolved { background: rgba(76,175,80,0.2); color: #4caf50; }
+        .status-closed { background: rgba(96,125,139,0.2); color: #607d8b; }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .priority-low { background: rgba(76,175,80,0.2); color: #4caf50; }
+        .priority-medium { background: rgba(255,152,0,0.2); color: #ff9800; }
+        .priority-high { background: rgba(255,107,107,0.2); color: #ff6b6b; }
+        .priority-urgent { background: rgba(255,0,0,0.2); color: #ff0000; }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .detail-item {
+            background: rgba(255,255,255,0.02);
+            padding: 12px 16px;
+            border-radius: 12px;
+        }
+        .detail-item .label {
+            color: #888;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .detail-item .value {
+            color: #e0e0e0;
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-top: 3px;
+        }
+
+        .reply-section {
+            margin-top: 20px;
+        }
+        .reply-input {
+            display: flex;
+            gap: 15px;
+            flex-direction: column;
+        }
+        .reply-input textarea {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(156,39,176,0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 100px;
+            font-family: 'Inter', sans-serif;
+        }
+        .reply-input textarea:focus {
+            outline: none;
+            border-color: #9c27b0;
+        }
+        .reply-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-reply {
+            background: linear-gradient(135deg, #9c27b0, #ab47bc);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-reply:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(156,39,176,0.4);
+        }
+        .btn-reply:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-back {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #888;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-back:hover {
+            border-color: #9c27b0;
+            color: #9c27b0;
+        }
+
+        .reply-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            margin-bottom: 10px;
+        }
+        .reply-item:last-child {
+            border-bottom: none;
+        }
+        .reply-item .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        .reply-item .reply-author {
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+        .reply-item .reply-author .role {
+            font-size: 0.7rem;
+            font-weight: 400;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: rgba(156,39,176,0.15);
+            color: #9c27b0;
+            margin-left: 8px;
+        }
+        .reply-item .reply-time {
+            color: #666;
+            font-size: 0.75rem;
+        }
+        .reply-item .reply-message {
+            color: #b0b0b0;
+            line-height: 1.7;
+            margin-top: 5px;
+        }
+        .reply-item .reply-attachments {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .reply-item .reply-attachments a {
+            color: #9c27b0;
+            text-decoration: none;
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            background: rgba(156,39,176,0.08);
+            border-radius: 12px;
+        }
+        .reply-item .reply-attachments a:hover {
+            background: rgba(156,39,176,0.15);
+        }
+
+        .internal-note {
+            background: rgba(255,152,0,0.05);
+            border-left: 3px solid #ff9800;
+            padding: 10px 15px;
+            border-radius: 4px;
+        }
+        .internal-note .note-label {
+            color: #ff9800;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.4);
+        }
+        .loading i {
+            font-size: 2.5rem;
+            color: #9c27b0;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+            .detail-card {
+                padding: 20px;
+            }
+            .detail-card .card-header {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+    <div id="particles"></div>
+
+    <nav class="clean-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="logo.png" alt="TAMYOKIY Logistics Logo" class="brand-logo-img">
+                <div class="brand-name">
+                    <span class="brand-main">TAMYOKIY</span>
+                    <span class="brand-sub">LOGISTICS INC.</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link"><i class="fas fa-home"></i> Home</a>
+                <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="support-tickets.html" class="nav-link"><i class="fas fa-ticket-alt"></i> Support</a>
+                <a href="support-ticket-details.html" class="nav-link active"><i class="fas fa-info-circle"></i> Ticket Details</a>
+                <a href="profile.html" class="nav-link"><i class="fas fa-user"></i> Profile</a>
+                <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <span id="userNameDisplay" style="display: none;"></span>
+            </div>
+        </div>
+    </nav>
+
+    <section class="details-section">
+        <video class="video-bg" autoplay muted loop playsinline>
+            <source src="support.mp4" type="video/mp4">
+        </video>
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="details-container">
+                <div id="ticketDetails">
+                    <div class="loading"><i class="fas fa-spinner fa-pulse"></i> Loading ticket details...</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="gold-divider">━━━━━━━━━━━━ ✦ ━━━━━━━━━━━━</div>
+
+    <footer>
+        <div class="footer-slogan">WE MOVE FREIGHT. YOU MOVE FORWARD.</div>
+        <p>TAMYOKIY Logistics Inc. © 2026 | Built on Trust. Powered by Precision. Driven by Excellence.</p>
+        <div class="footer-social">
+            <a href="#" target="_blank"><i class="fab fa-telegram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+
+        // ============================================================
+        // 🎫 TICKET DETAILS
+        // ============================================================
+
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const ticketId = urlParams.get('id');
+
+        if (!ticketId) {
+            window.location.href = 'support-tickets.html';
+        }
+
+        // ============================================================
+        // LOAD TICKET DETAILS
+        // ============================================================
+
+        async function loadTicketDetails() {
+            try {
+                const res = await fetch(`http://localhost:5000/api/tickets/${ticketId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+
+                if (!data.success) {
+                    document.getElementById('ticketDetails').innerHTML = `
+                        <div class="detail-card">
+                            <div style="text-align:center; padding:40px; color:#ff6b6b;">
+                                <i class="fas fa-exclamation-triangle" style="font-size:3rem; margin-bottom:15px;"></i>
+                                <p>${data.message || 'Ticket not found'}</p>
+                                <button onclick="window.location.href='support-tickets.html'" class="btn-back" style="margin-top:15px;">
+                                    <i class="fas fa-arrow-left"></i> Back to Tickets
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                renderTicketDetails(data.ticket, data.replies);
+
+            } catch (err) {
+                console.error('Error loading ticket:', err);
+                document.getElementById('ticketDetails').innerHTML = `
+                    <div class="detail-card">
+                        <div style="text-align:center; padding:40px; color:#ff6b6b;">
+                            <i class="fas fa-exclamation-triangle" style="font-size:3rem; margin-bottom:15px;"></i>
+                            <p>Error loading ticket</p>
+                            <button onclick="loadTicketDetails()" class="btn-back" style="margin-top:15px;">
+                                <i class="fas fa-sync-alt"></i> Retry
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // ============================================================
+        // RENDER TICKET DETAILS
+        // ============================================================
+
+        function renderTicketDetails(ticket, replies) {
+            const statusLabels = {
+                'new': '📋 New',
+                'in_progress': '🔄 In Progress',
+                'on_hold': '⏳ On Hold',
+                'resolved': '✅ Resolved',
+                'closed': '❌ Closed'
+            };
+
+            const priorityLabels = {
+                'low': 'Low',
+                'medium': 'Medium',
+                'high': 'High',
+                'urgent': 'Urgent'
+            };
+
+            const categoryLabels = {
+                'shipping': '📦 Shipping',
+                'warehouse': '🏢 Warehouse',
+                'billing': '💰 Billing',
+                'technical': '💻 Technical',
+                'general': '📋 General',
+                'other': '❓ Other'
+            };
+
+            const isAdmin = user.role === 'admin';
+            const canReply = ticket.status !== 'closed' && ticket.status !== 'resolved';
+
+            // Render replies
+            let repliesHtml = '';
+            if (replies && replies.length > 0) {
+                repliesHtml = replies.map(reply => {
+                    const isInternal = reply.isInternal;
+                    return `
+                        <div class="reply-item ${isInternal ? 'internal-note' : ''}">
+                            <div class="reply-header">
+                                <div>
+                                    <span class="reply-author">
+                                        ${escapeHtml(reply.userName)}
+                                        <span class="role">${reply.userRole}</span>
+                                    </span>
+                                    ${isInternal ? '<span class="note-label">🔒 Internal Note</span>' : ''}
+                                </div>
+                                <span class="reply-time">${new Date(reply.createdAt).toLocaleString()}</span>
+                            </div>
+                            <div class="reply-message">${escapeHtml(reply.message)}</div>
+                            ${reply.attachments && reply.attachments.length > 0 ? `
+                                <div class="reply-attachments">
+                                    ${reply.attachments.map(a => `
+                                        <a href="http://localhost:5000${a.url}" target="_blank">
+                                            <i class="fas fa-paperclip"></i> ${a.filename}
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                repliesHtml = `
+                    <div style="text-align:center; padding:20px; color:#666;">
+                        <i class="fas fa-comment" style="font-size:2rem; opacity:0.3; display:block; margin-bottom:10px;"></i>
+                        No replies yet
+                    </div>
+                `;
+            }
+
+            document.getElementById('ticketDetails').innerHTML = `
+                <div class="detail-card" data-aos="fade-up">
+                    <div class="card-header">
+                        <div>
+                            <div class="ticket-number">#${ticket.ticketNumber}</div>
+                            <h2>${escapeHtml(ticket.title)}</h2>
+                        </div>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <span class="status-badge status-${ticket.status}">${statusLabels[ticket.status] || ticket.status}</span>
+                            <span class="priority-badge priority-${ticket.priority}">${priorityLabels[ticket.priority] || ticket.priority}</span>
+                        </div>
+                    </div>
+
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="label">Category</div>
+                            <div class="value">${categoryLabels[ticket.category] || ticket.category}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="label">Created</div>
+                            <div class="value">${new Date(ticket.createdAt).toLocaleString()}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="label">Customer</div>
+                            <div class="value">${escapeHtml(ticket.userName)} (${escapeHtml(ticket.userEmail)})</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="label">Assigned To</div>
+                            <div class="value">${ticket.assignedToName ? escapeHtml(ticket.assignedToName) : 'Not Assigned'}</div>
+                        </div>
+                        ${ticket.resolvedAt ? `
+                        <div class="detail-item">
+                            <div class="label">Resolved</div>
+                            <div class="value">${new Date(ticket.resolvedAt).toLocaleString()}</div>
+                        </div>
+                        ` : ''}
+                        ${ticket.closedAt ? `
+                        <div class="detail-item">
+                            <div class="label">Closed</div>
+                            <div class="value">${new Date(ticket.closedAt).toLocaleString()}</div>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div style="margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05);">
+                        <div style="color:#b0b0b0; line-height:1.8;">
+                            ${escapeHtml(ticket.description)}
+                        </div>
+                        ${ticket.attachments && ticket.attachments.length > 0 ? `
+                            <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+                                ${ticket.attachments.map(a => `
+                                    <a href="http://localhost:5000${a.url}" target="_blank" style="color:#9c27b0; text-decoration:none; padding:4px 12px; background:rgba(156,39,176,0.08); border-radius:12px; font-size:0.8rem;">
+                                        <i class="fas fa-paperclip"></i> ${a.filename}
+                                    </a>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Replies Section -->
+                    <div style="margin-top:30px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05);">
+                        <h3 style="color:#9c27b0; font-size:1.1rem; margin-bottom:15px;">
+                            <i class="fas fa-comments"></i> Replies (${replies ? replies.length : 0})
+                        </h3>
+                        <div>
+                            ${repliesHtml}
+                        </div>
+                    </div>
+
+                    <!-- Reply Form -->
+                    ${canReply ? `
+                    <div style="margin-top:25px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05);">
+                        <h3 style="color:#9c27b0; font-size:1.1rem; margin-bottom:15px;">
+                            <i class="fas fa-reply"></i> Add Reply
+                        </h3>
+                        <div class="reply-section">
+                            <div class="reply-input">
+                                <textarea id="replyMessage" placeholder="Type your reply here..."></textarea>
+                                <div class="reply-actions">
+                                    <button onclick="addReply()" class="btn-reply" id="replyBtn">
+                                        <i class="fas fa-paper-plane"></i> Send Reply
+                                    </button>
+                                    <button onclick="window.location.href='support-tickets.html'" class="btn-back">
+                                        <i class="fas fa-arrow-left"></i> Back
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    ` : `
+                    <div style="margin-top:25px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.05);">
+                        <div style="text-align:center; padding:15px; color:#888; background:rgba(255,255,255,0.02); border-radius:12px;">
+                            <i class="fas fa-lock" style="margin-right:8px;"></i>
+                            This ticket is ${ticket.status === 'closed' ? 'closed' : 'resolved'} - no more replies allowed
+                        </div>
+                        <div style="margin-top:15px;">
+                            <button onclick="window.location.href='support-tickets.html'" class="btn-back">
+                                <i class="fas fa-arrow-left"></i> Back to Tickets
+                            </button>
+                        </div>
+                    </div>
+                    `}
+                </div>
+            `;
+        }
+
+        // ============================================================
+        // ADD REPLY
+        // ============================================================
+
+        async function addReply() {
+            const message = document.getElementById('replyMessage').value.trim();
+
+            if (!message) {
+                showToast('Please enter a message', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('replyBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Sending...';
+
+            try {
+                const res = await fetch(`http://localhost:5000/api/tickets/${ticketId}/reply`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    showToast('✅ Reply sent!', 'success');
+                    document.getElementById('replyMessage').value = '';
+                    loadTicketDetails();
+                } else {
+                    showToast('❌ ' + data.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ Connection error', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reply';
+            }
+        }
+
+        // ============================================================
+        // ESCAPE HTML
+        // ============================================================
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // ============================================================
+        // SHOW TOAST
+        // ============================================================
+
+        function showToast(message, type = 'info') {
+            let toastContainer = document.getElementById('toastContainer');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.id = 'toastContainer';
+                toastContainer.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    right: 30px;
+                    z-index: 99999;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    max-width: 400px;
+                `;
+                document.body.appendChild(toastContainer);
+            }
+
+            const toast = document.createElement('div');
+            const colors = {
+                success: '#4caf50',
+                error: '#ff6b6b',
+                info: '#9c27b0'
+            };
+
+            toast.style.cssText = `
+                background: #1a1a2e;
+                color: #fff;
+                padding: 14px 20px;
+                border-radius: 12px;
+                border-left: 4px solid ${colors[type] || '#9c27b0'};
+                box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+                animation: slideInToast 0.4s ease;
+                font-size: 0.9rem;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            `;
+
+            const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+            toast.innerHTML = `<span style="font-size: 1.1rem;">${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOutToast 0.4s ease forwards';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 400);
+            }, 3000);
+        }
+
+        // ============================================================
+        // UPDATE NAVIGATION
+        // ============================================================
+
+        if (user.name) {
+            const authLink = document.getElementById('authNavLink');
+            if (authLink) {
+                authLink.innerHTML = '<i class="fas fa-sign-out-alt"></i> Logout';
+                authLink.href = '#';
+                authLink.onclick = function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'index.html';
+                };
+            }
+            const userNameSpan = document.getElementById('userNameDisplay');
+            if (userNameSpan) {
+                userNameSpan.style.display = 'inline-flex';
+                userNameSpan.style.alignItems = 'center';
+                userNameSpan.style.gap = '8px';
+                userNameSpan.style.background = 'rgba(156,39,176,0.15)';
+                userNameSpan.style.padding = '5px 12px 5px 8px';
+                userNameSpan.style.borderRadius = '40px';
+                userNameSpan.innerHTML = `<i class="fas fa-user-circle" style="font-size: 1.2rem;"></i> ${user.name}`;
+            }
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+
+        loadTicketDetails();
+
+        console.log('🎫 Ticket Details loaded!');
+    </script>
+</body>
+</html>
