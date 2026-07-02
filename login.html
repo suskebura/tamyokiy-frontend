@@ -213,7 +213,12 @@
     <script src="js/script.js"></script>
     <script>
         AOS.init();
-        
+
+        // ============================================================
+        // ✅ FIXED: PRODUCTION API URL
+        // ============================================================
+        const API_BASE_URL = 'https://tamyokiy-backend-1.onrender.com/api';
+
         // Check for verification success message from URL
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('verified') === 'true') {
@@ -253,7 +258,8 @@
             loginBtn.disabled = true;
             
             try {
-                const res = await fetch('http://localhost:5000/api/auth/login', {
+                // ✅ FIXED: Using production API URL
+                const res = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -286,7 +292,6 @@
                             ${data.message}
                         </div>
                     `;
-                    // Shake effect on input
                     document.getElementById('loginPassword').style.borderColor = '#ffa500';
                     setTimeout(() => {
                         document.getElementById('loginPassword').style.borderColor = '';
@@ -356,7 +361,7 @@
                 messageArea.innerHTML = `
                     <div class="error-message">
                         <i class="fas fa-plug"></i>
-                        Cannot connect to server. Make sure backend is running on port 5000.
+                        Cannot connect to server. Please make sure the backend is running.
                     </div>
                 `;
             } finally {

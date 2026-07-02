@@ -24,9 +24,9 @@ try {
 }
 
 // ============================================================
-// BACKEND API URL
+// BACKEND API URL - ✅ FIXED FOR PRODUCTION
 // ============================================================
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = 'https://tamyokiy-backend-1.onrender.com/api';
 
 // ============================================================
 // MOUSE GLOW EFFECT
@@ -212,14 +212,14 @@ function formatNotificationTime(date) {
 }
 
 // ============================================================
-// GLOBAL NOTIFICATION FUNCTIONS
+// GLOBAL NOTIFICATION FUNCTIONS - ✅ FIXED URLs
 // ============================================================
 async function loadNotifications() {
     const token = localStorage.getItem('token');
     if (!token) return;
     
     try {
-        const res = await fetch('http://localhost:5000/api/notifications', {
+        const res = await fetch(`${API_BASE_URL}/notifications`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
@@ -269,7 +269,7 @@ async function markAsRead(id) {
     if (!token) return;
     
     try {
-        await fetch(`http://localhost:5000/api/notifications/${id}/read`, {
+        await fetch(`${API_BASE_URL}/notifications/${id}/read`, {
             method: 'PUT',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -294,7 +294,7 @@ async function markAllRead() {
     if (!token) return;
     
     try {
-        await fetch('http://localhost:5000/api/notifications/read-all', {
+        await fetch(`${API_BASE_URL}/notifications/read-all`, {
             method: 'PUT',
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -517,13 +517,13 @@ function updateAuthNavigation() {
         }
         
         // --- User Name Display with Profile Picture ---
-        fetch('http://localhost:5000/api/user/profile', {
+        fetch(`${API_BASE_URL}/user/profile`, {
             headers: { 'Authorization': `Bearer ${token}` }
         })
         .then(res => res.json())
         .then(userData => {
             if (userData && userData.profilePicture) {
-                const profilePicUrl = `http://localhost:5000${userData.profilePicture}`;
+                const profilePicUrl = `https://tamyokiy-backend-1.onrender.com${userData.profilePicture}`;
                 if (userNameSpan) {
                     userNameSpan.style.display = 'inline-flex';
                     userNameSpan.style.alignItems = 'center';
