@@ -163,8 +163,7 @@
                 <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
                 <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
-                <!-- 🗺️ GPS MAP -->
-<a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                <a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
                 <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
                 <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
                 <a href="#" id="authNavLink" class="nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
@@ -214,12 +213,9 @@
     <script>
         AOS.init();
 
-        // ============================================================
-        // ✅ FIXED: PRODUCTION API URL
-        // ============================================================
+        // ✅ FIXED: Production API URL
         const API_BASE_URL = 'https://tamyokiy-backend-1.onrender.com/api';
 
-        // Check for verification success message from URL
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('verified') === 'true') {
             const messageArea = document.getElementById('messageArea');
@@ -241,7 +237,6 @@
             const loginBtn = document.getElementById('loginBtn');
             const originalText = loginBtn.textContent;
             
-            // Clear previous messages
             messageArea.innerHTML = '';
             
             if (!email || !password) {
@@ -258,7 +253,6 @@
             loginBtn.disabled = true;
             
             try {
-                // ✅ FIXED: Using production API URL
                 const res = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -268,7 +262,6 @@
                 const data = await res.json();
                 console.log('Login response:', data);
                 
-                // ===== ACCOUNT LOCKED (Status 403) =====
                 if (res.status === 403 && data.isLocked) {
                     messageArea.innerHTML = `
                         <div class="error-message">
@@ -283,7 +276,6 @@
                     return;
                 }
                 
-                // ===== REMAINING ATTEMPTS WARNING (Status 400 with remainingAttempts) =====
                 if (res.status === 400 && data.remainingAttempts !== undefined) {
                     const remainingText = data.remainingAttempts === 1 ? '1 attempt' : `${data.remainingAttempts} attempts`;
                     messageArea.innerHTML = `
@@ -299,7 +291,6 @@
                     return;
                 }
                 
-                // ===== EMAIL VERIFICATION NEEDED =====
                 if (res.status === 401 && data.message && data.message.includes('verify')) {
                     messageArea.innerHTML = `
                         <div class="error-message">
@@ -314,7 +305,6 @@
                     return;
                 }
                 
-                // ===== VALIDATION ERRORS =====
                 if (data.errors) {
                     messageArea.innerHTML = `
                         <div class="error-message">
@@ -325,13 +315,11 @@
                     return;
                 }
                 
-                // ===== SUCCESSFUL LOGIN =====
                 if (data.token) {
                     localStorage.setItem('token', data.token);
                     localStorage.setItem('user', JSON.stringify(data.user));
                     showToast(`Welcome back ${data.user.name}!`, 'success');
                     
-                    // 🚚 REDIRECT BASED ON ROLE 🚚
                     setTimeout(() => {
                         if (data.user.role === 'admin') {
                             window.location.href = 'admin.html';
@@ -342,7 +330,6 @@
                         }
                     }, 1000);
                 } else if (data.message) {
-                    // Generic error
                     messageArea.innerHTML = `
                         <div class="error-message">
                             <i class="fas fa-lock"></i>

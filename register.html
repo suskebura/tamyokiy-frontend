@@ -132,8 +132,7 @@
                 <a href="contact.html" class="nav-link"><i class="fas fa-envelope"></i> Contact</a>
                 <a href="tracking-public.html" class="nav-link"><i class="fas fa-map-marker-alt"></i> Track</a>
                 <a href="dashboard.html" class="nav-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                <!-- 🗺️ GPS MAP -->
-<a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
+                <a href="gps-map.html" class="nav-link"><i class="fas fa-map"></i> GPS Map</a>
                 <a href="forecast.html" class="nav-link" id="forecastNavLink"><i class="fas fa-chart-line"></i> Forecast</a>
                 <a href="profile.html" class="nav-link" id="profileNavLink"><i class="fas fa-user"></i> Profile</a>
                 <a href="admin.html" class="nav-link" id="adminNavLink"><i class="fas fa-crown"></i> Admin</a>
@@ -162,7 +161,6 @@
                     <input type="password" id="regPassword" class="auth-input" placeholder="Password (min 6 characters)" required>
                     <input type="password" id="regConfirm" class="auth-input" placeholder="Confirm Password" required>
                     
-                    <!-- Driver-specific fields (visible only when driver selected) -->
                     <div id="driverFields" class="driver-fields">
                         <h4><i class="fas fa-truck"></i> Driver Information</h4>
                         <input type="tel" id="regPhone" class="auth-input" placeholder="📞 Phone Number">
@@ -205,6 +203,9 @@
     <script>
         AOS.init();
         
+        // ✅ FIXED: Production API URL
+        const API_BASE_URL = 'https://tamyokiy-backend-1.onrender.com/api';
+        
         const roleSelect = document.getElementById('regRole');
         const driverFields = document.getElementById('driverFields');
         
@@ -238,7 +239,7 @@
                 return;
             }
             
-            let endpoint = 'http://localhost:5000/api/auth/register';
+            let endpoint = `${API_BASE_URL}/auth/register`;
             let bodyData = { name, email, password };
             
             if (role === 'driver') {
@@ -251,7 +252,7 @@
                     return;
                 }
                 
-                endpoint = 'http://localhost:5000/api/auth/register-driver';
+                endpoint = `${API_BASE_URL}/auth/register-driver`;
                 bodyData = { name, email, password, phone, licenseNumber, vehicleType };
             }
             
@@ -286,7 +287,7 @@
                 }
             } catch (err) {
                 console.error('Registration error:', err);
-                alert('❌ Connection error. Make sure backend is running on port 5000.');
+                alert('❌ Connection error. Make sure backend is running.');
             } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
