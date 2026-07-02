@@ -213,8 +213,8 @@
     <script>
         AOS.init();
 
-        // ✅ FIXED: Production API URL
-        const API_BASE_URL = 'https://tamyokiy-backend-1.onrender.com/api';
+        // ✅ REMOVED: API_BASE_URL is already defined in script.js
+        // Using the global API_BASE_URL from script.js
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('verified') === 'true') {
@@ -253,6 +253,7 @@
             loginBtn.disabled = true;
             
             try {
+                // ✅ Using global API_BASE_URL from script.js
                 const res = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
