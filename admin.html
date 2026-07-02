@@ -766,7 +766,7 @@
         // ===== FETCH STATS =====
         async function fetchStats() {
             try {
-                const res = await fetch('http://localhost:5000/api/admin/stats', {
+                const res = await fetch('https://tamyokiy-backend-1.onrender.com/api/admin/stats', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 const stats = await res.json();
@@ -799,7 +799,7 @@
         // CONTACTS
         // ================================================================
         async function fetchContacts() {
-            const res = await fetch('http://localhost:5000/api/admin/contacts', { 
+            const res = await fetch('https://tamyokiy-backend-1.onrender.com/api/admin/contacts', { 
                 headers: { 'Authorization': `Bearer ${token}` } 
             });
             const data = await res.json();
@@ -867,7 +867,7 @@
             const status = document.getElementById('filterContactStatus')?.value || '';
             const search = document.getElementById('searchContact')?.value.toLowerCase() || '';
             
-            fetch('http://localhost:5000/api/admin/contacts', { 
+            fetch('https://tamyokiy-backend-1.onrender.com/api/admin/contacts', { 
                 headers: { 'Authorization': `Bearer ${token}` } 
             })
             .then(res => res.json())
@@ -947,7 +947,7 @@
 
         async function deleteContact(id) { 
             if (confirm('Delete this contact message?')) { 
-                await fetch(`http://localhost:5000/api/admin/contacts/${id}`, { 
+                await fetch(`https://tamyokiy-backend-1.onrender.com/api/admin/contacts/${id}`, { 
                     method: 'DELETE', 
                     headers: { 'Authorization': `Bearer ${token}` } 
                 }); 
@@ -972,7 +972,7 @@
             const replyText = document.getElementById('replyMessage').value.trim();
             if (!replyText) { showToast('Please enter a reply message', 'error'); return; }
             try {
-                const res = await fetch(`http://localhost:5000/api/contact/${currentContactId}/reply`, {
+                const res = await fetch(`https://tamyokiy-backend-1.onrender.com/api/contact/${currentContactId}/reply`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ adminResponse: replyText })
@@ -999,7 +999,7 @@
         async function sendApprove() {
             const approveText = document.getElementById('approveMessage').value.trim();
             try {
-                const res = await fetch(`http://localhost:5000/api/contact/${currentContactId}/approve`, {
+                const res = await fetch(`https://tamyokiy-backend-1.onrender.com/api/contact/${currentContactId}/approve`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ adminResponse: approveText })
@@ -1026,7 +1026,7 @@
         async function sendReject() {
             const rejectText = document.getElementById('rejectMessage').value.trim();
             try {
-                const res = await fetch(`http://localhost:5000/api/contact/${currentContactId}/reject`, {
+                const res = await fetch(`https://tamyokiy-backend-1.onrender.com/api/contact/${currentContactId}/reject`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ adminResponse: rejectText })
@@ -1042,7 +1042,7 @@
 
         // ===== APPLICATIONS =====
         async function fetchApplications() {
-            const res = await fetch('http://localhost:5000/api/admin/applications', { 
+            const res = await fetch('https://tamyokiy-backend-1.onrender.com/api/admin/applications', { 
                 headers: { 'Authorization': `Bearer ${token}` } 
             });
             const data = await res.json();
